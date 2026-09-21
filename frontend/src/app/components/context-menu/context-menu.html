@@ -1,0 +1,55 @@
+<hlm-dropdown-menu>
+  <hlm-dropdown-menu-group>
+    @if(base()) {
+      <section id="test" class="flex justify-center overflow-hidden rounded-sm bg-input">
+        <img alt="Marker Icon" class="max-w-9 drop-shadow-[0_0_10px_white]" [src]="base()!.iconUrl()"/>
+      </section>
+
+      <section id="test" class="px-2 pt-1 text-center text-sm text-secondary-foreground">
+        {{ base()!.name() }}
+      </section>
+
+      <section class="px-2 pb-1 text-center text-xs text-muted-foreground">
+        {{ base()!.iconName || base()!.baseType?.() }}
+      </section>
+
+      <hlm-dropdown-menu-separator />
+
+      <button hlmDropdownMenuItem (click)="newOrder(base()!.id)">New Order</button>
+
+      @if (isOpsBase()) {
+        <button hlmDropdownMenuItem [disabled]="isSelected()" (click)="clickHandlerBaseEdit($event, base()!)">
+          Edit Base
+        </button>
+
+        <button hlmDropdownMenuItem [disabled]="isDraggable()" (click)="base()?.draggable?.set(true)">
+          10sec Draggable
+        </button>
+      }
+      
+    } @else {
+      <button hlmDropdownMenuItem (click)="newOpsBase()">
+        <span>Add Base</span>
+        <hlm-dropdown-menu-shortcut>
+          <img src="/images/MapIconBunkerBaseTier3.png" alt="Bunker Base Icon" class="
+            w-7 opacity-90
+          "/>
+        </hlm-dropdown-menu-shortcut>
+      </button>
+
+      <button hlmDropdownMenuItem side="right" [hlmDropdownMenuTrigger]="invite">
+        <span>More</span>
+        <hlm-dropdown-menu-item-sub-indicator />
+      </button>
+    }
+  </hlm-dropdown-menu-group>
+</hlm-dropdown-menu>
+
+
+<ng-template #invite>
+  <hlm-dropdown-menu-sub>
+    <button hlmDropdownMenuItem>Shirt Truck</button>
+    <button hlmDropdownMenuItem>Fuel</button>
+    <button hlmDropdownMenuItem>Something Else</button>
+  </hlm-dropdown-menu-sub>
+</ng-template>

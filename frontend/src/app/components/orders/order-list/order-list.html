@@ -1,0 +1,215 @@
+
+<div #PopoverAnchor class="absolute top-0 right-0 size-0 translate-y-3"></div>
+  
+
+<section class="flex flex-col gap-2">
+
+  @for (order of orderList(); track order().id) {
+    <hlm-popover align="start" autoFocus="false"  [attachTo]="PopoverAnchor">
+
+      <button hlmItem hlmPopoverTrigger variant="muted" size="sm" class="
+        relative cursor-pointer flex-nowrap overflow-hidden border-sidebar-border select-none
+        hover:bg-muted
+      "
+        [class.border-x-success]="order().completed">
+
+        @if(!order().completed)
+        {
+        <div class="absolute bottom-0 left-0 flex h-1/5 w-full">
+          @let done = order().stats.delivered.total / order().stats.ordered.total * 100;
+          @let delivery = order().stats.inDelivery.total / order().stats.ordered.total * 100;
+          @let mine = myItemTotal() / order().stats.ordered.total * 100;
+
+          <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
+          <div class="h-full w-(--width) bg-lime-700" [style.--width]="`${done}%`"></div>
+
+          @if(order() === orderWithMyDelivery()) {
+            <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
+            <div class="h-full w-(--width) bg-yellow-600" [style.--width]="`${mine}%`"></div>
+            <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
+            <div class="h-full w-(--width) bg-stone-500/50" [style.--width]="`${delivery - mine}%`"></div>
+          }
+          @else {
+            <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
+            <div class="h-full w-(--width) bg-stone-500/50" [style.--width]="`${delivery}%`"></div>
+          }
+        </div>
+        }
+
+        <div hlmItemMedia class="
+          relative rounded-sm border border-sidebar-border bg-secondary p-0 shadow-sm
+        ">
+
+          @if (order().completed) {
+            <ng-icon name="lucidePackageCheck" size="35px" strokeWidth="1" class="m-1 text-success"/>
+            <span class="
+              absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 rounded-full bg-success/75
+              px-1 text-xs font-bold text-black
+            ">
+              {{order().stats.delivered.total}}
+            </span>
+          }
+          @else {
+            <app-order-truck size="small" [items]="order().items()"/>
+          }
+
+          @if (order().stats.leftToDeliver.high > 0) {
+            <i class="
+              absolute -top-1 -left-2 rounded-full bg-red-300 px-1 text-xs text-black not-italic
+            ">˄</i>
+          }
+          @else if (order().stats.leftToDeliver.medium > 0) {
+            <i class="
+              absolute -top-1 -left-2 rounded-full bg-amber-200 px-1 text-xs text-black not-italic
+            ">∽</i>
+          }
+          @else if (order().stats.leftToDeliver.low > 0) {
+            <i class="
+              absolute -top-1 -left-2 rounded-full bg-lime-200 px-1 text-xs text-black not-italic
+            ">˅</i>
+          }
+        </div>
+        <div hlmItemContent class="items-start truncate leading-none"> 
+          
+            {{ order().markerId | base:"name" | signal }}
+            <br/>
+            <small class="leading-none text-muted-foreground">{{ order().markerId | base:"type" | signal }}</small>
+          
+
+        </div>
+
+        <div hlmItemActions class="flex min-w-6 flex-col gap-1 text-xs">
+          @if(order().completed)
+          {
+            <span>{{order().timeEnd | fromNow | signal }}</span>
+            <hr class="h-px w-full border-0 bg-sidebar-border">
+            <span>
+              <ng-icon name="lucideTimer" class="relative top-px text-muted-foreground"/>
+              {{order() | orderDuration }}
+            </span>
+          }
+          @else {
+            <span>
+              <ng-icon name="lucidePackage" class="relative top-px mr-1 text-muted-foreground"/>
+              {{order().stats.leftToDeliver.total}}
+            </span>
+            <hr class="h-px w-full border-0 bg-sidebar-border">
+            <span>
+              @if(order() === orderWithMyDelivery()) {
+                <ng-icon name="lucideStar" class="
+                  absolute translate-x-[-125%] translate-y-px text-amber-500
+                "/>
+              }
+              <ng-icon name="lucideTruck" class="relative top-px mr-1 text-muted-foreground"/>
+              {{order().stats.inDelivery.total}}
+            </span>
+          }
+        </div>
+
+      </button>
+
+      <hlm-popover-content *hlmPopoverPortal="let ctx" [] class="
+        h-full min-w-125 rounded-sm outline-4 outline-white/30 outline-solid
+      ">
+        <app-order-popover [order]="order()" [ctx]="ctx"/>
+      </hlm-popover-content>
+    </hlm-popover>
+
+
+  }
+  @empty
+  {
+    <div id="NoOrdersBox" hlmItem variant="outline" size="sm" class="
+      relative flex-nowrap overflow-hidden border-border select-none
+    ">
+
+      <div hlmItemMedia class="
+        relative rounded-sm border border-sidebar-border bg-secondary p-0 shadow-sm
+      ">
+        <ng-icon name="lucideRadar" size="35px" strokeWidth="1" class="m-1 text-muted-foreground"/>
+      </div>
+
+      <div hlmItemContent class="truncate"> 
+        <div hlmItemDescription class="truncate text-center text-muted-foreground">
+          Waiting for new orders
+        </div>
+      </div>
+    </div>
+  }
+
+
+  @if(completedOrders() > 0)
+  {
+    <div class="flex flex-row items-center justify-center">
+      <button class="
+        inline-flex w-auto cursor-pointer flex-row items-center gap-2 rounded-sm bg-input px-2
+        py-0.5 text-base
+      "
+        hlmTooltip="Completed Orders" position="right" [hlmPopoverTriggerFor]="CompletedOrdersPopover">
+        <ng-icon name="lucidePackageCheck" strokeWidth="1" class="text-success" />
+        {{completedOrders()}}
+      </button>
+    </div>
+  }
+</section>
+
+
+
+
+<hlm-popover #CompletedOrdersPopover="brnPopover" align="start" autoFocus="false" [attachTo]="PopoverAnchor">
+  <hlm-popover-content *hlmPopoverPortal="let completeCtx" class="
+    h-full min-w-125 overflow-y-auto rounded-sm outline-4 outline-white/30 outline-solid
+  ">
+    
+    @for (order of completedOrderList(); track order().id)
+    {
+      <hlm-popover align="start" autoFocus="false" [attachTo]="PopoverAnchor" >
+
+        <button hlmItem hlmPopoverTrigger variant="outline" size="sm" class="
+          relative cursor-pointer flex-nowrap overflow-hidden border-border select-none
+          hover:bg-muted/50
+        "
+        [class.border-x-success]="order().completed">
+
+          <div hlmItemMedia class="
+            relative rounded-sm border border-border bg-secondary p-0 shadow-sm
+          ">
+            <ng-icon name="lucidePackageCheck" size="35px" strokeWidth="1" class="m-1 text-success"/>
+            <span class="
+              absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 rounded-full bg-success/75
+              px-1 text-xs font-bold text-black
+            ">
+              {{order().stats.delivered.total}}
+            </span>
+          </div>
+
+          <div hlmItemContent class="truncate"> 
+            <div hlmItemDescription class="flex-col gap-1 truncate px-2 leading-none">
+              {{ order().markerId | base:"name" | signal }}
+              <small class="leading-none text-muted-foreground">{{ order().markerId | base:"type" | signal }}</small>
+            </div>
+
+          </div>
+
+          <div hlmItemActions class="flex min-w-6 flex-col gap-1 text-xs">
+
+          <span>{{order().timeEnd | fromNow | signal }}</span>
+          <hr class="h-px w-full border-0 bg-border">
+          <span>
+            <ng-icon name="lucideTimer" class="relative top-px text-muted-foreground"/>
+            {{order() | orderDuration }}
+          </span>
+          </div>
+
+        </button>
+
+        <hlm-popover-content *hlmPopoverPortal="let ctx" class="
+          h-full min-w-125 rounded-sm outline-4 outline-white/30 outline-solid
+        ">
+        <app-order-popover [order]="order()" [ctx]="ctx"/>
+        </hlm-popover-content>
+      </hlm-popover>
+    }
+
+  </hlm-popover-content>
+</hlm-popover>

@@ -1,0 +1,35 @@
+import type { BackendSettings, FrontendSettings, Settings } from "@loc/types";
+export declare const Events: {
+    readonly SYNC_INFO_LAYER: "SYNC_INFO_LAYER";
+    readonly SYNC_MAP_DATA: "SYNC_MAP_DATA";
+    readonly SYNC_OPS_BASE: "SYNC_OPS_BASE";
+    readonly SYNC_ORDERS: "SYNC_ORDERS";
+    readonly SYNC_PRESENCE: "SYNC_PRESENCE";
+    readonly SYNC_SETTINGS: "SYNC_SETTINGS";
+    readonly SYNC_TEMPLATES: "SYNC_TEMPLATES";
+    readonly REQUEST_INFO_LAYER: "REQUEST_INFO_LAYER";
+    readonly REQUEST_MAP_DATA: "REQUEST_MAP_DATA";
+    readonly REQUEST_OPS_BASE: "REQUEST_OPS_BASE";
+    readonly REQUEST_ORDERS: "REQUEST_ORDERS";
+    readonly REQUEST_PRESENCE: "REQUEST_PRESENCE";
+    readonly REQUEST_TEMPLATES: "REQUEST_TEMPLATES";
+    readonly DELIVERY_AUTOPICK15: "DELIVERY_AUTOPICK15";
+    readonly DELIVERY_CANCEL: "DELIVERY_CANCEL";
+    readonly DELIVERY_CHANGESTATE: "DELIVERY_CHANGESTATE";
+    readonly DELIVERY_PICK: "DELIVERY_PICK";
+    readonly TEMPLATE_DELETE: "TEMPLATE_DELETE";
+    readonly TEMPLATE_UPDATE: "TEMPLATE_UPDATE";
+    readonly ADMIN_BACKEND_SETTINGS: "ADMIN_BACKEND_SETTINGS";
+    readonly ADMIN_BACKUP_LIST: "ADMIN_BACKUP_LIST";
+    readonly ADMIN_BACKUP_RESTORE: "ADMIN_BACKUP_RESTORE";
+    readonly ADMIN_FRONTEND_SETTINGS: "ADMIN_FRONTEND_SETTINGS";
+    readonly ADMIN_RESET_DATA: "ADMIN_RESET_DATA";
+};
+export type Events = typeof Events[keyof typeof Events];
+export default Events;
+export { updateOrderStats, highFilter, mediumFilter, lowFilter } from "./order-stats.js";
+export { checkOrderCompletion } from "./order-completion.js";
+export declare const defaultBackendSettings: BackendSettings;
+export declare const defaultFrontendSettings: FrontendSettings;
+export declare const defaultSettings: Settings;
+//# sourceMappingURL=index.d.ts.map

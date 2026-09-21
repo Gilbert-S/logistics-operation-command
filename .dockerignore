@@ -1,0 +1,31 @@
+# .dockerignore
+
+node_modules
+**/node_modules
+
+dockerfile
+
+.env
+**/.env
+
+.gitignore
+**/.gitignore
+
+TODO
+
+**/.vscode
+
+frontend/dist/
+frontend/coverage/
+
+frontend/.angular/cache
+
+backend/database/data/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Node
+npm-debug.log
+yarn-error.log

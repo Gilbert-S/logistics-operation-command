@@ -1,0 +1,45 @@
+name: logistics-operation-command
+
+networks:
+  loc-network:
+
+volumes:
+  loc-frontend-volume:
+  loc-backend-volume:
+
+
+
+
+services:
+
+  backend:
+    container_name: loc-backend
+    build:
+      context: .
+      dockerfile: ./backend/dockerfile
+    image: loc/backend
+    networks:
+      - loc-network
+    env_file:
+      - container.env
+    volumes:
+      - loc-backend-volume:/app/backend/database/data
+
+
+
+  frontend:
+    container_name: loc-frontend
+    build:
+      context: .
+      dockerfile: ./frontend/dockerfile
+      args:
+        - BACKEND_SERVICE_NAME=backend
+        - BASE_URL=${BASE_URL}
+    image: loc/frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - loc-network
+    volumes:
+      - loc-frontend-volume:/data

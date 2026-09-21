@@ -1,0 +1,121 @@
+@if(myDelivery())
+{
+  <div hlmItem variant="outline" size="sm" class="
+    relative flex flex-col flex-nowrap items-stretch gap-0 border-amber-500/50 shadow-[0_0_6px_0px]
+    shadow-amber-500/50 select-none
+  ">
+    <h2 class="absolute -top-3 right-3 bg-sidebar px-2">My Delivery</h2>
+
+    <header class="mb-2 flex items-center gap-4 leading-none">
+      <span class="rounded-sm border border-input bg-secondary p-1">
+        @if(base()?.iconUrl())
+        {
+          <img alt="Marker Icon" class="size-9 shrink-0 grow-0" [src]="base()?.iconUrl()"/>
+        }
+        @else
+        {
+          <ng-icon name="lucideSkull" size="36px" strokeWidth="1.5" class="
+            shrink-0 grow-0 text-muted-foreground/50
+          "/>
+        }
+      </span>
+      <div class="grow">
+        {{baseName()}}
+        <p class="text-sm text-muted-foreground">{{ type() }}</p>
+      </div>
+      
+      <button hlmBtn variant="outline" size="icon" class="shrink-0 grow-0 cursor-pointer"
+        hlmTooltip="Locate Marker" [showDelay]="500" [disabled]="!base()" (click)="base()?.panTo()">
+        <ng-icon name="lucideLocateFixed" class=""/>
+      </button>
+    </header>
+
+    @if(myOrder()?.details)
+    {
+      <app-order-details class="mb-2 *:min-h-0" readonly [order]="myOrder()!"/>
+    }
+
+    <hlm-collapsible class="flex flex-col gap-0 rounded-sm border border-border" [expanded]="true">
+
+      <button hlmCollapsibleTrigger hlmBtn variant="ghost" class="rounded-none text-left">
+        {{itemTotal()}} items
+        <span class="grow"></span>
+        <app-item-variant class="scale-75 **:border-0! in-data-[state=closed]:hidden"/>
+        <ng-icon name="lucideChevronsUpDown" />
+      </button>
+
+      <hlm-collapsible-content class="flex max-h-[40vh] flex-col items-stretch gap-0 overflow-auto">
+        <app-delivery-items [delivery]="myDelivery()!"/>
+      </hlm-collapsible-content>
+    </hlm-collapsible>
+
+    <footer class="mt-2 flex items-center justify-end gap-2 text-sm">
+      <span class="opacity-50">Status: </span>
+      <span class="grow">{{ myDelivery()?.status }}</span>
+      <button hlmBtn size="icon-sm" variant="outline" [hlmDropdownMenuTrigger]="menu">
+        <ng-icon hlm name="lucideMoreVertical" size="sm" />
+      </button>
+    </footer>
+  </div>
+
+
+  <ng-template #menu>
+    <hlm-dropdown-menu>
+      <hlm-dropdown-menu-label>My Delivery</hlm-dropdown-menu-label>
+      <hlm-dropdown-menu-separator />
+      <hlm-dropdown-menu-group>
+        <button hlmDropdownMenuItem [disabled]="myDelivery()?.status === 'pickup'"
+          (click)="changeDeliveryState('pickup')">
+          <ng-icon name="lucidePackage" />
+          pickup
+        </button>
+        <button hlmDropdownMenuItem [disabled]="myDelivery()?.status === 'delivery'"
+          (click)="changeDeliveryState('delivery')">
+          <ng-icon name="lucideTruck"/>
+          driving
+        </button>
+        <button hlmDropdownMenuItem class="text-lime-200" [disabled]="myDelivery()?.status === 'completed'"
+          (click)="changeDeliveryState('completed')">
+          <ng-icon name="lucideCheckCircle" class="text-lime-200/70"/>
+          delivered
+        </button>
+
+        <hlm-dropdown-menu-separator />
+
+        <button hlmDropdownMenuItem hlmTooltip="Transfer this delivery to another driver"
+          position="right" side="right" align="start" [hlmDropdownMenuSubTrigger]="transfers">
+          <ng-icon name="lucideArrowLeftRight" />
+          transfer
+          <hlm-dropdown-menu-item-sub-indicator />
+        </button>
+
+        <button hlmDropdownMenuItem variant="destructive"
+          hlmTooltip="Cancel my delivery and mark all items as available for delivery"
+          position="right" (click)="cancelDelivery()"
+        >
+          <ng-icon name="lucidePackageX" />
+          cancel
+        </button>
+      </hlm-dropdown-menu-group>
+    </hlm-dropdown-menu>
+  </ng-template>
+
+  <ng-template #transfers>
+    <hlm-dropdown-menu>
+      <hlm-dropdown-menu-label>Transfer this delivery to:</hlm-dropdown-menu-label>
+      <hlm-dropdown-menu-separator />
+      <hlm-dropdown-menu-group>
+        @for (user of presences(); track user.id) {
+          <button hlmDropdownMenuItem [disabled]="usersWithDelivery().includes(user.id)"
+            (click)="transferDelivery(user)">
+            <app-user-avatar size="small" [avatarUrl]="user.image" [userName]="user.name"/>
+            {{ user.name }}
+          </button>
+        }
+      </hlm-dropdown-menu-group>
+    </hlm-dropdown-menu>
+  </ng-template>
+
+}
+
+

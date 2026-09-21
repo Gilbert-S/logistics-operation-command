@@ -1,0 +1,43 @@
+
+<span class="mb-3 flex flex-row items-center gap-2 rounded-sm border p-2">
+  <ng-icon name="lucideInfo" class="shrink-0 text-lg text-accent-foreground"/>
+  <span class="flex shrink grow flex-col flex-wrap">
+    Backups contain a snapshot of Orders, Deliveries and Bases.<br>
+    <small>Auto backup every 5min (only when something changed). Deletes everything beyond 1hour age. Keeps at least last 10 backups.</small>
+  </span>
+</span>
+
+<div class="flex flex-col gap-2">
+  <div class="flex flex-row items-center gap-2 rounded-sm border bg-secondary p-2">
+    <span class="shrink grow">Backup Time</span>
+    <span class="min-w-20">Action</span>
+  </div>
+
+
+  @if (!backups() || backups().length === 0)
+  {
+    <div>No Backups</div>
+  }
+  @else
+  {
+    @for (backup of backups(); track backup.id)
+    {
+      <div class="
+        flex flex-row items-center gap-2 rounded-sm border bg-muted/50 p-2 transition
+        transition-discrete hover:bg-muted starting:opacity-0
+      ">
+        <span class="min-w-24">{{backup.time | date:"yyyy-MM-dd"}}</span>
+        <span class="min-w-20">{{backup.time | date:"HH:mm:ss"}}</span>
+        <span class="min-w-20">{{backup.time | fromNow | signal}}</span>
+        <span class="min-w-10 shrink grow text-right">
+          <button hlmBtn variant="outline" size="sm" class="cursor-pointer"
+            (click)="restoreBackup(backup.id)">
+            <ng-icon name="lucideDatabaseBackup"/>
+            Restore
+          </button>
+        </span>
+      </div>
+    }
+  }
+
+</div>

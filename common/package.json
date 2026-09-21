@@ -1,0 +1,21 @@
+{
+  "author": "",
+  "description": "",
+  "license": "ISC",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "name": "@loc/common",
+  "private": true,
+  "type": "module",
+  "version": "1.0.1",
+
+  "scripts": {
+    "build": "tsc --build"
+  },
+  
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "~5.9.3"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "tailwindCSS.includeLanguages": {
+      "typescript": "javascript"
+    },
+  "tailwindCSS.experimental.configFile": "frontend/src/styles.scss",
+  "tailwindCSS.classFunctions": [
+    "tw",
+    "classes"
+  ],
+}

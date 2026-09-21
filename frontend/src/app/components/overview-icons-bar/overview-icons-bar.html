@@ -1,0 +1,36 @@
+<div class="
+  flex w-full items-center justify-center gap-2 bg-sidebar text-xs select-none [&_ng-icon]:text-base
+  [&_span]:flex [&_span]:flex-row [&_span]:items-center [&_span]:gap-2 [&_span]:rounded-sm
+  [&_span]:border [&_span]:border-border [&_span]:bg-input/70 [&_span]:px-1.5 [&_span]:py-0.5
+">
+
+      <span class=""
+        hlmTooltip="Open Orders" [showDelay]="500">
+        <ng-icon name="lucideShoppingCart" strokeWidth="1"/>
+        {{openOrders()}}
+      </span>
+
+      <span class=""
+        hlmTooltip="Open Deliveries Left" [showDelay]="500">
+        <ng-icon name="lucidePackageOpen" strokeWidth="1"/>
+        {{openDeliveries()}}
+      </span>
+
+      <span class=""
+        hlmTooltip="Deliveries in Pickup" [showDelay]="500">
+        <ng-icon name="lucidePackageSearch" strokeWidth="1"/>
+        {{deliveriesInPickup()}}
+      </span>
+
+      <span class=""
+        hlmTooltip="Deliveries in Transit" [showDelay]="500">
+        <ng-icon name="lucideTruck" strokeWidth="1"/>
+        {{deliveriesInTransit()}}
+      </span>
+
+    <span class=""
+      hlmTooltip="Present Users" [showDelay]="500">
+      <ng-icon name="lucideUsers" strokeWidth="1"/>
+      {{presentUsers()}}
+    </span>
+  </div>

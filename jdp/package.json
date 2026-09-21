@@ -1,0 +1,10 @@
+{
+  "author": "",
+  "description": "",
+  "license": "ISC",
+  "main": "index.ts",
+  "name": "@loc/jdp",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0"
+}

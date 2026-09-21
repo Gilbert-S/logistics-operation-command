@@ -1,0 +1,241 @@
+<hlm-hover-card class="contents">
+
+@switch (variant()) {
+
+  @case ("icon") {
+    <div class="group/orderitem relative grid place-items-center overflow-hidden rounded-sm"
+    tabindex="0" [hlmContextMenuTrigger]="menu"
+    [class.cursor-pointer]="canPickDelivery()" (click)="pickItem($event)"
+      (keyup.enter)="pickItem($event)"
+      (keyup.space)="pickItem($event)"
+      (wheel)="mouseWheelHandler($event)">
+      <img alt hlmHoverCardTrigger [appFoxholeItemImage]="foxholeItem()" [hlmHoverCardTriggerFor]="FoxholeItemHoverCard" [showDelay]="1000*1" [hideDelay]="150">
+
+        <div class="{{orderItem().priority}} absolute bottom-1 right-0.5 h-3 w-3 z-2
+          [.medium]:bg-amber-200 [.low]:bg-lime-200 [.high]:bg-red-300
+          rounded-full grid place-content-center text-black font-xs font-bold " id="priority">{{priorityIndicator()}}
+        </div>
+
+        <span class="
+          absolute top-0.5 left-0.5 rounded-sm border bg-primary px-1 pb-0.5 text-sm leading-none
+          font-semibold text-primary-foreground group-data-canpick/orderitem:bg-accent
+          group-data-canpick/orderitem:text-accent-foreground
+        " [class.bg-ring!]="allPicked()" >
+            x{{ orderItem().quantity }}
+        </span>
+
+        @if(editMode())
+        {
+          <button hlmBtn variant="ghost" size="icon-xs" class="
+            absolute top-6 right-1 size-5 cursor-pointer rounded-sm bg-red-300 p-2 text-black
+            opacity-0 transition-opacity duration-500 ease-in-out group-hover/orderitem:opacity-100
+            hover:bg-red-300! hover:text-black active:duration-100
+          "
+            (click)="changeQuantity(-1)">
+              <ng-icon hlm name="lucideMinus" strokeWidth="3" size="1em"/>
+          </button>
+          <button hlmBtn variant="ghost"  size="icon-xs" class="
+            absolute top-0.5 right-1 size-5 cursor-pointer rounded-sm bg-lime-300 p-2 text-black
+            opacity-0 transition-opacity duration-500 ease-in-out group-hover/orderitem:opacity-100
+            hover:bg-lime-300! hover:text-black active:duration-100
+          "
+            (click)="changeQuantity(1)">
+              <ng-icon hlm name="lucidePlus" strokeWidth="3" size="1em"/>
+          </button>
+        }
+        @else
+        {
+          <div class="absolute bottom-0 left-0 z-1 flex h-2 w-full">
+            <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
+            <div class="h-full w-(--width) bg-lime-700" [style.--width]="stats().delivered"></div>
+            <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
+            <div class="h-full w-(--width) bg-yellow-600" [style.--width]="stats().myDelivery"></div>
+            <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
+            <div class="h-full w-(--width) bg-stone-500/50" [style.--width]="stats().inDelivery"></div>
+          </div>
+
+          @if(canReduceDelivery())
+          {
+            <div id="my-delivery-actions" class="
+              absolute top-1 right-1 z-10 flex max-h-9 flex-col gap-0.5
+            ">
+              <button hlmBtn variant="ghost"  size="icon-xs" class="
+                size-4.5 cursor-pointer rounded-xs border border-ring/70 bg-background!
+                text-destructive shadow-[0_0_8px_var(--background),0_0_8px__var(--background)]
+                drop-shadow-sm hover:bg-stone-700!
+              "
+                (click)="lowerMyDeliveryCount($event,-1)">
+                <ng-icon hlm name="lucideChevronDown" strokeWidth="2" size="13px"/>
+              </button>
+
+            </div>
+          }
+        }
+    </div>
+  }
+
+
+
+
+  @case ("list") {
+    <div class="
+      @container relative box-border flex shrink-0 basis-full flex-row items-center gap-3 border-x
+      border-b border-border bg-white/5 p-2 select-none [app-order-item:first-child>&]:rounded-t-sm
+      [app-order-item:first-child>&]:border-y [app-order-item:last-child>&]:rounded-b-sm
+    "
+      tabindex="0" [class.cursor-pointer]="canPickDelivery()"
+      [class.hover:bg-border]="canPickDelivery()"
+      [hlmContextMenuTrigger]="menu"
+      (click)="pickItem($event)"
+      (keyup.enter)="pickItem($event)"
+      (keyup.space)="pickItem($event)"
+      (wheel)="mouseWheelHandler($event)"
+      >
+
+      <div class="absolute bottom-1 left-0 flex h-2 w-full">
+        <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
+        <div class="h-full w-(--width) bg-lime-700" [style.--width]="stats().delivered"></div>
+        <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
+        <div class="h-full w-(--width) bg-yellow-600" [style.--width]="stats().myDelivery"></div>
+        <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
+        <div class="h-full w-(--width) bg-stone-500/50" [style.--width]="stats().inDelivery"></div>
+      </div>
+
+      <section class="z-1 -my-1.5 -ml-1.5 shrink-0 bg-muted/80 @max-sm:hidden" >
+        <img alt forListVariant hlmHoverCardTrigger [appFoxholeItemImage]="foxholeItem()" [hlmHoverCardTriggerFor]="FoxholeItemHoverCard" [showDelay]="1000*1" [hideDelay]="150"/>
+      </section>
+
+      @if ( editMode() && item) {
+      <div class="">
+        <input hlmInput type="number" class="w-16" name="quantity"
+          autocomplete="off" [min]="item.delivered + item.inDelivery || 1" [(ngModel)]="item.quantity" (ngModelChange)="updateOrderItems()" />
+      </div>
+      }
+      @else
+      {
+        <div class="w-1/10">
+          x{{ orderItem().quantity }}
+        </div>
+      }
+
+      <div class="max-w-full grow truncate overflow-hidden">
+        {{ foxholeItem().DisplayName }}
+      </div>
+
+      @if ( editMode() && item) {
+      <div>
+        <hlm-toggle-group size="sm" class="origin-left" type="single" variant="outline" [(value)]="item.priority" (valueChange)="updateOrderItems()">
+
+          <button hlmToggleGroupItem value="high" aria-label="High Priority" class="
+            block text-xs font-normal text-muted-foreground data-[state=on]:text-red-300
+            @max-sm:text-[0px] @max-sm:first-letter:text-xs
+          ">
+            High
+          </button>
+
+          <button hlmToggleGroupItem value="medium" aria-label="Medium Priority" class="
+            block text-xs font-normal text-muted-foreground data-[state=on]:text-amber-200
+            @max-sm:text-[0px] @max-sm:first-letter:text-xs
+          ">
+            Medium
+          </button>
+
+          <button hlmToggleGroupItem value="low" aria-label="Low Priority" class="
+            block text-xs font-normal text-muted-foreground data-[state=on]:text-lime-200
+            @max-sm:text-[0px] @max-sm:first-letter:text-xs
+          ">
+            Low
+          </button>
+
+        </hlm-toggle-group>
+      </div>
+
+      <div class="flex w-8.75 justify-end @max-sm:hidden">
+        <button hlmBtn variant="destructive" size="icon" class="
+          scale-75 cursor-pointer hover:bg-destructive/40!
+        "
+          [disabled]="!canDeleteOrderItem()" (click)="removeItem()">
+          <ng-icon hlm name="lucideTrash2" strokeWidth="1"/>
+        </button>
+      </div>
+      }
+      @else {
+        <div id="priority-indicator" [class.text-amber-200]="medium()" [class.text-red-300]="high()" [class.text-lime-200]="low()">
+          {{ priorityIndicator() }}
+        </div>
+
+        @if(canReduceDelivery())
+        {
+          <div id="my-delivery-actions" class="z-10 flex max-h-9 flex-col gap-1">
+
+            <button hlmBtn variant="outline" size="icon" class="
+              size-4 cursor-pointer rounded-xs bg-accent! text-destructive hover:bg-stone-700!
+            "
+              (click)="lowerMyDeliveryCount($event)">
+              <ng-icon hlm name="lucideDelete" strokeWidth="1" size="13px"/>
+            </button>
+
+            <button hlmBtn variant="outline" size="icon" class="
+              size-4 cursor-pointer rounded-xs bg-accent! hover:bg-stone-700!
+            "
+              (click)="lowerMyDeliveryCount($event,-1)">
+              <ng-icon hlm name="lucideChevronDown" strokeWidth="1" size="13px"/>
+            </button>
+
+          </div>
+        }
+      }
+    </div>
+  }
+}
+
+
+  <ng-template #FoxholeItemHoverCard="brnHoverCardContent" hlmHoverCardPortal>
+    <app-foxhole-item-hover-card [item]="foxholeItem()"/>
+  </ng-template>
+</hlm-hover-card>
+
+
+
+
+
+
+
+<ng-template #menu>
+  <hlm-dropdown-menu >
+  @if(editMode())
+  {
+    @if (item) {
+    <hlm-dropdown-menu-group>
+      <hlm-dropdown-menu-label>Quantity</hlm-dropdown-menu-label>
+      <input hlmInput class="mx-8 mb-2 w-36 text-center" name="quantity" autocomplete="off"
+        type="number" [min]="item.delivered + item.inDelivery || 1" [(ngModel)]="item.quantity" (ngModelChange)="updateOrderItems()"/>
+    </hlm-dropdown-menu-group>
+    }
+
+    <hlm-dropdown-menu-separator />
+
+    <hlm-dropdown-menu-group>
+      <hlm-dropdown-menu-label>Priority</hlm-dropdown-menu-label>
+      <button hlmDropdownMenuRadio class="text-red-300" [checked]="high()" (triggered)="setPriority('high')">
+        <hlm-dropdown-menu-radio-indicator />
+        high
+      </button>
+      <button hlmDropdownMenuRadio class="text-amber-200" [checked]="medium()" (triggered)="setPriority('medium')">
+        <hlm-dropdown-menu-radio-indicator />
+        medium
+      </button>
+      <button hlmDropdownMenuRadio class="text-lime-200" [checked]="low()" (triggered)="setPriority('low')">
+        <hlm-dropdown-menu-radio-indicator />
+        low
+      </button>
+    </hlm-dropdown-menu-group>
+
+    <hlm-dropdown-menu-separator />
+
+    <button hlmDropdownMenuItem inset variant="destructive" (click)="removeItem()">
+      Remove item from order
+    </button>
+  }
+  </hlm-dropdown-menu>
+</ng-template>

@@ -1,0 +1,7 @@
+<div #map id="map" [hlmContextMenuTrigger]="connected() ? menu : empty"></div>
+
+<ng-template #menu>
+  <app-context-menu/>
+</ng-template>
+
+<ng-template #empty />

@@ -1,0 +1,83 @@
+
+<div hlmFieldGroup class="gap-6">
+  <fieldset hlmFieldSet>
+    <label hlmFieldLegend>Frontend Settings</label>
+    
+    <form #frontendSettings="ngForm" hlmFieldGroup>
+      <div hlmField>
+        <label hlmFieldLabel>Completed orders display duration</label>
+        <p hlmFieldDescription>How long, after completion, shall orders still be displayed in the 'current' orders list</p>
+        <hlm-input-group class="w-36!">
+          <input hlmInputGroupInput type="number" min="0" max="9999" required name="orders.display-completed-for" [ngModel]="settings().frontend['orders.display-completed-for']" />
+          <hlm-input-group-addon align="inline-end">
+            <hlm-input-group-text>minutes</hlm-input-group-text>
+          </hlm-input-group-addon>
+        </hlm-input-group>
+      </div>
+
+      <div hlmField>
+        <label hlmFieldLabel>Completed deliveries display duration</label>
+        <p hlmFieldDescription>How long, after completion, shall deliveries still be displayed in the 'current' deliveries list</p>
+        <hlm-input-group class="w-36!">
+          <input hlmInputGroupInput type="number" min="0" max="9999" required name="deliveries.display-completed-for" [ngModel]="settings().frontend['deliveries.display-completed-for']" />
+          <hlm-input-group-addon align="inline-end">
+            <hlm-input-group-text>minutes</hlm-input-group-text>
+          </hlm-input-group-addon>
+        </hlm-input-group>
+        
+      </div>
+    </form>
+
+    <div hlmField orientation="horizontal" class="justify-end">
+      <button hlmBtn [disabled]="frontendSettings.invalid || frontendSettings.pristine"
+        (click)="saveFrontendSettings(frontendSettings.value)">
+        Save Frontend Settings
+      </button>
+    </div>
+
+  </fieldset>
+
+  <hlm-field-separator />
+
+  <fieldset hlmFieldSet>
+    <label hlmFieldLegend>Backend Settings</label>
+    <form #backendSettings="ngForm" hlmFieldGroup>
+
+      <div hlmField>
+        <label hlmFieldLabel>Presence offline cutoff</label>
+        <p hlmFieldDescription>How long shall Users still be included in the presence list after going offline. At least 1 hour is recommended</p>
+        <hlm-input-group class="w-36!">
+          <input hlmInputGroupInput type="number" min="0" max="999" required name="presence.cutoff-hours" [ngModel]="settings().backend['presence.cutoff-hours']"/>
+          <hlm-input-group-addon align="inline-end">
+            <hlm-input-group-text>hours</hlm-input-group-text>
+          </hlm-input-group-addon>
+        </hlm-input-group>
+      </div>
+
+      <div hlmField>
+        <label hlmFieldLabel for="field-preview-name-on-card">Permitted Roles</label>
+        <p hlmFieldDescription>A comma separated list of Discord role IDs (snowflakes) that are permitted to use this application.<br>If left empty, anyone is allowed to login.</p>
+        <input hlmInput name="auth.permitted-roles" pattern="^\d{17,19}(?:[\s,]+\d{17,19})*$"
+         [ngModel]="settings().backend['auth.permitted-roles'].join(', ')"/>
+        <p hlmFieldDescription class="text-destructive">Danger! Changing this may lock you and others out of the application.</p>
+      </div>
+
+      <div hlmField>
+        <label hlmFieldLabel for="field-preview-name-on-card">Admin Roles</label>
+        <p hlmFieldDescription>A comma separated list of Discord role IDs (snowflakes) that are permitted to use the admin panel.<br>If left empty, every user is allowed to access the admin panel.</p>
+        <input hlmInput name="auth.admin-roles" pattern="^\d{17,19}(?:[\s,]+\d{17,19})*$"
+          [ngModel]="settings().backend['auth.admin-roles'].join(', ')" />
+        <p hlmFieldDescription class="text-destructive">Danger! Changing this may lock you and others out of the admin panel.</p>
+      </div>
+    </form>
+
+    <div hlmField orientation="horizontal" class="justify-end">
+      <button hlmBtn [disabled]="backendSettings.invalid || backendSettings.pristine"
+        (click)="saveBackendSettings(backendSettings.value)">
+        Save Backend Settings
+      </button>
+    </div>
+
+  </fieldset>
+</div>
+

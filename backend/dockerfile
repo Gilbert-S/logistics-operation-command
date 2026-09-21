@@ -1,0 +1,50 @@
+# syntax=docker/dockerfile:1
+
+# This Dockerfile is meant to be executed with the parent directory as build context,
+# e.g. `docker build -f backend/dockerfile .`
+
+FROM node:26-alpine AS build
+
+# ENV NPM_CONFIG_LOGLEVEL=info
+ENV NODE_ENV=production
+
+WORKDIR /app
+
+COPY package.json package-lock.json .npmrc ./
+COPY ./backend/ ./backend/
+COPY ./common/ ./common/
+COPY ./jdp/ ./jdp/ 
+COPY ./backend/entrypoint.sh /
+
+RUN npm ci \
+  --workspace=common \
+  --workspace=jdp \
+  --workspace=backend \
+  --omit=dev \
+  --omit=peer \
+  --omit=optional \
+  --ignore-scripts \
+  --include-workspace-root
+
+RUN npm prune --production
+RUN rm -f .npmrc package.json package-lock.json
+
+
+
+
+
+FROM node:26-alpine
+
+ENV NODE_ENV=production
+
+USER node
+WORKDIR /app
+
+COPY --chown=node:node --from=build /app /app
+RUN mkdir -p /app/backend/database/data
+VOLUME /app/backend/database/data
+
+COPY --from=build entrypoint.sh ./
+ENTRYPOINT ["/app/entrypoint.sh"]
+
+EXPOSE 3000

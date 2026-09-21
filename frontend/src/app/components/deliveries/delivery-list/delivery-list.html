@@ -1,0 +1,207 @@
+
+<div #PopoverAnchor class="absolute top-0 right-0 size-0 translate-y-3"></div>
+  
+
+<section class="flex flex-col gap-2">
+
+  @for (delivery of deliveriesList(); track $index)
+  {
+    @let completed = delivery.status === 'completed';
+    @let base = delivery.markerId | base:"object" | signal;
+    @let iconUrl = delivery.markerId | base:"iconUrl" | signal;
+    @let name = delivery.markerId | base:"name" | signal;
+    @let type = delivery.markerId | base:"type" | signal;
+
+    <hlm-popover align="start" autoFocus="false" [attachTo]="PopoverAnchor">
+
+      <button hlmItem hlmPopoverTrigger variant="muted" size="sm" class="
+        relative cursor-pointer flex-nowrap overflow-hidden border-sidebar-border select-none
+        hover:bg-muted
+      "
+        [class.border-x-success]="completed">
+
+          @switch (delivery.priority) {
+            @case ("high") {<i class="
+              absolute -top-0.5 -left-0.5 rounded-full bg-red-300 px-1 text-xs text-black not-italic
+            ">˄</i>}
+            @case ("medium") {<i class="
+              absolute -top-0.5 -left-0.5 rounded-full bg-amber-200 px-1 text-xs text-black
+              not-italic
+            ">∽</i>}
+            @case ("low") {<i class="
+              absolute -top-0.5 -left-0.5 rounded-full bg-lime-200 px-1 text-xs text-black
+              not-italic
+            ">˅</i>}
+          }
+
+        <div class="relative grid">
+          <app-order-truck size="small" class="col-1 row-1 ml-6 scale-x-[-1]"/>
+          <app-user-avatar class="col-1 row-1" [avatarUrl]="delivery.user.image" [userName]="delivery.user.name"/>
+        </div>
+
+
+          <div hlmItemContent class="items-center truncate"> 
+            @if (completed) {
+              <section class="flex flex-row items-center gap-1 text-xs">
+                <ng-icon name="lucidePackageCheck" size="35px" strokeWidth="1" class="
+                  m-1 text-success
+                "/>
+
+                <span class="flex flex-col items-start">
+                  <span>
+                    <ng-icon name="lucideTimer" class="relative top-px text-muted-foreground"/>
+                    {{delivery | deliveryDuration }}
+                  </span>
+                  {{delivery.timeEnd | fromNow | signal }}
+                </span>
+              </section>
+            }
+            @else {
+              <span class="text-xs text-muted-foreground">{{delivery.status}}</span>
+              <div class="flex w-full items-center px-1">
+                <div class="h-px flex-1 bg-border"></div>
+                <div class="-ml-2.5 size-2.5 rotate-45 border-t border-r border-border"></div>
+              </div>
+              <span class="flex items-center gap-1 text-xs text-muted-foreground">
+                <ng-icon name="lucideTimer" class=""/>
+                {{delivery.timeStart | fromNow:true | signal }}
+              </span>
+            }
+          </div>
+
+        
+        <div hlmItemActions class="
+          flex min-w-6 flex-col items-end gap-1 truncate text-xs leading-none
+        ">
+            {{ delivery.markerId | base:"name" | signal }}
+            <small class="text-muted-foreground">{{ delivery.markerId | base:"type" | signal }}</small>
+            <span class="text-foreground/75">
+              <ng-icon name="lucidePackage" class="relative top-px"/>
+              {{delivery.quantity}}
+            </span>
+
+        </div>
+
+      </button>
+
+      <hlm-popover-content *hlmPopoverPortal="let ctx" class="
+        h-full min-w-125 rounded-sm outline-4 outline-white/30 outline-solid
+      ">
+        <header class="flex items-center gap-2 leading-none">
+
+          <app-user-avatar size="large" [avatarUrl]="delivery.user.image" [userName]="delivery.user.name"/>
+          <span class="grow truncate">{{ delivery.user.name }}</span>
+
+          <div class="text-right">
+            {{name}}
+            <p class="text-sm text-muted-foreground">{{ type }}</p>
+          </div>
+
+          <span class="rounded-sm border border-input bg-secondary p-1">
+            @if(iconUrl)
+            {
+              <img alt="Marker Icon" class="size-9 shrink-0 grow-0" [src]="iconUrl"/>
+            }
+            @else
+            {
+              <ng-icon name="lucideSkull" size="36px" strokeWidth="1.5" class="
+                shrink-0 grow-0 text-muted-foreground/50
+              "/>
+            }
+          </span>
+
+          <div class="flex flex-col gap-1">
+            <button hlmBtn size="icon-xs" variant="outline" [hlmDropdownMenuTrigger]="menu">
+              <ng-icon hlm name="lucideMoreVertical" size="sm" [strokeWidth]="1"/>
+            </button>
+
+            <button hlmBtn variant="outline" size="icon-xs" class="shrink-0 grow-0" hlmTooltip="Locate Marker"
+              [showDelay]="500" [disabled]="!base" (click)="base?.panTo()">
+              <ng-icon name="lucideLocateFixed" class="" [strokeWidth]="1"/>
+            </button>
+          </div>
+
+        </header>
+        <app-delivery-items [delivery]="delivery"/>
+      </hlm-popover-content>
+
+      <ng-template #menu>
+        <hlm-dropdown-menu>
+          <hlm-dropdown-menu-label>{{delivery.user.name}} Delivery</hlm-dropdown-menu-label>
+          <hlm-dropdown-menu-separator />
+          <hlm-dropdown-menu-group>
+            <button hlmDropdownMenuItem [disabled]="delivery.status === 'pickup'"
+              (click)="changeDeliveryState(delivery.orderId!, delivery.user.id, 'pickup')">
+              <ng-icon name="lucidePackage" />
+              pickup
+            </button>
+            <button hlmDropdownMenuItem [disabled]="delivery.status === 'delivery'"
+              (click)="changeDeliveryState(delivery.orderId!, delivery.user.id, 'delivery')">
+              <ng-icon name="lucideTruck"/>
+              driving
+            </button>
+            <button hlmDropdownMenuItem class="text-lime-200" [disabled]="delivery.status === 'completed'"
+              (click)="changeDeliveryState(delivery.orderId!, delivery.user.id, 'completed')">
+              <ng-icon name="lucideCheckCircle" class="text-lime-200/70"/>
+              delivered
+            </button>
+
+            <hlm-dropdown-menu-separator />
+
+            <button hlmDropdownMenuItem hlmTooltip="Transfer this delivery to another driver"
+              position="right" side="right" align="start" [hlmDropdownMenuSubTrigger]="transfers">
+              <ng-icon name="lucideArrowLeftRight" />
+              transfer
+              <hlm-dropdown-menu-item-sub-indicator />
+            </button>
+
+            <button hlmDropdownMenuItem variant="destructive" hlmTooltip="Cancel delivery"
+              (click)="cancelDelivery(delivery.orderId!, delivery.user.id)">
+              <ng-icon name="lucidePackageX" />
+              cancel
+            </button>
+          </hlm-dropdown-menu-group>
+        </hlm-dropdown-menu>
+      </ng-template>
+
+      <ng-template #transfers>
+        <hlm-dropdown-menu>
+          <hlm-dropdown-menu-label>Transfer this delivery to:</hlm-dropdown-menu-label>
+          <hlm-dropdown-menu-separator />
+          <hlm-dropdown-menu-group>
+            @for (user of presences(); track user.id) {
+              <button hlmDropdownMenuItem [disabled]="usersWithDelivery().includes(user.id)"
+               (click)="transferDelivery(delivery.orderId!, delivery.user, user)">
+                <app-user-avatar size="small" [avatarUrl]="user.image" [userName]="user.name"/>
+                {{ user.name }}
+              </button>
+            }
+          </hlm-dropdown-menu-group>
+        </hlm-dropdown-menu>
+      </ng-template>
+    </hlm-popover>
+
+
+  }
+  @empty
+  {
+    <div id="NoOrdersBox" hlmItem variant="outline" size="sm" class="
+      relative flex-nowrap overflow-hidden border-border select-none
+    ">
+
+      <div hlmItemMedia class="relative rounded-sm border border-border bg-secondary p-0 shadow-sm">
+        <ng-icon name="lucideTruck" size="35px" strokeWidth="1" class="m-1 text-muted-foreground"/>
+        <hr class="
+          absolute top-1/2 left-1/2 h-0.5 w-12 -translate-1/2 -rotate-45 border-0
+          bg-muted-foreground
+        "/>
+      </div>
+
+      <div hlmItemContent class="truncate"> 
+        <div hlmItemDescription class="truncate text-center text-muted-foreground">
+          No active deliveries
+        </div>
+      </div>
+    </div>
+  }
+</section>

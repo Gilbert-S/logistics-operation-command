@@ -1,0 +1,78 @@
+<div hlmFieldGroup class="">
+  <fieldset hlmFieldSet>
+    <label hlmFieldLabel>Reset Application Data</label>
+    <p hlmFieldDescription>Choose the application data you want to reset.</p>
+    <hlm-radio-group value="orders" [(ngModel)]="selectedData">
+
+      <label hlmFieldLabel for="infolayer">
+        <div hlmField orientation="horizontal">
+          <div hlmFieldContent>
+            <div hlmFieldTitle>Info-Layer only</div>
+            <div hlmFieldDescription>
+              Reset the Info-Layer and remove all drawings and labels.<br>
+              Currently there are <b>{{shapeCount()}}</b> individual shapes on the Info-Layer.
+            </div>
+          </div>
+          <hlm-radio value="infolayer" inputId="infolayer">
+            <hlm-radio-indicator indicator />
+          </hlm-radio>
+        </div>
+      </label>
+      
+      <label hlmFieldLabel for="orders">
+        <div hlmField orientation="horizontal">
+          <div hlmFieldContent>
+            <div hlmFieldTitle>Orders only</div>
+            <div hlmFieldDescription>
+              Reset order data and remove all Orders and Deliveries.<br>
+              Currently there are <b>{{orderCount()}}</b> orders <b>({{completedOrderCount()}}</b> completed)
+            </div>
+          </div>
+          <hlm-radio value="orders" inputId="orders">
+            <hlm-radio-indicator indicator />
+          </hlm-radio>
+        </div>
+      </label>
+
+      <label hlmFieldLabel for="bases">
+        <div hlmField orientation="horizontal">
+          <div hlmFieldContent>
+            <div hlmFieldTitle>Bases & Orders</div>
+            <div hlmFieldDescription>
+              Reset base and order data. Currently there are <b>{{baseCount()}}</b> bases.<br>
+              <small>(Bases aka BBs, Bobers, FOBs ...)</small>
+            </div>
+          </div>
+          <hlm-radio value="bases" inputId="bases">
+            <hlm-radio-indicator indicator />
+          </hlm-radio>
+        </div>
+      </label>
+
+      <label hlmFieldLabel for="all">
+        <div hlmField orientation="horizontal">
+          <div hlmFieldContent>
+            <div hlmFieldTitle>All Data</div>
+            <div hlmFieldDescription>
+              Reset <b>all</b> application data AND static & dynamic map data.
+            </div>
+          </div>
+          <hlm-radio value="all" inputId="all">
+            <hlm-radio-indicator indicator />
+          </hlm-radio>
+        </div>
+      </label>
+
+    </hlm-radio-group>
+
+    <div hlmField orientation="horizontal" class="justify-end">
+      <button hlmBtn variant="destructive" [disabled]="waitingForResponse()" (click)="resetData()">
+        @if(waitingForResponse()){
+          <hlm-spinner data-icon="inline-start"/>
+        }
+        Reset selected Data
+      </button>
+    </div>
+
+  </fieldset>
+</div>

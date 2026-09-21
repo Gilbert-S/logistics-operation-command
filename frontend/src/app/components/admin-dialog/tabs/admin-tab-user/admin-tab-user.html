@@ -1,0 +1,106 @@
+<div class="flex h-full flex-col gap-1.5">
+
+  <div class="flex flex-row items-center gap-2 rounded-sm border bg-secondary p-2">
+    <span class="min-w-10">
+      @if(users.isLoading())
+      {
+        <span class="transition transition-discrete duration-200 starting:opacity-0">
+          <hlm-spinner />
+        </span>
+      }
+    </span>
+    <span class="flex shrink grow flex-row items-center gap-20">
+      Name
+      <hlm-button-group>
+      <input #s hlmInput id="input-button-group" placeholder="search..." (keydown.enter)="search.set(s.value);page.set(1)" />
+      <button hlmBtn variant="outline" (click)="search.set(s.value);page.set(1)">
+        <ng-icon name="lucideSearch"/>
+      </button>
+    </hlm-button-group>
+    </span>
+    <span class="min-w-20">Created</span>
+    <span class="min-w-20">Updated</span>
+    <span class="min-w-10">&nbsp;</span>
+  </div>
+
+
+  @if (!users.isLoading() && (!users.hasValue() || users.value().total === 0))
+  {
+    <div>No users found</div>
+  }
+  @else
+  {
+    @for (user of users.value().users; track user.id)
+    {
+      <div class="
+        flex flex-row items-center gap-2 rounded-sm border bg-muted/50 p-2 transition
+        transition-discrete hover:bg-muted starting:opacity-0
+      ">
+        <app-user-avatar [avatarUrl]="user.image" [userName]="user.name"/>
+        <span class="shrink grow truncate">
+          {{user.name}}
+          @if(user.banned) { <span hlmBadge variant="destructive">Banned</span> }
+          @if(user.role === 'admin') { 
+            <span hlmBadge variant="outline" class="bg-accent-foreground/20 text-accent-foreground">
+              Admin
+            </span>
+          }
+        </span>
+        <span class="min-w-20">{{user.createdAt | fromNow | signal}}</span>
+        <span class="min-w-20">{{user.updatedAt | fromNow | signal}}</span>
+        <span class="min-w-10">
+          <button hlmBtn variant="outline" size="icon" class="cursor-pointer"
+            [hlmDropdownMenuTrigger]="menu" [hlmDropdownMenuTriggerData]="{ $implicit: user }">
+            <ng-icon name="lucideMoreVertical"/>
+          </button>
+        </span>
+      </div>
+    }
+  }
+  
+  <div class="flex grow flex-row items-end justify-center gap-2">
+    <button hlmBtn variant="outline" [disabled]="page() === 1" (click)="prevPage()">
+      <ng-icon name="lucideChevronLeft"/>
+      Previous
+    </button>
+    <button hlmBtn variant="outline" [disabled]="page() === maxPage()" (click)="nextPage()">
+      Next
+      <ng-icon name="lucideChevronRight"/>
+    </button>
+  </div>
+
+</div>
+
+
+<ng-template #menu let-user>
+  <hlm-dropdown-menu>
+    <hlm-dropdown-menu-group>
+      <hlm-dropdown-menu-label>{{user.name}}</hlm-dropdown-menu-label>
+      <button hlmDropdownMenuItem [disabled]="user.role === 'admin'" (click)="impersonate(user.id)">
+        <ng-icon name="lucideVenetianMask" class="mr-1 text-muted-foreground"/>
+        Impersonate
+      </button>
+      @if(user.banned)
+      {
+        <button hlmDropdownMenuItem [disabled]="user.role === 'admin'" (click)="unban(user.id)">
+          <ng-icon name="lucideUserCheck" class="mr-1 text-muted-foreground"/>
+          Unban
+        </button>
+      }
+      @else
+      {
+        <button hlmDropdownMenuItem [disabled]="user.role === 'admin'" (click)="ban(user.id)">
+          <ng-icon name="lucideUserX" class="mr-1 text-muted-foreground"/>
+          Ban
+        </button>
+      }
+      <button hlmDropdownMenuItem (click)="revokeSessions(user.id)">
+        <ng-icon name="lucideLogOut" class="mr-1 text-muted-foreground"/>
+        Revoke Sessions</button>
+      <button hlmDropdownMenuItem (click)="remove(user.id)">
+        <ng-icon name="lucideTrash" class="mr-1 text-muted-foreground"/>
+        Delete
+      </button>
+    </hlm-dropdown-menu-group>
+  </hlm-dropdown-menu>
+</ng-template>

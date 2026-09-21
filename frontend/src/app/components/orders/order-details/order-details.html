@@ -1,0 +1,9 @@
+<textarea 
+  #orderdetails 
+  hlmTextarea 
+  placeholder="Add some order details (optional) ..."
+  class="field-sizing-content resize-none"
+  [attr.readonly]="readonly() ? true : null"
+  [value]="details()"
+  (change)="details.set(orderdetails.value)"
+></textarea>

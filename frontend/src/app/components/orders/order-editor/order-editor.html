@@ -1,0 +1,161 @@
+<hlm-dialog [state]="state()" (closed)="editOrder.set(null)">
+  <hlm-dialog-content *hlmDialogPortal="let ctx" class="
+    flex h-[95vh] w-screen max-w-[min(95vw,1400px)]! flex-col overflow-hidden rounded-sm
+  ">
+    <hlm-dialog-header class="flex flex-row items-center justify-start gap-12">
+
+      <div class="rounded-sm border border-input p-1">
+        <img class="size-9" alt="" [src]="baseIconUrl()"/>
+      </div>
+
+      <h3 hlmDialogTitle>
+        <small>Target:</small> {{ baseName() }} {{ baseIconName() || baseType() }}
+        
+      </h3>
+
+      <p hlmDialogDescription>
+        @if(order()?.unsaved) {
+          <span hlmBadge variant="destructive">editing new unsaved order</span>
+        }
+        @else {
+          <span hlmBadge variant="destructive">editing existing order.</span>
+          <span hlmBadge variant="destructive">
+            WARNING: avoid changing existing orders. rather create a new one.
+          </span>
+        }
+      </p>
+    </hlm-dialog-header>
+
+
+    <hlm-resizable-group class="size-full grow overflow-hidden rounded-md border p-2"
+      direction="horizontal" [(layout)]="layout">
+
+      <hlm-resizable-panel class="flex flex-col overflow-hidden" collapsible="false" minSize="10">
+          <section id="toolbar" class="
+            m-2 flex justify-center gap-2 rounded-sm border border-border bg-[#191919e0] p-2
+          ">
+            <hlm-toggle-group class="shrink-0" type="multiple" variant="outline" [(value)]="factionItemFilter">
+
+              <button hlmToggleGroupItem aria-label="Warden Items" class="
+                data-[state=off]:opacity-50 data-[state=off]:grayscale
+              " 
+                [value]="FactionVariant.Wardens">
+                <img src="/images/logoWarden64.png" alt="Wardens" class="h-full"/>
+              </button>
+
+              <button hlmToggleGroupItem aria-label="Neutral Items" class="
+                data-[state=off]:opacity-50 data-[state=off]:grayscale
+              "  [value]="FactionVariant.Neutral" >
+                <img src="/images/MapIconVictory.png" alt="None" class="h-[67%]"/>
+              </button>
+
+              <button hlmToggleGroupItem aria-label="Colonial Items" class="
+                data-[state=off]:opacity-50 data-[state=off]:grayscale
+              " [value]="FactionVariant.Colonials" >
+                <img src="/images/logoColonial64.png" alt="Colonials" class="h-full"/>
+              </button>
+
+            </hlm-toggle-group>
+
+            <hlm-field orientation="horizontal" class="max-w-42 shrink">
+              <input hlmInput type="search" placeholder="Search..." [(ngModel)]="nameItemFilter" />
+            </hlm-field>
+
+          </section>
+
+        
+          <section id="items" class="
+            relative m-2 flex h-full flex-wrap content-start justify-center gap-2 overflow-x-hidden
+            overflow-y-auto not-firefox:scroll-fade
+          ">
+            @for (item of filteredItems(); track $index)
+            {
+              <hlm-hover-card class="contents">
+              <button type="button" (click)="addItemToOrder($event, item.CodeName)"
+                (wheel)="orderItemMouseWheelHandler($event, item.CodeName)">
+                <!-- eslint-disable-next-line @html-eslint/angular-template/no-obsolete-attrs -->
+                <img alt hlmHoverCardTrigger align="right" [appFoxholeItemImage]="item.CodeName | foxholeItem" [hlmHoverCardTriggerFor]="FoxholeItemHoverCard" [showDelay]="1500"/>
+              </button>
+              <ng-template #FoxholeItemHoverCard="brnHoverCardContent" hlmHoverCardPortal>
+                <app-foxhole-item-hover-card [item]="item.CodeName | foxholeItem"/>
+              </ng-template>
+              </hlm-hover-card>
+            }
+          </section>
+      </hlm-resizable-panel>
+
+      
+      @if (order()) {
+        <hlm-resizable-handle withHandle />
+        <hlm-resizable-panel class="flex flex-col overflow-hidden" collapsible="false" minSize="20">
+          <section id="toolbar" class="
+            m-2 flex justify-end rounded-sm border border-border bg-[#191919e0] p-2
+          ">
+
+            <hlm-toggle-group class="w-full" type="single" variant="outline" nullable="false" [(value)]="priority">
+
+              <button hlmToggleGroupItem value="high" aria-label="High Priority" class="
+                bg-background font-normal data-[state=on]:text-red-300
+              ">
+                <i class="text-xs not-italic opacity-50">˄</i> high
+              </button>
+
+              <button hlmToggleGroupItem value="medium" aria-label="Medium Priority" class="
+                bg-background font-normal data-[state=on]:text-amber-200
+              ">
+                <i class="text-xs not-italic opacity-50">∽</i> medium
+              </button>
+
+              <button hlmToggleGroupItem value="low" aria-label="Low Priority" class="
+                bg-background font-normal data-[state=on]:text-lime-200
+              ">
+                <i class="text-xs not-italic opacity-50">˅</i> low
+              </button>
+
+            </hlm-toggle-group>
+
+            <app-item-variant/>
+
+          </section>
+          <app-order-items class="*:grow" [order]="order()!"/>
+          <app-order-details class="m-2" [order]="order()!"/>
+        </hlm-resizable-panel>
+      }
+
+      <hlm-resizable-handle withHandle />
+      <hlm-resizable-panel collapsible="true">
+        <app-order-templates/>
+      </hlm-resizable-panel>
+
+
+    </hlm-resizable-group>
+
+    <hlm-dialog-footer class="items-center">
+
+      
+      <section id="status" class="flex grow-[.5] flex-row items-center justify-center gap-2">
+        <span class="text-sm opacity-50">
+          Order Slots:
+        </span>
+
+        <span class="text-red-300 data-full:text-lime-200" [attr.data-full]="orderFull() ? '' : null">
+          {{ orderItemCount() }}
+        </span>
+          /
+        <span class="font-bold">{{ orderItem15()}}</span>
+
+        <app-order-truck [items]="order()?.items()" />
+      </section>
+
+      
+      @if(order()?.unsaved) {
+        <button hlmBtn variant="outline" brnDialogClose (click)="discardNewOrder()">
+          Discard Order
+        </button>
+        <button hlmBtn brnDialogClose (click)="saveNewOrder()">Add new Order</button>
+      } @else {
+        <button hlmBtn disabled>changes will be synced automatically</button>
+      }
+    </hlm-dialog-footer>
+  </hlm-dialog-content>
+</hlm-dialog>

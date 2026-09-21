@@ -1,0 +1,68 @@
+# syntax=docker/dockerfile:1
+
+# This Dockerfile is meant to be executed with the parent directory as build context,
+# e.g. `docker build -f backend/dockerfile .`
+
+FROM dhi.io/node:26-alpine-dev AS build
+
+# ENV NPM_CONFIG_LOGLEVEL=info
+
+WORKDIR /app
+
+COPY package.json package-lock.json .npmrc ./
+COPY ./frontend/ ./frontend/
+COPY ./common/ ./common/
+COPY ./jdp/ ./jdp/
+COPY ./types/ ./types/
+
+RUN --mount=type=cache,target=/root/.npm npm ci \
+  --workspace=common \
+  --workspace=jdp \
+  --workspace=frontend \
+  --workspace=types \
+  --ignore-scripts \
+  --include-workspace-root
+
+# temporary monkey patch for spartan overlay bug until 1.5 release
+COPY ./spartan-ng-brain-overlay.mjs ./node_modules/@spartan-ng/brain/fesm2022/
+
+RUN npm run build --workspace=frontend
+
+
+
+
+
+FROM dhi.io/caddy:2
+
+ARG BACKEND_SERVICE_NAME=backend
+ARG BASE_URL=https://localhost
+
+
+
+WORKDIR /app
+VOLUME /data
+EXPOSE 80 443
+
+
+COPY --from=build /app/frontend/dist/frontend/browser/ ./
+
+COPY <<EOF /etc/caddy/Caddyfile
+${BASE_URL} {
+  encode
+
+  @backend path /socket.io/* /auth/*
+
+  handle @backend {
+    reverse_proxy ${BACKEND_SERVICE_NAME}:3000 {
+      stream_timeout 12h
+      stream_close_delay 5m
+    }
+  }
+
+  handle {
+    root /app
+    try_files {path} /index.html
+    file_server
+  }
+}
+EOF

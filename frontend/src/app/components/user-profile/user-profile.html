@@ -1,0 +1,121 @@
+<div hlmItem variant="muted" size="sm" class="
+  -mx-2 -mb-6 rounded-b-none border border-b-0 border-sidebar-border select-none
+" tabindex=0 (click)="clickHandler()" (keyup.enter)="clickHandler()"
+  (keyup.space)="clickHandler()">
+  @if (!authenticationInitialized()) {
+    <div hlmItemMedia>
+        <hlm-skeleton class="size-10 rounded-full bg-neutral-700" />
+    </div>
+    <div hlmItemContent>
+      <hlm-skeleton class="h-4 w-24 bg-neutral-700" />
+    </div>
+    <div hlmItemActions>
+      <hlm-skeleton class="size-8 rounded-full bg-neutral-700" />
+    </div>
+  }
+  @else if (isAuthenticated())
+  {
+    <div hlmItemMedia>
+      <app-user-avatar [avatarUrl]="user()?.image" [userName]="user()?.name" />
+    </div>
+    <div hlmItemContent class="truncate">
+      <div hlmItemTitle class="w-full truncate">{{ user()?.name ?? 'Unknown' }}</div>
+      
+    </div>
+    <div hlmItemActions>
+      <button #PopoverAnchor hlmBtn size="icon" variant="outline" [hlmDropdownMenuTrigger]="menu" (click)="$event.stopPropagation()">
+        <ng-icon hlm name="lucideMoreVertical" size="sm" />
+      </button>
+    </div>
+
+    <hlm-popover #ProfilePopover="brnPopover" align="start" [attachTo]="PopoverAnchor">
+      <hlm-popover-content *hlmPopoverPortal="let ctx" class="
+        min-h-100 w-160 rounded-sm outline-4 outline-white/30 outline-solid
+      ">
+        <app-user-profile-popover class="max-h-full" />
+      </hlm-popover-content>
+    </hlm-popover>
+
+
+    <ng-template #menu>
+      <hlm-dropdown-menu>
+
+        @if(isAdmin())
+        {
+          <hlm-dropdown-menu-label>Administration</hlm-dropdown-menu-label>
+          <button hlmDropdownMenuItem (click)="openAdminDialog()">
+            <ng-icon hlm name="lucideShieldCog" size="sm" />
+            Admin Panel
+          </button>
+        }
+
+        @if(isImpersonated())
+        {
+          <button hlmDropdownMenuItem (click)="stopImpersonating()">
+            <ng-icon hlm name="lucideUserRoundArrowLeft" size="sm" />
+            Stop Impersonating
+          </button>
+        }
+
+        @if(isAdmin())
+        {
+          <hlm-dropdown-menu-separator />
+        }
+
+        <hlm-dropdown-menu-label>User</hlm-dropdown-menu-label>
+        <hlm-dropdown-menu-group>
+          <button hlmDropdownMenuItem  [hlmPopoverTriggerFor]="ProfilePopover">
+            <ng-icon hlm name="lucideSettings2" size="sm"/>
+            Profile
+          </button>
+
+          <hlm-dropdown-menu-separator />
+
+          <button hlmDropdownMenuItem (triggered)="logout()">
+            <ng-icon hlm name="lucideUndo2" size="sm"/>
+            Sign out
+          </button>
+        </hlm-dropdown-menu-group>
+      </hlm-dropdown-menu>
+    </ng-template>
+  } 
+  @else {
+    <div hlmItemMedia>
+      <hlm-avatar class="size-10">
+        <img hlmAvatarImage src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Discord" />
+        <span hlmAvatarFallback>D</span>
+      </hlm-avatar>
+    </div>
+    <div hlmItemContent>
+      <p hlmItemDescription class="text-xs">
+        @if (hasSessionError()) {
+          Establishing user session
+        }
+        @else {
+          Authentication required
+        }
+        
+      </p>
+    </div>
+    <div hlmItemActions>
+      @if (hasSessionError()) {
+        <hlm-spinner class="text-3xl text-muted-foreground/50" />
+      }
+      @else {
+        <button hlmBtn variant="outline" class="pl-1" (click)="login()">
+          <ng-icon hlm name="lucideLogIn" size="sm" class="text-muted-foreground" />
+          Sign in
+        </button>
+      }
+    </div>
+  }
+</div>
+
+
+
+
+
+
+
+
+

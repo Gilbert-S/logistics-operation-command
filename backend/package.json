@@ -1,0 +1,41 @@
+{
+  "name": "backend",
+  "version": "0.0.0",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "db:studio": "drizzle-kit studio",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "set DEBUG=loc:*,-loc:service:war-api*,-loc:service:diff* && node --watch --watch-preserve-output ./index.ts",
+    "startprod": "node ./index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@better-auth/drizzle-adapter": "^1.7.4",
+    "@better-fetch/fetch": "^1.3.1",
+    "@hono/node-server": "^2.1.1",
+    "better-auth": "^1.7.4",
+    "debug": "^4.4.3",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^1.0.0-rc.5-ab785fc",
+    "drizzle-orm": "^1.0.0-rc.5-ab785fc",
+    "hono": "^4.13.7",
+    "jsondiffpatch": "^0.7.6",
+    "socket.io": "^4.8.3",
+    "zod": "^4.6.1"
+  },
+  "devDependencies": {
+    "@loc/common": "*",
+    "@loc/jdp": "*",
+    "@loc/types": "*",
+    "@types/node": "^25.9.6"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.1.0",
+    "utf-8-validate": "^6.0.6"
+  }
+}

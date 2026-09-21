@@ -1,0 +1,28 @@
+<hlm-tabs tab="data" class="h-full gap-5" orientation="vertical">
+
+  <hlm-tabs-list class="sticky top-0 min-w-40 shrink-0 gap-0 [&_button]:w-full [&_button]:py-3" variant="line" >
+    <button hlmTabsTrigger="data" ><ng-icon name="lucideDatabaseZap"/>Application Data</button>
+    <button hlmTabsTrigger="users"><ng-icon name="lucideUsers"/>Users</button>
+    <button hlmTabsTrigger="backups"><ng-icon name="lucideHardDrive"/>Backups</button>
+    <button hlmTabsTrigger="settings"><ng-icon name="lucideSettings"/>Settings</button>
+  </hlm-tabs-list>
+
+
+  <div hlmTabsContent="data" class="px-5"><app-admin-tab-data/></div>
+  <div hlmTabsContent="users" class="px-5">
+    <ng-template hlmTabsContentLazy>
+      <app-admin-tab-user/>
+    </ng-template>
+  </div>
+  <div hlmTabsContent="backups" class="px-5">
+    <ng-template hlmTabsContentLazy>
+      <app-admin-tab-backups/>
+    </ng-template>
+  </div>
+  <div hlmTabsContent="settings" class="px-5">
+    <ng-template hlmTabsContentLazy>
+      <app-admin-tab-settings/>
+    </ng-template>
+  </div>
+
+</hlm-tabs>
