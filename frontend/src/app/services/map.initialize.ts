@@ -8,6 +8,7 @@ import { default as L } from "leaflet"
 import "@geoman-io/leaflet-geoman-free"
 import { ColorAndLineWidthControl }
   from "../leaflet-color-line-control/color-and-line-width-control"
+import "../leaflet-edgebuffer/leaflet.edgebuffer"
 
 
 

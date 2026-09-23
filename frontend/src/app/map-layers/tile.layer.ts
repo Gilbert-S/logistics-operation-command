@@ -28,6 +28,7 @@ const tileLayerDefaultUrlTemplate = `/assets/map-tiles/default/{z}/{x}/{y}.webp`
 
 const tileLayerDefaultOptions: L.TileLayerOptions = {
   bounds: new L.LatLngBounds([0, 256], [-256, 0]),
+  edgeBufferTiles: 2,
   maxNativeZoom: 6,
   noWrap: true,
   opacity: 1,
