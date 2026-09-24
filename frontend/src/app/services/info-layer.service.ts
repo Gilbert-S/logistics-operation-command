@@ -349,9 +349,15 @@ export class InfoLayerService
           .addTo(this.layerGroup)
         break
       case "Marker":
-        layer = L.marker(shape.latLng, shape.options)
+      {
+        const o = {
+          ...shape.options,
+          icon: this.createIcon(shape.options.alt as keyof typeof this.markers),
+        }
+        layer = L.marker(shape.latLng, o)
           .addTo(this.layerGroup)
         break
+      }
     }
 
 
@@ -426,4 +432,89 @@ export class InfoLayerService
 
 
   deepCopy = <T>(obj: T): T => JSON.parse(JSON.stringify(obj)) as T
+
+
+
+  private readonly coloredMarkers = {
+    blue: this.createSvgMarker("#2196f3"),
+    green: this.createSvgMarker("#4caf50"),
+    orange: this.createSvgMarker("#ff9800"),
+    pink: this.createSvgMarker("#ff69b4"),
+    red: this.createSvgMarker("#f44336"),
+  }
+
+  private createSvgMarker(color: string): string
+  {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="84 74 198 299" role="img" aria-labelledby="title">
+      <title id="title">Map marker</title>
+      <path fill="${color}" fill-rule="evenodd" d="M183 76c-53.6 0-97 43.4-97 97 0 16.8 4.3 32.6 11.9 46.4l78.9 147.3c2.7 4.9 9.7 4.9 12.4 0l78.9-147.3c7.6-13.8 11.9-29.6 11.9-46.4 0-53.6-43.4-97-97-97Zm0 53.3c23.5 0 42.5 19 42.5 42.5s-19 42.5-42.5 42.5-42.5-19-42.5-42.5 19-42.5 42.5-42.5Z"/>
+    </svg>`
+    return `data:image/svg+xml;base64,${btoa(svg)}`
+  }
+
+  public readonly markers = {
+    /* eslint-disable sort-keys */
+    shirt_truck: {
+      title: "Shirt Truck",
+      alt: "shirt_truck",
+      iconUrl: "/images/ShirtTruck.png",
+      class: "drop-shadow-[0_0_2px_var(--background),0_0_2px__var(--background)]",
+    },
+    marker_blue: {
+      title: "Marker",
+      alt: "marker_blue",
+      iconUrl: this.coloredMarkers.blue,
+      class: "drop-shadow-[1px_1px_2px_var(--background)]",
+    },
+    marker_red: {
+      title: "Marker",
+      alt: "marker_red",
+      iconUrl: this.coloredMarkers.red,
+      class: "drop-shadow-[1px_1px_2px_var(--background)]",
+    },
+    marker_green: {
+      title: "Marker",
+      alt: "marker_green",
+      iconUrl: this.coloredMarkers.green,
+      class: "drop-shadow-[1px_1px_2px_var(--background)]",
+    },
+    marker_orange: {
+      title: "Marker",
+      alt: "marker_orange",
+      iconUrl: this.coloredMarkers.orange,
+      class: "drop-shadow-[1px_1px_2px_var(--background)]",
+    },
+    marker_pink: {
+      title: "Marker",
+      alt: "marker_pink",
+      iconUrl: this.coloredMarkers.pink,
+      class: "drop-shadow-[1px_1px_2px_var(--background)]",
+    },
+    petrol_can: {
+      title: "Petrol Can",
+      alt: "petrol_can",
+      iconUrl: "/images/PetrolCan.png",
+      class: "drop-shadow-[0_0_2px_var(--background),0_0_2px__var(--background)]",
+    },
+    diesel_can: {
+      title: "Diesel Can",
+      alt: "diesel_can",
+      iconUrl: "/images/DieselCan.png",
+      class: "drop-shadow-[0_0_2px_var(--background),0_0_2px__var(--background)]",
+    },
+    /* eslint-enable sort-keys */
+  } as const
+
+
+
+
+  createIcon(key: keyof typeof this.markers)
+  {
+    return new L.Icon({
+      iconUrl: this.markers[key]?.iconUrl || this.markers.marker_blue.iconUrl,
+      className: this.markers[key]?.class || this.markers.marker_blue.class,
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+    })
+  }
 }

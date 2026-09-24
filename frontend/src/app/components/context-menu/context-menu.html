@@ -48,8 +48,13 @@
 
 <ng-template #invite>
   <hlm-dropdown-menu-sub>
-    <button hlmDropdownMenuItem>Shirt Truck</button>
-    <button hlmDropdownMenuItem>Fuel</button>
-    <button hlmDropdownMenuItem>Something Else</button>
+    @for (item of (markers | keyvalue: ()=>0); track item.key) {
+      <button hlmDropdownMenuItem (click)="drawMarker(item.value)">
+        <span>{{ item.value.title }}</span>
+        <hlm-dropdown-menu-shortcut>
+          <img class="h-6" [alt]="item.value.alt" [src]="item.value.iconUrl"/>
+        </hlm-dropdown-menu-shortcut>
+      </button>
+    }
   </hlm-dropdown-menu-sub>
 </ng-template>

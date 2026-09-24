@@ -3,13 +3,16 @@ import { HlmDropdownMenuImports } from "@spartan-ng/helm/dropdown-menu"
 import { ContextMenu as Context } from "../../services/context-menu"
 import { OrderService } from "../../services/order.service"
 import { BaseService } from "../../services/base.service"
+import { MapService } from "../../services/map.service"
+import { KeyValuePipe } from "@angular/common"
+import { InfoLayerService } from "../../services/info-layer.service"
 
 
 
 
 
 @Component({
-  imports: [HlmDropdownMenuImports],
+  imports: [HlmDropdownMenuImports, KeyValuePipe],
   selector: "app-context-menu",
   styles: ":host {display: contents;}",
   templateUrl: "./context-menu.html",
@@ -29,6 +32,7 @@ export class ContextMenu
   public clickHandlerBaseEdit = this.baseService.clickHandlerBaseEdit
 
   protected newOrder = inject(OrderService).newOrder
+  private readonly map = inject(MapService).map.asReadonly()
 
 
 
@@ -38,4 +42,23 @@ export class ContextMenu
     this.baseService.newOpsBase(this.event()!)
   }
 
+
+
+  infoLayerService = inject(InfoLayerService)
+  markers = this.infoLayerService.markers
+
+  drawMarker(marker: typeof this.markers[keyof typeof this.markers]): void
+  {
+    const map = this.map()
+    if (!map)
+      return
+
+    const icon = this.infoLayerService.createIcon(marker.alt)
+
+    map.pm.enableDraw("Marker", {
+      continueDrawing: false,
+      markerEditable: false,
+      markerStyle: { title: marker.title, alt: marker.alt, icon },
+    })
+  }
 }
