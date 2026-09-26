@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from "@angular/core"
+import { ChangeDetectionStrategy, Component, computed, inject, input } from "@angular/core"
 import { OrderService } from "../../../services/order.service"
 import { HlmContextMenuImports } from "@spartan-ng/helm/context-menu"
 import { HlmDropdownMenuImports } from "@spartan-ng/helm/dropdown-menu"
@@ -24,6 +24,7 @@ import { ItemHoverCard } from "../../item-hover-card/item-hover-card"
 
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     HlmContextMenuImports,
     HlmDropdownMenuImports,

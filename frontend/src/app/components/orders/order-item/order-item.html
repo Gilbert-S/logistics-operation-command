@@ -80,8 +80,8 @@
   @case ("list") {
     <div class="
       @container relative box-border flex shrink-0 basis-full flex-row items-center gap-3 border-x
-      border-b border-border bg-white/5 p-2 select-none [app-order-item:first-child>&]:rounded-t-sm
-      [app-order-item:first-child>&]:border-y [app-order-item:last-child>&]:rounded-b-sm
+      border-b border-border bg-white/5 p-1 select-none [app-order-item:first-child_&]:rounded-t-sm
+      [app-order-item:first-child_&]:border-y [app-order-item:last-child_&]:rounded-b-sm
     "
       tabindex="0" [class.cursor-pointer]="canPickDelivery()"
       [class.hover:bg-border]="canPickDelivery()"
@@ -101,8 +101,8 @@
         <div class="h-full w-(--width) bg-stone-500/50" [style.--width]="stats().inDelivery"></div>
       </div>
 
-      <section class="z-1 -my-1.5 -ml-1.5 shrink-0 bg-muted/80 @max-sm:hidden" >
-        <img alt forListVariant hlmHoverCardTrigger [appFoxholeItemImage]="foxholeItem()" [hlmHoverCardTriggerFor]="FoxholeItemHoverCard" [showDelay]="1000*1" [hideDelay]="150"/>
+      <section class="z-1 -my-1 -ml-1 shrink-0 bg-muted/80 @max-sm:hidden" >
+        <img alt forListVariant hlmHoverCardTrigger [appFoxholeItemImage]="foxholeItem()" [hlmHoverCardTriggerFor]="FoxholeItemHoverCard" [showDelay]="600" [hideDelay]="0"/>
       </section>
 
       @if ( editMode() && item) {
@@ -169,14 +169,16 @@
           <div id="my-delivery-actions" class="z-10 flex max-h-9 flex-col gap-1">
 
             <button hlmBtn variant="outline" size="icon" class="
-              size-4 cursor-pointer rounded-xs bg-accent! text-destructive hover:bg-stone-700!
+              size-3.5 cursor-pointer rounded-xs border-2 bg-black! text-destructive shadow-xs
+              shadow-black hover:bg-stone-700!
             "
               (click)="lowerMyDeliveryCount($event)">
               <ng-icon hlm name="lucideDelete" strokeWidth="1" size="13px"/>
             </button>
 
             <button hlmBtn variant="outline" size="icon" class="
-              size-4 cursor-pointer rounded-xs bg-accent! hover:bg-stone-700!
+              size-3.5 cursor-pointer rounded-xs border-2 bg-black! shadow-xs shadow-black
+              hover:bg-stone-700!
             "
               (click)="lowerMyDeliveryCount($event,-1)">
               <ng-icon hlm name="lucideChevronDown" strokeWidth="1" size="13px"/>

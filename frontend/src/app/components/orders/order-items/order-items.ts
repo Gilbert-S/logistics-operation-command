@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from "@angular/core"
+import { ChangeDetectionStrategy, Component, computed, inject, input } from "@angular/core"
 import { HlmToggleGroupImports } from "@spartan-ng/helm/toggle-group"
 import { Order } from "@loc/types"
 import { OrderItem } from "../order-item/order-item"
@@ -9,6 +9,7 @@ import { lucideImage, lucideImagePlus, lucideList, lucideDock } from "@ng-icons/
 
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     HlmToggleGroupImports,
     OrderItem,

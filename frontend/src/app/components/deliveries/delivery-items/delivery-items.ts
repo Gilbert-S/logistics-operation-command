@@ -69,13 +69,14 @@ import { ItemHoverCard } from "../../item-hover-card/item-hover-card"
         {
           <div class="
             @container relative box-border flex shrink-0 basis-full flex-row items-center gap-3
-            border-x border-b border-border bg-white/5 p-2 select-none first:rounded-t-sm
-            first:border-y last:rounded-b-sm
+            border-x border-b border-border bg-white/5 p-2 select-none
+            [hlm-hover-card:first-child_&]:rounded-t-sm [hlm-hover-card:first-child_&]:border-y
+            [hlm-hover-card:last-child_&]:rounded-b-sm
           ">
 
             <section class="z-1 -my-1.5 -ml-1.5 shrink-0 bg-muted/80 @max-3xs:hidden" >
               <!-- eslint-disable-next-line @html-eslint/angular-template/no-obsolete-attrs -->
-            <img alt forListVariant hlmHoverCardTrigger align="right" [appFoxholeItemImage]="foxholeItem" [showDelay]="600" [hideDelay]="0"/>
+            <img alt class="data-listvariant:size-8" forListVariant hlmHoverCardTrigger align="right" [appFoxholeItemImage]="foxholeItem" [showDelay]="600" [hideDelay]="0"/>
             </section>
 
             <div class="w-1/10">

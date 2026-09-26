@@ -44,7 +44,7 @@ export class FoxholeItemImage
     classes(() =>
       [
         "size-16 rounded-sm border-2 p-1 select-none",
-        "data-listvariant:size-12 relative",
+        "data-listvariant:size-10 relative",
         this.categoryClasses(),
         this.ShirtStackClasses(),
       ])
