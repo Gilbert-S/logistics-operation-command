@@ -57,15 +57,17 @@ export type FactionVariant = (typeof FactionVariant)[keyof typeof FactionVariant
 
 
 export const ItemCategory = {
+  /* eslint-disable sort-keys */
   Custom: "Custom",
-  HeavyAmmo: "EItemCategory::HeavyAmmo",
-  HeavyArms: "EItemCategory::HeavyArms",
-  Medical: "EItemCategory::Medical",
-  Parts: "EItemCategory::Parts",
   SmallArms: "EItemCategory::SmallArms",
-  Supplies: "EItemCategory::Supplies",
-  Uniform: "Uniform",
+  HeavyArms: "EItemCategory::HeavyArms",
+  HeavyAmmo: "EItemCategory::HeavyAmmo",
   Utility: "EItemCategory::Utility",
+  Medical: "EItemCategory::Medical",
+  Uniform: "Uniform",
+  Supplies: "EItemCategory::Supplies",
+  Parts: "EItemCategory::Parts",
+  /* eslint-enable sort-keys */
 } as const
 
 export type ItemCategory = (typeof ItemCategory)[keyof typeof ItemCategory]

@@ -98,8 +98,8 @@ export class OrderEditor
 
   readonly filteredItems = computed(() =>
     this.items()
-      .filter((item) => this.factionItemFilter().includes(item.FactionVariant))
-      .filter((item) =>
+      .filter((item) => this.factionItemFilter().includes(item.FactionVariant) &&
+        (this.categoryFilter() === null || item.ItemCategory === this.categoryFilter()) &&
         item.DisplayName.toLowerCase().includes(this.nameItemFilter().toLowerCase())))
 
   private debounce = 0
@@ -110,6 +110,62 @@ export class OrderEditor
     this.debounce = setTimeout(() => this.userStoredLayout.set(layout), 1000)
   })
 
+  readonly categoryFilter = signal<ItemCategory | null>(null)
+  categories = [
+    {
+      name: "Custom",
+      value: ItemCategory.Custom,
+      icon: "/images/IconInfrastructureCommand.png",
+    },
+    {
+      name: "Small Arms",
+      value: ItemCategory.SmallArms,
+      icon: "/images/IconFilterSmallWeapons.png",
+      class: "data-[state=on]:bg-yellow-300/30",
+    },
+    {
+      name: "Heavy Arms",
+      value: ItemCategory.HeavyArms,
+      icon: "/images/IconFilterHeavyWeapons.png",
+      class: "data-[state=on]:bg-amber-500/30",
+    },
+    {
+      name: "Heavy Ammo",
+      value: ItemCategory.HeavyAmmo,
+      icon: "/images/IconFilterHeavyAmmunition.png",
+      class: "data-[state=on]:bg-red-500/30",
+    },
+    {
+      name: "Utility",
+      value: ItemCategory.Utility,
+      icon: "/images/IconFilterUtility.png",
+      class: "data-[state=on]:bg-sky-500/30",
+    },
+    {
+      name: "Medical",
+      value: ItemCategory.Medical,
+      icon: "/images/IconFilterMedical.png",
+      class: "data-[state=on]:bg-lime-500/30",
+    },
+    {
+      name: "Uniform",
+      value: ItemCategory.Uniform,
+      icon: "/images/IconFilterUniforms.png",
+      class: "data-[state=on]:bg-mist-500/30",
+    },
+    {
+      name: "Supplies",
+      value: ItemCategory.Supplies,
+      icon: "/images/IconFilterResource.png",
+      class: "data-[state=on]:bg-stone-500/30",
+    },
+    {
+      name: "Parts",
+      value: ItemCategory.Parts,
+      icon: "/images/IconFilterAircraft.png",
+      class: "data-[state=on]:bg-violet-500/30",
+    },
+  ]
 
 
   readonly state = computed<BrnDialogState>(() => this.editOrder() ? "open" : "closed")

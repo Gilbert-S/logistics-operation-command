@@ -32,7 +32,8 @@
 
       <hlm-resizable-panel class="flex flex-col overflow-hidden" collapsible="false" minSize="10">
           <section id="toolbar" class="
-            m-2 flex justify-center gap-2 rounded-sm border border-border bg-[#191919e0] p-2
+            m-2 flex flex-wrap justify-center gap-2 rounded-sm border border-border bg-[#191919e0]
+            p-2
           ">
             <hlm-toggle-group class="shrink-0" type="multiple" variant="outline" [(value)]="factionItemFilter">
 
@@ -60,6 +61,22 @@
             <hlm-field orientation="horizontal" class="max-w-42 shrink">
               <input hlmInput type="search" placeholder="Search..." [(ngModel)]="nameItemFilter" />
             </hlm-field>
+
+
+            <hlm-toggle-group class="shrink flex-wrap justify-center" spacing="1" type="single" nullable variant="outline" [(value)]="categoryFilter">
+
+              @for (category of categories; track category.value)
+              {
+                <button aria-label="{{category.name}}" class="
+                  px-0.5 data-[state=off]:opacity-50 {{category.class}}
+                " hlmToggleGroupItem  size="sm"
+                [value]="category.value">
+                <img src="{{category.icon}}" alt="{{category.name}}" class="h-full"/>
+              </button>
+
+              }
+
+            </hlm-toggle-group>
 
           </section>
 
