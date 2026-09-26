@@ -91,7 +91,7 @@
               <button type="button" (click)="addItemToOrder($event, item.CodeName)"
                 (wheel)="orderItemMouseWheelHandler($event, item.CodeName)">
                 <!-- eslint-disable-next-line @html-eslint/angular-template/no-obsolete-attrs -->
-                <img alt hlmHoverCardTrigger align="right" [appFoxholeItemImage]="item.CodeName | foxholeItem" [hlmHoverCardTriggerFor]="FoxholeItemHoverCard" [showDelay]="1500"/>
+                <img alt hlmHoverCardTrigger align="right" [appFoxholeItemImage]="item.CodeName | foxholeItem" [hlmHoverCardTriggerFor]="FoxholeItemHoverCard" [showDelay]="600" [hideDelay]="0"/>
               </button>
               <ng-template #FoxholeItemHoverCard="brnHoverCardContent" hlmHoverCardPortal>
                 <app-foxhole-item-hover-card [item]="item.CodeName | foxholeItem"/>

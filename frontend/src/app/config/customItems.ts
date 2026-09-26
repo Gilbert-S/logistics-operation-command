@@ -6,7 +6,7 @@ const customItems: Record<string, Item> = {
     bIsLarge: false,
     ChassisName: "",
     CodeName: "ShirtStack",
-    Description: "A stack of 100x shirts, pulled by fellow Kriegsman in the Shirt Truck.",
+    Description: "A stack of 100x shirts, pulled by fellow Kriegsmen in the Shirt Truck.",
     DisplayName: "Shirt Stack",
     EquipmentSlot: null,
     FactionVariant: null,

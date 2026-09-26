@@ -9,7 +9,7 @@
       (keyup.enter)="pickItem($event)"
       (keyup.space)="pickItem($event)"
       (wheel)="mouseWheelHandler($event)">
-      <img alt hlmHoverCardTrigger [appFoxholeItemImage]="foxholeItem()" [hlmHoverCardTriggerFor]="FoxholeItemHoverCard" [showDelay]="1000*1" [hideDelay]="150">
+      <img alt hlmHoverCardTrigger [appFoxholeItemImage]="foxholeItem()" [hlmHoverCardTriggerFor]="FoxholeItemHoverCard" [showDelay]="600" [hideDelay]="0">
 
         <div class="{{orderItem().priority}} absolute bottom-1 right-0.5 h-3 w-3 z-2
           [.medium]:bg-amber-200 [.low]:bg-lime-200 [.high]:bg-red-300
@@ -92,7 +92,7 @@
       (wheel)="mouseWheelHandler($event)"
       >
 
-      <div class="absolute bottom-1 left-0 flex h-2 w-full">
+      <div class="absolute bottom-1 left-0 flex h-1.25 w-full">
         <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
         <div class="h-full w-(--width) bg-lime-700" [style.--width]="stats().delivered"></div>
         <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->

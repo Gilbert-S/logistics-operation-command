@@ -43,7 +43,7 @@ import { ItemHoverCard } from "../../item-hover-card/item-hover-card"
         {
           <div id="test" class="group/deliveryitem relative grid place-items-center rounded-sm">
             <!-- eslint-disable-next-line @html-eslint/angular-template/no-obsolete-attrs -->
-            <img alt hlmHoverCardTrigger align="right" [appFoxholeItemImage]="foxholeItem" [showDelay]="1500" />
+            <img alt hlmHoverCardTrigger align="right" [appFoxholeItemImage]="foxholeItem" [showDelay]="600" [hideDelay]="0"/>
 
               <div class="
                 absolute right-0.5 bottom-1 grid size-3 place-content-center rounded-full font-bold
@@ -75,7 +75,7 @@ import { ItemHoverCard } from "../../item-hover-card/item-hover-card"
 
             <section class="z-1 -my-1.5 -ml-1.5 shrink-0 bg-muted/80 @max-3xs:hidden" >
               <!-- eslint-disable-next-line @html-eslint/angular-template/no-obsolete-attrs -->
-            <img alt forListVariant hlmHoverCardTrigger align="right" [appFoxholeItemImage]="foxholeItem" [showDelay]="1500" />
+            <img alt forListVariant hlmHoverCardTrigger align="right" [appFoxholeItemImage]="foxholeItem" [showDelay]="600" [hideDelay]="0"/>
             </section>
 
             <div class="w-1/10">

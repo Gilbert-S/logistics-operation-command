@@ -151,4 +151,5 @@ body {
   color: var(--color-success);
   font-weight: bold;
   text-shadow: 0px 0px 2px black,  0px 0px 3px black,  0px 0px 5px black;
+  pointer-events: none;
 }
