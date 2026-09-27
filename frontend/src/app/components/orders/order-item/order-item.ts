@@ -64,6 +64,12 @@ export class OrderItem
   orderService = inject(OrderService)
   orderItems = this.orderService.currentOrder()?.items
 
+  readonly quantity = computed(() =>
+  {
+    this.orderItems?.()
+    return this.orderItem().quantity
+  })
+
   myDelivery = inject(MyDeliveryService)
 
   readonly canPickDelivery = computed(() =>

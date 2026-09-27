@@ -83,7 +83,7 @@
         
           <section id="items" class="
             relative m-2 flex h-full flex-wrap content-start justify-center gap-2 overflow-x-hidden
-            overflow-y-auto not-firefox:scroll-fade
+            overflow-y-auto select-none not-firefox:scroll-fade
           ">
             @for (item of filteredItems(); track $index)
             {
@@ -91,7 +91,7 @@
               <button type="button" (click)="addItemToOrder($event, item.CodeName)"
                 (wheel)="orderItemMouseWheelHandler($event, item.CodeName)">
                 <!-- eslint-disable-next-line @html-eslint/angular-template/no-obsolete-attrs -->
-                <img alt hlmHoverCardTrigger align="right" [appFoxholeItemImage]="item.CodeName | foxholeItem" [hlmHoverCardTriggerFor]="FoxholeItemHoverCard" [showDelay]="600" [hideDelay]="0"/>
+                <img alt draggable="false" hlmHoverCardTrigger align="right" [appFoxholeItemImage]="item.CodeName | foxholeItem" [hlmHoverCardTriggerFor]="FoxholeItemHoverCard" [showDelay]="600" [hideDelay]="0"/>
               </button>
               <ng-template #FoxholeItemHoverCard="brnHoverCardContent" hlmHoverCardPortal>
                 <app-foxhole-item-hover-card [item]="item.CodeName | foxholeItem"/>

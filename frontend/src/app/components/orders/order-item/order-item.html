@@ -3,7 +3,10 @@
 @switch (variant()) {
 
   @case ("icon") {
-    <div class="group/orderitem relative grid place-items-center overflow-hidden rounded-sm"
+    <div class="
+      group/orderitem relative grid place-items-center overflow-hidden rounded-sm transition-colors
+      duration-400
+    "
     tabindex="0" [hlmContextMenuTrigger]="menu"
     [class.cursor-pointer]="canPickDelivery()" [attr.data-mine]="!!mine() ? '' : null"
       [attr.data-completed]="completed() ? '' : null"
@@ -11,8 +14,8 @@
       [id]="orderItem().id"
       (click)="pickItem($event)"
       (keyup.enter)="pickItem($event)"
-      (keyup.space)="pickItem($event)"
-      (wheel)="mouseWheelHandler($event)">
+      (keyup.space)="pickItem($event)" (wheel)="mouseWheelHandler($event)"
+      >
       <img alt hlmHoverCardTrigger [appFoxholeItemImage]="foxholeItem()" [hlmHoverCardTriggerFor]="FoxholeItemHoverCard" [showDelay]="600" [hideDelay]="0">
 
         <div class="{{orderItem().priority}} absolute bottom-1 right-0.5 h-3 w-3 z-2
@@ -22,10 +25,10 @@
 
         <span class="
           absolute top-0.5 left-0.5 rounded-sm border bg-primary px-1 pb-0.5 text-sm leading-none
-            x{{ orderItem().quantity }}
           font-semibold text-primary-foreground group-data-completed/orderitem:bg-lime-300
           group-data-mine/orderitem:bg-amber-500
         " >
+            x{{ quantity() }}
         </span>
 
         @if(editMode())
@@ -84,12 +87,14 @@
   @case ("list") {
     <div class="
       @container relative box-border flex shrink-0 basis-full flex-row items-center gap-3 border-x
-      border-b border-border bg-white/5 p-1 select-none [app-order-item:first-child_&]:rounded-t-sm
-      [app-order-item:first-child_&]:border-y [app-order-item:last-child_&]:rounded-b-sm
+      border-b border-border bg-white/5 p-1 transition-colors duration-400 select-none
+      [app-order-item:first-child_&]:rounded-t-sm [app-order-item:first-child_&]:border-y
+      [app-order-item:last-child_&]:rounded-b-sm
     "
       tabindex="0" [class.cursor-pointer]="canPickDelivery()"
       [class.hover:bg-border]="canPickDelivery()"
       [hlmContextMenuTrigger]="menu"
+      [id]="orderItem().id"
       (click)="pickItem($event)"
       (keyup.enter)="pickItem($event)"
       (keyup.space)="pickItem($event)"
@@ -118,7 +123,7 @@
       @else
       {
         <div class="w-1/10">
-          x{{ orderItem().quantity }}
+          x{{ quantity() }}
         </div>
       }
 

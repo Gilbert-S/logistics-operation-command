@@ -206,6 +206,7 @@ export class OrderEditor
       amount = 5
 
     this.orderService.addItemToOrder(itemId, this.priority(), amount)
+    this.scrollToOrderItem(itemId)
   }
 
 
@@ -268,5 +269,28 @@ export class OrderEditor
       return value.faction === this.team()
     else
       return true
+  }
+
+
+
+  scrollToOrderItem(itemId: string)
+  {
+    setTimeout(() =>
+    {
+      const element = document.getElementById(itemId)
+
+      if (element)
+      {
+        clearTimeout(Number(element.dataset["timeout"]))
+        element.scrollIntoView({ behavior: "instant", block: "center" })
+        element.classList.add("bg-accent-foreground")
+        element.dataset["timeout"] =
+          String(setTimeout(() =>
+          {
+            element?.classList.remove("bg-accent-foreground")
+            delete element.dataset["timeout"]
+          }, 150))
+      }
+    })
   }
 }
