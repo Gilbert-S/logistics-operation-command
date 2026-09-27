@@ -5,7 +5,11 @@
   @case ("icon") {
     <div class="group/orderitem relative grid place-items-center overflow-hidden rounded-sm"
     tabindex="0" [hlmContextMenuTrigger]="menu"
-    [class.cursor-pointer]="canPickDelivery()" (click)="pickItem($event)"
+    [class.cursor-pointer]="canPickDelivery()" [attr.data-mine]="!!mine() ? '' : null"
+      [attr.data-completed]="completed() ? '' : null"
+      [attr.data-all-picked]="allPicked() ? '' : null"
+      [id]="orderItem().id"
+      (click)="pickItem($event)"
       (keyup.enter)="pickItem($event)"
       (keyup.space)="pickItem($event)"
       (wheel)="mouseWheelHandler($event)">
@@ -18,10 +22,10 @@
 
         <span class="
           absolute top-0.5 left-0.5 rounded-sm border bg-primary px-1 pb-0.5 text-sm leading-none
-          font-semibold text-primary-foreground group-data-canpick/orderitem:bg-accent
-          group-data-canpick/orderitem:text-accent-foreground
-        " [class.bg-ring!]="allPicked()" >
             x{{ orderItem().quantity }}
+          font-semibold text-primary-foreground group-data-completed/orderitem:bg-lime-300
+          group-data-mine/orderitem:bg-amber-500
+        " >
         </span>
 
         @if(editMode())
@@ -160,6 +164,7 @@
       </div>
       }
       @else {
+        @if(completed()){<ng-icon hlm name="lucideCircleCheck" class="text-lime-300" strokeWidth="2" size="1em"/>}
         <div id="priority-indicator" [class.text-amber-200]="medium()" [class.text-red-300]="high()" [class.text-lime-200]="low()">
           {{ priorityIndicator() }}
         </div>

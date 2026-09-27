@@ -8,7 +8,7 @@ import { FormsModule } from "@angular/forms"
 import { HlmToggleGroupImports } from "@spartan-ng/helm/toggle-group"
 import { HlmIconImports } from "@spartan-ng/helm/icon"
 import { NgIcon, provideIcons } from "@ng-icons/core"
-import { lucideChevronDown, lucideDelete, lucideMinus, lucidePlus, lucideTrash2 }
+import { lucideChevronDown, lucideCircleCheck, lucideDelete, lucideMinus, lucidePlus, lucideTrash2 }
   from "@ng-icons/lucide"
 import { DeliveryItemsVariant, Order, OrderItem as OrderItemType } from "@loc/types"
 import { MyDeliveryService } from "../../../services/my-delivery.service"
@@ -41,6 +41,7 @@ import { ItemHoverCard } from "../../item-hover-card/item-hover-card"
   providers: [
     provideIcons({
       lucideChevronDown,
+      lucideCircleCheck,
       lucideDelete,
       lucideMinus,
       lucidePlus,
@@ -150,13 +151,7 @@ export class OrderItem
     const delivered = this.orderItem().delivered
     const inDelivery = this.orderItem().inDelivery
     const quantity = this.orderItem().quantity
-
-    let myDelivery = 0
-    if (this.myDelivery.orderWithMyDelivery() &&
-      this.myDelivery.orderWithMyDelivery()?.id === this.order().id
-    )
-      myDelivery = this.myDelivery.itemCounts().get(this.orderItem().id) || 0
-
+    const myDelivery = this.mine()
 
     return {
       delivered: `${delivered / quantity * 100 }%`,
@@ -173,6 +168,18 @@ export class OrderItem
     const quantity = this.orderItem().quantity
     return delivered + inDelivery >= quantity
   })
+
+  readonly mine = computed(() =>
+  {
+    if (this.myDelivery.orderWithMyDelivery() &&
+      this.myDelivery.orderWithMyDelivery()?.id === this.order().id)
+
+      return this.myDelivery.itemCounts().get(this.orderItem().id) || 0
+
+    else return 0
+  })
+
+  readonly completed = computed(() => this.orderItem().delivered === this.orderItem().quantity)
 
 
   get item ()
