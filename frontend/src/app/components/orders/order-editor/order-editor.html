@@ -88,10 +88,12 @@
             @for (item of filteredItems(); track $index)
             {
               <hlm-hover-card class="contents">
-              <button type="button" (click)="addItemToOrder($event, item.CodeName)"
+              <button type="button" class="relative" (click)="addItemToOrder($event, item.CodeName)"
                 (wheel)="orderItemMouseWheelHandler($event, item.CodeName)">
                 <!-- eslint-disable-next-line @html-eslint/angular-template/no-obsolete-attrs -->
                 <img alt draggable="false" hlmHoverCardTrigger align="right" [appFoxholeItemImage]="item.CodeName | foxholeItem" [hlmHoverCardTriggerFor]="FoxholeItemHoverCard" [showDelay]="600" [hideDelay]="0"/>
+                <app-item-subtype-icon [foxholeItem]="item.CodeName | foxholeItem" />
+
               </button>
               <ng-template #FoxholeItemHoverCard="brnHoverCardContent" hlmHoverCardPortal>
                 <app-foxhole-item-hover-card [item]="item.CodeName | foxholeItem"/>

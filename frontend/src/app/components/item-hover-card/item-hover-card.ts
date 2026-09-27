@@ -1,10 +1,11 @@
 import { Component, input } from "@angular/core"
 import { FactionVariant, Item } from "../../config/items"
 import { FoxholeItemImage } from "../../directives/foxhole-item-image"
+import { ItemSubtypeIcon } from "../item-subtype-icon/item-subtype-icon"
 
 @Component({
   selector: "app-foxhole-item-hover-card",
-  imports: [FoxholeItemImage],
+  imports: [FoxholeItemImage, ItemSubtypeIcon],
   templateUrl: "./item-hover-card.html",
   host: { class: "contents" },
 })

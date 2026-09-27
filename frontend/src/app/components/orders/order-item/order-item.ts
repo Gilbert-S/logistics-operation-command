@@ -18,6 +18,7 @@ import items, { EMPTY_ITEM } from "../../../config/items"
 import { FoxholeItemImage } from "../../../directives/foxhole-item-image"
 import { HlmHoverCardImports } from "@spartan-ng/helm/hover-card"
 import { ItemHoverCard } from "../../item-hover-card/item-hover-card"
+import { ItemSubtypeIcon } from "../../item-subtype-icon/item-subtype-icon"
 
 
 
@@ -37,6 +38,7 @@ import { ItemHoverCard } from "../../item-hover-card/item-hover-card"
     FoxholeItemImage,
     HlmHoverCardImports,
     ItemHoverCard,
+    ItemSubtypeIcon,
   ],
   providers: [
     provideIcons({

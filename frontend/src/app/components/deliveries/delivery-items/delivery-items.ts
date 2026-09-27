@@ -9,6 +9,7 @@ import { FoxholeItemPipe } from "../../../pipes/foxhole-item-pipe"
 import { FoxholeItemImage } from "../../../directives/foxhole-item-image"
 import { HlmHoverCardImports } from "@spartan-ng/helm/hover-card"
 import { ItemHoverCard } from "../../item-hover-card/item-hover-card"
+import { ItemSubtypeIcon } from "../../item-subtype-icon/item-subtype-icon"
 
 @Component({
   selector: "app-delivery-items",
@@ -19,6 +20,7 @@ import { ItemHoverCard } from "../../item-hover-card/item-hover-card"
     HlmHoverCardImports,
     HlmToggleGroupImports,
     ItemHoverCard,
+    ItemSubtypeIcon,
   ],
 
   template: `
@@ -44,22 +46,23 @@ import { ItemHoverCard } from "../../item-hover-card/item-hover-card"
           <div id="test" class="group/deliveryitem relative grid place-items-center rounded-sm">
             <!-- eslint-disable-next-line @html-eslint/angular-template/no-obsolete-attrs -->
             <img alt hlmHoverCardTrigger align="right" [appFoxholeItemImage]="foxholeItem" [showDelay]="600" [hideDelay]="0"/>
+            <app-item-subtype-icon [foxholeItem]="foxholeItem"/>
 
               <div class="
-                absolute right-0.5 bottom-1 grid size-3 place-content-center rounded-full font-bold
-                text-black select-none group-hover/deliveryitem:hidden
-                data-[priority=high]:bg-red-300 data-[priority=low]:bg-lime-200
-                data-[priority=medium]:bg-amber-200
+                absolute bottom-1 left-0.5 grid size-3 place-content-center rounded-full
+                leading-none font-bold text-black outline outline-black/50 select-none
+                group-hover/deliveryitem:hidden data-[priority=high]:bg-red-300
+                data-[priority=low]:bg-lime-200 data-[priority=medium]:bg-amber-200
               " id="priority" [attr.data-priority]="item.priority">
                 {{priorityIndicator(item.priority)}}
               </div>
 
               <span class="
-                absolute top-0.5 left-0.5 rounded-sm border bg-primary px-1 pb-0.5 text-sm
-                leading-none font-semibold text-primary-foreground select-none
-                group-hover/deliveryitem:hidden
+                absolute right-1 bottom-1.5 z-2 rounded-sm border bg-primary px-1 pb-0.5 text-sm
+                leading-none font-semibold text-primary-foreground outline outline-black/50
+                select-none group-hover/deliveryitem:hidden
               ">
-                  x{{ item.quantity }}
+                x{{ item.quantity }}
               </span>
           </div>
         }
@@ -74,9 +77,10 @@ import { ItemHoverCard } from "../../item-hover-card/item-hover-card"
             [hlm-hover-card:last-child_&]:rounded-b-sm
           ">
 
-            <section class="z-1 -my-1.5 -ml-1.5 shrink-0 bg-muted/80 @max-3xs:hidden" >
+            <section class="relative z-1 -my-1.5 -ml-1.5 shrink-0 bg-muted/80 @max-3xs:hidden" >
               <!-- eslint-disable-next-line @html-eslint/angular-template/no-obsolete-attrs -->
             <img alt class="data-listvariant:size-8" forListVariant hlmHoverCardTrigger align="right" [appFoxholeItemImage]="foxholeItem" [showDelay]="600" [hideDelay]="0"/>
+            <app-item-subtype-icon [foxholeItem]="foxholeItem"/>
             </section>
 
             <div class="w-1/10">

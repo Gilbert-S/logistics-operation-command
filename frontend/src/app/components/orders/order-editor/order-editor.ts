@@ -23,6 +23,7 @@ import { HlmFieldImports } from "@spartan-ng/helm/field"
 import { HlmInputImports } from "@spartan-ng/helm/input"
 import { HlmHoverCardImports } from "@spartan-ng/helm/hover-card"
 import { ItemHoverCard } from "../../item-hover-card/item-hover-card"
+import { ItemSubtypeIcon } from "../../item-subtype-icon/item-subtype-icon"
 
 
 
@@ -51,6 +52,7 @@ import { ItemHoverCard } from "../../item-hover-card/item-hover-card"
     OrderItems,
     OrderTemplates,
     OrderTruck,
+    ItemSubtypeIcon,
   ],
   templateUrl: "./order-editor.html",
 })

@@ -95,3 +95,51 @@ export const EMPTY_ITEM: Item = {
     SingleRetrieveTime: 0,
   },
 }
+
+
+export const SubtypeIcons: Record<string, string> = {
+  /* eslint-disable sort-keys */
+  MortarAmmoFlame: "War/Content/Textures/UI/ItemIcons/SubtypeFireIcon",
+  MortarAmmoFL: "War/Content/Textures/UI/ItemIcons/SubtypeFLIcon",
+  MortarAmmoSH: "War/Content/Textures/UI/ItemIcons/SubtypeSHIcon",
+  MortarAmmo: "War/Content/Textures/UI/ItemIcons/SubtypeHEIcon",
+
+  AmmoUniformW: "War/Content/Textures/UI/ItemIcons/SubtypeAmmoIcon",
+  ArmourUniformC: "War/Content/Textures/UI/ItemIcons/SubtypeArmourIcon",
+  ArmourUniformW: "War/Content/Textures/UI/ItemIcons/SubtypeArmourIcon",
+  EngineerUniformC: "War/Content/Textures/UI/ItemIcons/SubtypeEngineerIcon",
+  EngineerUniformW: "War/Content/Textures/UI/ItemIcons/SubtypeEngineerIcon",
+  GrenadeUniformC: "War/Content/Textures/UI/ItemIcons/SubtypeGrenadeIcon",
+  MedicUniformC: "War/Content/Textures/UI/ItemIcons/SubtypeMedicIcon",
+  MedicUniformW: "War/Content/Textures/UI/ItemIcons/SubtypeMedicIcon",
+  NavalUniformC: "War/Content/Textures/UI/ItemIcons/SubtypeNavalIcon",
+  NavalUniformW: "War/Content/Textures/UI/ItemIcons/SubtypeNavalIcon",
+  OfficerUniformC: "War/Content/Textures/UI/ItemIcons/SubtypeOfficerIcon",
+  OfficerUniformW: "War/Content/Textures/UI/ItemIcons/SubtypeOfficerIcon",
+  ParatrooperUniformC: "War/Content/Textures/UI/ItemIcons/SubtypeParatrooperIcon",
+  ParatrooperUniformW: "War/Content/Textures/UI/ItemIcons/SubtypeParatrooperIcon",
+  PilotUniformC: "War/Content/Textures/UI/ItemIcons/SubtypeAirIcon",
+  PilotUniformW: "War/Content/Textures/UI/ItemIcons/SubtypeAirIcon",
+  RainUniformC: "War/Content/Textures/UI/ItemIcons/SubtypeRainIcon",
+  ScoutUniformC: "War/Content/Textures/UI/ItemIcons/SubtypeScoutIcon",
+  ScoutUniformW: "War/Content/Textures/UI/ItemIcons/SubtypeScoutIcon",
+  SnowUniformC: "War/Content/Textures/UI/ItemIcons/SubtypeSnowIcon",
+  SnowUniformW: "War/Content/Textures/UI/ItemIcons/SubtypeSnowIcon",
+  TankUniformC: "War/Content/Textures/UI/ItemIcons/SubtypeTankIcon",
+  TankUniformW: "War/Content/Textures/UI/ItemIcons/SubtypeTankIcon",
+
+  FacilityMaterials4: "War/Content/Textures/UI/ItemIcons/CoalIcon",
+  FacilityMaterials5: "War/Content/Textures/UI/ItemIcons/RefinedFuelIcon",
+  FacilityMaterials6: "War/Content/Textures/UI/ItemIcons/SulfurIcon",
+  FacilityMaterials7: "War/Content/Textures/UI/ItemIcons/Facilities/HeavyOilIcon",
+  FacilityMaterials8: "War/Content/Textures/UI/ItemIcons/Facilities/EnrichedOilIcon",
+
+  FlameBackpackC: "War/Content/Textures/UI/ItemIcons/SubtypeFireIcon",
+  FlameBackpackW: "War/Content/Textures/UI/ItemIcons/SubtypeFireIcon",
+  FireRocketAmmo: "War/Content/Textures/UI/ItemIcons/SubtypeFireIcon",
+  FlameAmmo: "War/Content/Textures/UI/ItemIcons/SubtypeFireIcon",
+
+  GreenAsh: "War/Content/Textures/UI/ItemIcons/SubtypeGAIcon",
+  SmokeGrenade: "War/Content/Textures/UI/ItemIcons/SubtypeSMKIcon",
+  /* eslint-enable sort-keys */
+}

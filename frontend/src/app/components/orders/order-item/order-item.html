@@ -16,17 +16,30 @@
       (keyup.enter)="pickItem($event)"
       (keyup.space)="pickItem($event)" (wheel)="mouseWheelHandler($event)"
       >
-      <img alt hlmHoverCardTrigger [appFoxholeItemImage]="foxholeItem()" [hlmHoverCardTriggerFor]="FoxholeItemHoverCard" [showDelay]="600" [hideDelay]="0">
+        <img alt hlmHoverCardTrigger class="
+          group-data-completed/orderitem:contrast-30 group-data-completed/orderitem:grayscale-100
+          hover:contrast-100 hover:grayscale-0
+        " [appFoxholeItemImage]="foxholeItem()" [hlmHoverCardTriggerFor]="FoxholeItemHoverCard" [showDelay]="600"
+          [hideDelay]="0">
+        <app-item-subtype-icon [foxholeItem]="foxholeItem()"/>
+        @if(completed())
+        {
+          <ng-icon hlm name="lucideCircleCheck" strokeWidth="3" size="1.3em" class="
+            absolute top-1 text-lime-300
+          "/>
+        }
 
-        <div class="{{orderItem().priority}} absolute bottom-1 right-0.5 h-3 w-3 z-2
+
+
+        <div class="{{orderItem().priority}} absolute bottom-1 left-0.5 h-3 w-3 z-2
           [.medium]:bg-amber-200 [.low]:bg-lime-200 [.high]:bg-red-300
-          rounded-full grid place-content-center text-black font-xs font-bold " id="priority">{{priorityIndicator()}}
+          rounded-full grid place-content-center text-black font-xs font-bold outline outline-black/50 leading-none" id="priority">{{priorityIndicator()}}
         </div>
 
         <span class="
-          absolute top-0.5 left-0.5 rounded-sm border bg-primary px-1 pb-0.5 text-sm leading-none
-          font-semibold text-primary-foreground group-data-completed/orderitem:bg-lime-300
-          group-data-mine/orderitem:bg-amber-500
+          absolute right-1 bottom-1.5 z-2 rounded-sm border bg-primary px-1 pb-0.5 text-sm
+          leading-none font-semibold text-primary-foreground outline outline-black/50
+          group-data-completed/orderitem:opacity-66 group-data-mine/orderitem:bg-amber-500
         " >
             x{{ quantity() }}
         </span>
@@ -52,14 +65,17 @@
         }
         @else
         {
-          <div class="absolute bottom-0 left-0 z-1 flex h-2 w-full">
-            <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
-            <div class="h-full w-(--width) bg-lime-700" [style.--width]="stats().delivered"></div>
-            <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
-            <div class="h-full w-(--width) bg-yellow-600" [style.--width]="stats().myDelivery"></div>
-            <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
-            <div class="h-full w-(--width) bg-stone-500/50" [style.--width]="stats().inDelivery"></div>
-          </div>
+          @if(!completed())
+          {
+            <div class="absolute bottom-0 left-0 z-1 flex h-2 w-full">
+              <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
+              <div class="h-full w-(--width) bg-lime-700" [style.--width]="stats().delivered"></div>
+              <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
+              <div class="h-full w-(--width) bg-yellow-600" [style.--width]="stats().myDelivery"></div>
+              <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
+              <div class="h-full w-(--width) bg-stone-500/50" [style.--width]="stats().inDelivery"></div>
+            </div>
+          }
 
           @if(canReduceDelivery())
           {
@@ -87,9 +103,9 @@
   @case ("list") {
     <div class="
       @container relative box-border flex shrink-0 basis-full flex-row items-center gap-3 border-x
-      border-b border-border bg-white/5 p-1 transition-colors duration-400 select-none
-      [app-order-item:first-child_&]:rounded-t-sm [app-order-item:first-child_&]:border-y
-      [app-order-item:last-child_&]:rounded-b-sm
+      border-b border-border p-1 transition-colors duration-400 select-none
+      not-data-timeout:bg-white/5 [app-order-item:first-child_&]:rounded-t-sm
+      [app-order-item:first-child_&]:border-y [app-order-item:last-child_&]:rounded-b-sm
     "
       tabindex="0" [class.cursor-pointer]="canPickDelivery()"
       [class.hover:bg-border]="canPickDelivery()"
@@ -110,8 +126,9 @@
         <div class="h-full w-(--width) bg-stone-500/50" [style.--width]="stats().inDelivery"></div>
       </div>
 
-      <section class="z-1 -my-1 -ml-1 shrink-0 bg-muted/80 @max-sm:hidden" >
+      <section class="relative z-1 -my-1 -ml-1 shrink-0 bg-muted/80 @max-sm:hidden" >
         <img alt forListVariant hlmHoverCardTrigger [appFoxholeItemImage]="foxholeItem()" [hlmHoverCardTriggerFor]="FoxholeItemHoverCard" [showDelay]="600" [hideDelay]="0"/>
+        <app-item-subtype-icon [foxholeItem]="foxholeItem()"/>
       </section>
 
       @if ( editMode() && item) {
