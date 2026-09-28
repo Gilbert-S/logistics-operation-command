@@ -5,7 +5,7 @@
       group/orderitem relative grid place-items-center overflow-hidden rounded-sm transition-colors
       duration-400
     "
-    tabindex="0" [hlmContextMenuTrigger]="menu"
+    tabindex="0" [hlmContextMenuTrigger]="menu" [disabled]="!editMode()"
     [class.cursor-pointer]="canPickDelivery()" [attr.data-mine]="!!mine() ? '' : null"
       [attr.data-completed]="completed() ? '' : null"
       [attr.data-all-picked]="allPicked() ? '' : null"
@@ -107,6 +107,7 @@
       tabindex="0" [class.cursor-pointer]="canPickDelivery()"
       [class.hover:bg-border]="canPickDelivery()"
       [hlmContextMenuTrigger]="menu"
+      [disabled]="!editMode()"
       [id]="orderItem().id"
       (click)="pickItem($event)"
       (keyup.enter)="pickItem($event)"
