@@ -25,7 +25,7 @@ import { DeliveryItems } from "../delivery-items/delivery-items"
 import { HlmTooltipImports } from "@spartan-ng/helm/tooltip"
 import { HlmButtonImports } from "@spartan-ng/helm/button"
 import { HlmDropdownMenuImports } from "@spartan-ng/helm/dropdown-menu"
-import { Delivery, User } from "@loc/types"
+import { Delivery, Order, User } from "@loc/types"
 import { PresenceService } from "../../../services/presence.service"
 import { SettingsService } from "../../../services/settings.service"
 
@@ -102,32 +102,32 @@ export class DeliveryList
         const finishedSince = dayjs(d.timeEnd).diff(undefined, "minutes")
         const isRecentlyFinished = finishedSince >= this.recentlyFinishedDeliveriesCutoff()
         return d.status !== "completed" || isRecentlyFinished
-      }).map((d) => ({ ...d, orderId: order().id, markerId: order().markerId })))
+      }).map((delivery) => ({ delivery, order: order() })))
 
 
     return deliveries
   })
 
-  cancelDelivery(orderId: string, userId: string)
+  cancelDelivery(delivery: Delivery, order: Order)
   {
-    this.orderService.cancelDelivery(orderId, userId)
+    this.orderService.cancelDelivery(delivery, order)
   }
 
-  changeDeliveryState(orderId: string, userId: string, newState: Delivery["status"])
+  changeDeliveryState(delivery: Delivery, order: Order, newState: Delivery["status"])
   {
-    this.orderService.changeDeliveryState(orderId, userId, newState)
+    this.orderService.changeDeliveryState(delivery, order, newState)
   }
 
-  transferDelivery(orderId: string, from: User, to: User)
+  transferDelivery(delivery: Delivery, order: Order, user: User)
   {
-    this.orderService.transferDelivery(orderId, from, to)
+    this.orderService.transferDelivery(delivery, order, user)
   }
 
   readonly usersWithDelivery = computed(() =>
   {
     const presences = this.presences() || []
-    const activeDeliveries = this.deliveriesList().filter((d) => d.status !== "completed")
-      .map((d) => d.user.id)
+    const activeDeliveries = this.deliveriesList().filter((d) => d.delivery.status !== "completed")
+      .map((d) => d.delivery.user.id)
     return presences.filter((p) => activeDeliveries.includes(p.id)).map((p) => p.id)
   })
 }

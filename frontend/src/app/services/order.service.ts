@@ -192,42 +192,13 @@ export class OrderService
 
 
 
-  getDelivery(orderId: OrderId, userId: string)
+  transferDelivery(delivery: Delivery, order: Order, user: User)
   {
-    const empty = { order: undefined, deliveries: undefined, delivery: undefined }
-    if (!orderId || !userId)
-      return empty
-
-    const orderSignal = this.getOrderById(orderId)
-    const order = orderSignal?.()
-    if (!order)
-      return empty
-
-    const deliveries = order.deliveries()
-    const delivery = deliveries.find((d) => d.user.id === userId)
-
-    if (!delivery)
-      return empty
-
-    return { order, deliveries, delivery }
-  }
-
-
-
-
-
-  transferDelivery(orderId: OrderId, from: User, to: User)
-  {
-    if (!this.socket()?.connected || !orderId || !from || !to)
+    if (!this.socket()?.connected || !delivery || !user || !order)
       return
 
-    const { order, deliveries, delivery } = this.getDelivery(orderId, from.id)
-    if (!order || !deliveries || !delivery)
-      return
-
-    delivery.user = to
-
-    order.deliveries.set([...deliveries])
+    delivery.user = user
+    order.deliveries.set([...order.deliveries()])
     this.updateSyncOrder(order)
   }
 
@@ -235,16 +206,12 @@ export class OrderService
 
 
 
-  cancelDelivery(orderId: OrderId, userId: string)
+  cancelDelivery(delivery: Delivery, order: Order)
   {
-    if (!this.socket()?.connected || !orderId || !userId)
+    if (!this.socket()?.connected || !delivery || !order)
       return
 
-    const { order, deliveries, delivery } = this.getDelivery(orderId, userId)
-    if (!order || !deliveries || !delivery)
-      return
-
-    order.deliveries.set(deliveries.filter((d) => d.user.id !== userId))
+    order.deliveries.set(order.deliveries().filter((d) => d !== delivery))
     this.updateSyncOrder(order)
   }
 
@@ -252,17 +219,14 @@ export class OrderService
 
 
 
-  changeDeliveryState(orderId: OrderId, userId: string, newState: Delivery["status"])
+  changeDeliveryState(delivery: Delivery, order: Order, newState: Delivery["status"])
   {
-    if (!this.socket()?.connected || !orderId || !userId)
-      return
-
-    const { order, deliveries, delivery } = this.getDelivery(orderId, userId)
-    if (!order || !deliveries || !delivery)
+    if (!this.socket()?.connected || !delivery || !order)
       return
 
     delivery.status = newState
-    order.deliveries.set([...deliveries])
+    delivery.timeEnd = Date.now()
+    order.deliveries.set([...order.deliveries()])
     this.updateSyncOrder(order)
   }
 

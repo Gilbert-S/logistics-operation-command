@@ -101,12 +101,12 @@ export class MyDelivery
 
   transferDelivery(toUser: User)
   {
-    const orderId = this.myOrder()?.id
-    const fromUser = this.myDelivery()?.user
-    if (!orderId || !fromUser || !toUser)
+    const myOrder = this.myOrder()
+    const myDelivery = this.myDelivery()
+    if (!myDelivery || !myOrder || !toUser)
       return
 
-    this.orderService.transferDelivery(orderId, fromUser, toUser)
+    this.orderService.transferDelivery(myDelivery, myOrder, toUser)
   }
 
 

@@ -4,13 +4,15 @@
 
 <section class="flex flex-col gap-2">
 
-  @for (delivery of deliveriesList(); track $index)
+  @for (d of deliveriesList(); track $index)
   {
+    @let delivery = d.delivery;
+    @let order = d.order;
     @let completed = delivery.status === 'completed';
-    @let base = delivery.markerId | base:"object" | signal;
-    @let iconUrl = delivery.markerId | base:"iconUrl" | signal;
-    @let name = delivery.markerId | base:"name" | signal;
-    @let type = delivery.markerId | base:"type" | signal;
+    @let base = order.markerId | base:"object" | signal;
+    @let iconUrl = order.markerId | base:"iconUrl" | signal;
+    @let name = order.markerId | base:"name" | signal;
+    @let type = order.markerId | base:"type" | signal;
 
     <hlm-popover align="start" autoFocus="false" [attachTo]="PopoverAnchor">
 
@@ -73,8 +75,8 @@
         <div hlmItemActions class="
           flex min-w-6 flex-col items-end gap-1 truncate text-xs leading-none
         ">
-            {{ delivery.markerId | base:"name" | signal }}
-            <small class="text-muted-foreground">{{ delivery.markerId | base:"type" | signal }}</small>
+            {{ order.markerId | base:"name" | signal }}
+            <small class="text-muted-foreground">{{ order.markerId | base:"type" | signal }}</small>
             <span class="text-foreground/75">
               <ng-icon name="lucidePackage" class="relative top-px"/>
               {{delivery.quantity}}
@@ -131,17 +133,17 @@
           <hlm-dropdown-menu-separator />
           <hlm-dropdown-menu-group>
             <button hlmDropdownMenuItem [disabled]="delivery.status === 'pickup'"
-              (click)="changeDeliveryState(delivery.orderId!, delivery.user.id, 'pickup')">
+              (click)="changeDeliveryState(delivery, order, 'pickup')">
               <ng-icon name="lucidePackage" />
               pickup
             </button>
             <button hlmDropdownMenuItem [disabled]="delivery.status === 'delivery'"
-              (click)="changeDeliveryState(delivery.orderId!, delivery.user.id, 'delivery')">
+              (click)="changeDeliveryState(delivery, order, 'delivery')">
               <ng-icon name="lucideTruck"/>
               driving
             </button>
             <button hlmDropdownMenuItem class="text-lime-200" [disabled]="delivery.status === 'completed'"
-              (click)="changeDeliveryState(delivery.orderId!, delivery.user.id, 'completed')">
+              (click)="changeDeliveryState(delivery, order, 'completed')">
               <ng-icon name="lucideCheckCircle" class="text-lime-200/70"/>
               delivered
             </button>
@@ -156,7 +158,7 @@
             </button>
 
             <button hlmDropdownMenuItem variant="destructive" hlmTooltip="Cancel delivery"
-              (click)="cancelDelivery(delivery.orderId!, delivery.user.id)">
+              (click)="cancelDelivery(delivery, order)">
               <ng-icon name="lucidePackageX" />
               cancel
             </button>
@@ -171,7 +173,7 @@
           <hlm-dropdown-menu-group>
             @for (user of presences(); track user.id) {
               <button hlmDropdownMenuItem [disabled]="usersWithDelivery().includes(user.id)"
-               (click)="transferDelivery(delivery.orderId!, delivery.user, user)">
+               (click)="transferDelivery(delivery, order, user)">
                 <app-user-avatar size="small" [avatarUrl]="user.image" [userName]="user.name"/>
                 {{ user.name }}
               </button>
