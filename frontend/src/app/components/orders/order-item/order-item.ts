@@ -16,8 +16,7 @@ import { SocketService } from "../../../services/socket.service"
 import Events from "@loc/common"
 import items, { EMPTY_ITEM } from "../../../config/items"
 import { FoxholeItemImage } from "../../../directives/foxhole-item-image"
-import { HlmHoverCardImports } from "@spartan-ng/helm/hover-card"
-import { ItemHoverCard } from "../../item-hover-card/item-hover-card"
+import { FoxholeItemHovercard } from "../../../directives/foxhole-item-hovercard"
 import { ItemSubtypeIcon } from "../../item-subtype-icon/item-subtype-icon"
 
 
@@ -36,8 +35,7 @@ import { ItemSubtypeIcon } from "../../item-subtype-icon/item-subtype-icon"
     HlmIconImports,
     NgIcon,
     FoxholeItemImage,
-    HlmHoverCardImports,
-    ItemHoverCard,
+    FoxholeItemHovercard,
     ItemSubtypeIcon,
   ],
   providers: [

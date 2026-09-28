@@ -1,5 +1,3 @@
-<hlm-hover-card class="contents">
-
 @switch (variant()) {
 
   @case ("icon") {
@@ -16,11 +14,10 @@
       (keyup.enter)="pickItem($event)"
       (keyup.space)="pickItem($event)" (wheel)="mouseWheelHandler($event)"
       >
-        <img alt hlmHoverCardTrigger class="
+        <img alt class="
           group-data-completed/orderitem:contrast-30 group-data-completed/orderitem:grayscale-100
           hover:contrast-100 hover:grayscale-0
-        " [appFoxholeItemImage]="foxholeItem()" [hlmHoverCardTriggerFor]="FoxholeItemHoverCard" [showDelay]="600"
-          [hideDelay]="0">
+        " [appFoxholeItemImage]="foxholeItem()" [appFoxholeItemHovercard]="foxholeItem()">
         <app-item-subtype-icon [foxholeItem]="foxholeItem()"/>
         @if(completed())
         {
@@ -127,7 +124,7 @@
       </div>
 
       <section class="relative z-1 -my-1 -ml-1 shrink-0 bg-muted/80 @max-sm:hidden" >
-        <img alt forListVariant hlmHoverCardTrigger [appFoxholeItemImage]="foxholeItem()" [hlmHoverCardTriggerFor]="FoxholeItemHoverCard" [showDelay]="600" [hideDelay]="0"/>
+        <img alt forListVariant [appFoxholeItemImage]="foxholeItem()" [appFoxholeItemHovercard]="foxholeItem()"/>
         <app-item-subtype-icon [foxholeItem]="foxholeItem()"/>
       </section>
 
@@ -217,12 +214,6 @@
     </div>
   }
 }
-
-
-  <ng-template #FoxholeItemHoverCard="brnHoverCardContent" hlmHoverCardPortal>
-    <app-foxhole-item-hover-card [item]="foxholeItem()"/>
-  </ng-template>
-</hlm-hover-card>
 
 
 

@@ -7,8 +7,7 @@ import { lucideImage, lucideList } from "@ng-icons/lucide"
 import { LocalUserPreferenceService } from "../../../services/local-user-preference.service"
 import { FoxholeItemPipe } from "../../../pipes/foxhole-item-pipe"
 import { FoxholeItemImage } from "../../../directives/foxhole-item-image"
-import { HlmHoverCardImports } from "@spartan-ng/helm/hover-card"
-import { ItemHoverCard } from "../../item-hover-card/item-hover-card"
+import { FoxholeItemHovercard } from "../../../directives/foxhole-item-hovercard"
 import { ItemSubtypeIcon } from "../../item-subtype-icon/item-subtype-icon"
 
 @Component({
@@ -17,9 +16,8 @@ import { ItemSubtypeIcon } from "../../item-subtype-icon/item-subtype-icon"
   imports: [
     FoxholeItemImage,
     FoxholeItemPipe,
-    HlmHoverCardImports,
     HlmToggleGroupImports,
-    ItemHoverCard,
+    FoxholeItemHovercard,
     ItemSubtypeIcon,
   ],
 
@@ -33,19 +31,13 @@ import { ItemSubtypeIcon } from "../../item-subtype-icon/item-subtype-icon"
 
       @let foxholeItem = item.itemId | foxholeItem;
 
-      <hlm-hover-card class="contents">
-
-          <app-foxhole-item-hover-card *hlmHoverCardPortal [item]="foxholeItem"/>
-
-
       @switch (variant())
       {
 
         @case ("icon")
         {
           <div id="test" class="group/deliveryitem relative grid place-items-center rounded-sm">
-            <!-- eslint-disable-next-line @html-eslint/angular-template/no-obsolete-attrs -->
-            <img alt hlmHoverCardTrigger align="right" [appFoxholeItemImage]="foxholeItem" [showDelay]="600" [hideDelay]="0"/>
+            <img alt [appFoxholeItemImage]="foxholeItem" [appFoxholeItemHovercard]="foxholeItem"/>
             <app-item-subtype-icon [foxholeItem]="foxholeItem"/>
 
               <div class="
@@ -72,14 +64,12 @@ import { ItemSubtypeIcon } from "../../item-subtype-icon/item-subtype-icon"
         {
           <div class="
             @container relative box-border flex shrink-0 basis-full flex-row items-center gap-3
-            border-x border-b border-border bg-white/5 p-2 select-none
-            [hlm-hover-card:first-child_&]:rounded-t-sm [hlm-hover-card:first-child_&]:border-y
-            [hlm-hover-card:last-child_&]:rounded-b-sm
+            border-x border-b border-border bg-white/5 p-2 select-none first:rounded-t-sm
+            first:border-y last:rounded-b-sm
           ">
 
             <section class="relative z-1 -my-1.5 -ml-1.5 shrink-0 bg-muted/80 @max-3xs:hidden" >
-              <!-- eslint-disable-next-line @html-eslint/angular-template/no-obsolete-attrs -->
-            <img alt class="data-listvariant:size-8" forListVariant hlmHoverCardTrigger align="right" [appFoxholeItemImage]="foxholeItem" [showDelay]="600" [hideDelay]="0"/>
+            <img alt class="data-listvariant:size-8" forListVariant [appFoxholeItemImage]="foxholeItem" [appFoxholeItemHovercard]="foxholeItem"/>
             <app-item-subtype-icon [foxholeItem]="foxholeItem"/>
             </section>
 
@@ -103,7 +93,6 @@ import { ItemSubtypeIcon } from "../../item-subtype-icon/item-subtype-icon"
         }
 
       }
-      </hlm-hover-card>
     }
   </section>
   `,

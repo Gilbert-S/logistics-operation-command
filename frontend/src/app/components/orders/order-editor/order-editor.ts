@@ -21,8 +21,7 @@ import { OrderDetails } from "../order-details/order-details"
 import { FormsModule } from "@angular/forms"
 import { HlmFieldImports } from "@spartan-ng/helm/field"
 import { HlmInputImports } from "@spartan-ng/helm/input"
-import { HlmHoverCardImports } from "@spartan-ng/helm/hover-card"
-import { ItemHoverCard } from "../../item-hover-card/item-hover-card"
+import { FoxholeItemHovercard } from "../../../directives/foxhole-item-hovercard"
 import { ItemSubtypeIcon } from "../../item-subtype-icon/item-subtype-icon"
 
 
@@ -41,12 +40,11 @@ import { ItemSubtypeIcon } from "../../item-subtype-icon/item-subtype-icon"
     HlmContextMenuImports,
     HlmDialogImports,
     HlmFieldImports,
-    HlmHoverCardImports,
     HlmInputImports,
     HlmResizableImports,
     HlmToggleGroupImports,
     HlmTooltipImports,
-    ItemHoverCard,
+    FoxholeItemHovercard,
     ItemVariant,
     OrderDetails,
     OrderItems,
