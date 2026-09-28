@@ -236,7 +236,7 @@ export class OrderEditor
     if (!order)
       return
 
-    let item = order.items().find((i) => i.id === itemId)
+    const item = order.items().find((i) => i.id === itemId)
 
     if (amount < 0 && !item)
       return
@@ -244,7 +244,7 @@ export class OrderEditor
     if (amount > 0 && !item)
     {
       this.orderService.addItemToOrder(itemId, this.priority())
-      item = order.items().find((i) => i.id === itemId)
+      return
     }
 
 
