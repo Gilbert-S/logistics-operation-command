@@ -210,10 +210,16 @@ export class OrderItem
     this.syncOrderChanges()
   }
 
-  changeQuantity = (delta: number) =>
+  changeQuantity = (delta: number, event?: Event) =>
   {
     if (!this.editMode() || !this.item || !this.orderItems)
       return
+
+    if (event && "shiftKey" in event && event.shiftKey)
+      delta *= 3
+
+    else if (event && "ctrlKey" in event && event.ctrlKey)
+      delta *= 5
 
     const minimum = this.item.delivered + this.item.inDelivery || 0
     this.item.quantity = Math.max(minimum, this.item.quantity + delta)

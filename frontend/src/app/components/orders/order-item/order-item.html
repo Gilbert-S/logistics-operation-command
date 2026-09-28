@@ -48,7 +48,7 @@
             opacity-0 transition-opacity duration-500 ease-in-out group-hover/orderitem:opacity-100
             hover:bg-red-300! hover:text-black active:duration-100
           "
-            (click)="changeQuantity(-1)">
+            (click)="changeQuantity(-1, $event)">
               <ng-icon hlm name="lucideMinus" strokeWidth="3" size="1em"/>
           </button>
           <button hlmBtn variant="ghost"  size="icon-xs" class="
@@ -56,7 +56,7 @@
             opacity-0 transition-opacity duration-500 ease-in-out group-hover/orderitem:opacity-100
             hover:bg-lime-300! hover:text-black active:duration-100
           "
-            (click)="changeQuantity(1)">
+            (click)="changeQuantity(1, $event)">
               <ng-icon hlm name="lucidePlus" strokeWidth="3" size="1em"/>
           </button>
         }
