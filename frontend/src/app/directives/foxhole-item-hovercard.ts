@@ -121,7 +121,7 @@ export class FoxholeItemHovercard implements OnDestroy
 
     const overlayRef = this.overlay.create({
       positionStrategy,
-      scrollStrategy: this.overlay.scrollStrategies.reposition(),
+      scrollStrategy: this.overlay.scrollStrategies.close(),
     })
 
     // Keep the preview open while the pointer is over it, so its contents stay interactive

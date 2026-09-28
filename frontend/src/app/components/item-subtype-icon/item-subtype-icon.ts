@@ -28,4 +28,6 @@ export class ItemSubtypeIcon
 
     return undefined
   })
+
+  onError = () => this.iconMod.set("default")
 }
