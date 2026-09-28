@@ -162,6 +162,9 @@ export const ColorAndLineWidthControl = L.Control.extend({
 
     applyDrawStyle()
 
+    document.getElementsByTagName("app-sidebar")[0]?.addEventListener("click", () =>
+      panel.style.display = "none")
+
     return container
   },
 
