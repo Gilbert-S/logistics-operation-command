@@ -134,6 +134,7 @@ export interface Order
   timeEnd: number | null
   timeStart: number
   unsaved?: boolean
+  user?: User
 }
 
 interface SyncOrder extends Omit<Order, "items" | "deliveries">

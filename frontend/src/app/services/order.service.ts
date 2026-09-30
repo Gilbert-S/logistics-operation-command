@@ -6,6 +6,7 @@ import { Delta } from "jsondiffpatch"
 import { OrderId, Order, SyncOrder, OrderItem, RequestResponse, User, Delivery } from "@loc/types"
 import { AudioService } from "./audio.service"
 import { jdp } from "@loc/jdp"
+import { AuthService } from "./auth.service"
 
 
 
@@ -16,6 +17,7 @@ export class OrderService
 {
   private socket = inject(SocketService).socket
   private audio = inject(AudioService)
+  private user = inject(AuthService).user
 
 
   readonly editOrder = signal<OrderId>(null)
@@ -59,6 +61,12 @@ export class OrderService
       return this.unsavedOrder()!
     }
 
+    const user = this.user() ? {
+      id: this.user()!.id,
+      name: this.user()!.name,
+      image: this.user()!.image ?? null,
+    } : undefined
+
     const order: Order = {
       completed: false,
       deliveries: signal([]),
@@ -68,6 +76,7 @@ export class OrderService
       timeEnd: null,
       timeStart: Date.now(),
       unsaved: true,
+      user,
 
       stats: {
         ordered: { total: 0, high: 0, medium: 0, low: 0 },

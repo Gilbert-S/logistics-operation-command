@@ -21,6 +21,7 @@ import { HlmAutocompleteImports } from "@spartan-ng/helm/autocomplete"
 import { OrderTransfer } from "../order-transfer/order-transfer"
 import { ItemVariant } from "../../shared/item-variant"
 import { OrderDetails } from "../order-details/order-details"
+import { UserAvatar } from "../../user-avatar/user-avatar"
 
 
 
@@ -38,6 +39,7 @@ import { OrderDetails } from "../order-details/order-details"
     HlmAutocompleteImports,
     ItemVariant,
     OrderDetails,
+    UserAvatar,
   ],
   providers: [
     provideIcons({
@@ -90,6 +92,8 @@ import { OrderDetails } from "../order-details/order-details"
 
 
     <section class="my-3 mb-6 flex justify-center gap-4">
+      <app-user-avatar size="small" class="absolute left-0 ml-2" [avatarUrl]="order().user?.image"
+        [userName]="'created by ' + order().user?.name"/>
       @if(order().completed)
       {
         <button hlmBtn size="sm" variant="outline" class="text-success opacity-100!" disabled>
