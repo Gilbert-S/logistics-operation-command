@@ -1,0 +1,157 @@
+<hlm-dialog-header>
+  @if(order){<h3 hlmDialogTitle>Transfer this order to a new base</h3>}
+  @else if(base){<h3 hlmDialogTitle>Transfer orders to this base</h3>}
+</hlm-dialog-header>
+
+
+
+@if(order)
+{
+  <table class="mb-8">
+    <tr>
+      <td class="w-[50%] py-5 text-sm text-muted-foreground">Current destination</td>
+      <td class="w-5"></td>
+      <td class="w-[50%] py-5 text-right text-sm text-muted-foreground">New destination</td>
+    </tr>
+    <tr>
+      <td>
+        <div class="flex items-center gap-4 leading-none">
+          <span class="rounded-sm border border-border bg-secondary p-1">
+            <img alt="Marker Icon" class="size-9 shrink-0 grow-0" [src]="order.markerId|base:'iconUrl'|signal"/>
+          </span>
+          <div class="grow">
+            {{order.markerId|base:'name'|signal}}
+            <p class="text-sm text-muted-foreground">{{ order.markerId|base:'type'|signal }}</p>
+          </div>
+        </div>
+      </td>
+
+      <td><ng-icon name="lucideMoveRight" size="20px" strokeWidth="1"/></td>
+
+      <td>
+        @if(targetBase())
+        {
+          <div class="flex items-center gap-4 leading-none">
+            <div class="grow text-right">
+              {{targetBaseName()}}
+              <p class="text-sm text-muted-foreground">{{ targetBaseType() }}</p>
+            </div>
+            <span class="rounded-sm border border-border bg-secondary p-1">
+              <img alt="Marker Icon" class="size-9 shrink-0 grow-0" [src]="targetBase()?.iconUrl()"/>
+            </span>
+          </div>
+        }
+      </td>
+  </table>
+
+
+  <hlm-autocomplete autoHighlight [itemToString]="itemToString" [state]="autocompleteState()" [(value)]="targetBase" [(search)]="search">
+
+    <hlm-autocomplete-input placeholder="Search a base or map icon"/>
+
+    <hlm-autocomplete-content *hlmAutocompletePortal>
+      <hlm-autocomplete-empty>Not found</hlm-autocomplete-empty>
+      <div hlmAutocompleteList>
+          <div hlmAutocompleteGroup>
+
+            <div hlmAutocompleteLabel>Operation Bases</div>
+            @for (base of opsBaseList(); track $index) {
+              <hlm-autocomplete-item class="flex flex-row gap-2" [value]="base">
+                <img alt="Marker Icon" class="size-6" [src]="base.iconUrl()"/>
+                <div class="flex flex-col">
+                  <span>{{ base.name() }}</span>
+                  <span class="text-muted-foreground">
+                    {{ base.baseType?.() }}
+                  </span>
+                </div>
+              </hlm-autocomplete-item>
+            }
+            </div>
+            <div hlmAutocompleteGroup>
+            <div hlmAutocompleteLabel>Map Icons</div>
+            @for (base of mapIconList(); track $index) {
+              <hlm-autocomplete-item class="flex flex-row gap-2" [value]="base">
+                <img alt="Marker Icon" class="size-6" [src]="base.iconUrl()"/>
+                <div class="flex flex-col">
+                  <span>{{ base.name() }}</span>
+                  <span class="text-muted-foreground">
+                    {{ base.iconName }} - {{ base.region }}
+                  </span>
+                </div>
+              </hlm-autocomplete-item>
+            }
+          </div>
+      </div>
+    </hlm-autocomplete-content>
+  </hlm-autocomplete>
+
+  <hlm-dialog-footer class="border-0 bg-transparent">
+    <button hlmBtn variant="ghost" (click)="close()">Cancel</button>
+    <button hlmBtn [disabled]="!targetBase()" (click)="transfer()">Transfer</button>
+  </hlm-dialog-footer>
+}
+
+
+@else if (base)
+{
+  <div class="flex items-center gap-4 leading-none">
+    <span class="rounded-sm border border-border bg-secondary p-1">
+      <img alt="Marker Icon" class="size-9 shrink-0 grow-0" [src]="base.iconUrl()"/>
+    </span>
+    <div class="grow">
+      {{base.name() || "(unnamed)"}}
+      <p class="text-sm text-muted-foreground">{{base.iconName || base.baseType?.() || "(unnamed)"}}</p>
+    </div>
+  </div>
+
+  <div hlmFieldGroup>
+    <form #Form="ngForm">
+    <fieldset hlmFieldSet class="gap-2">
+      <p hlmFieldDescription>Select the orders that shall be transferred to this base:</p>
+      @for (order of orderList(); track order().id) {
+        <label for="{{ order().id }}" hlmFieldLabel class="hover:bg-primary/5">
+          <div hlmField orientation="horizontal">
+            <div hlmFieldContent class="flex flex-row gap-4">
+
+              <div class="flex min-w-12 flex-col items-center justify-center text-sm font-light">
+                <span>
+                  <ng-icon name="lucidePackage" class="relative top-px mr-1 text-muted-foreground"/>
+                  {{order().stats.leftToDeliver.total}}
+                </span>
+                <hr class="h-px w-full border-0 bg-sidebar-border">
+                <span>
+                  <ng-icon name="lucideTruck" class="relative top-px mr-1 text-muted-foreground"/>
+                  {{order().stats.inDelivery.total}}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-4 leading-none">
+                <span class="rounded-sm border border-border bg-secondary p-1">
+                  <img alt="Marker Icon" class="size-9 shrink-0 grow-0" [src]="order().markerId | base:'iconUrl' | signal"/>
+                </span>
+                <div class="grow">
+                  {{order().markerId | base:'name' | signal}}
+                  <p class="text-sm text-muted-foreground">{{order().markerId | base:'type' | signal}}</p>
+                  <p class="text-sm font-light">{{order().details}}</p>
+                </div>
+              </div>
+
+            </div>
+            <hlm-checkbox inputId="{{ order().id }}" name="{{ order().id }}" [ngModel]="false" />
+          </div>
+        </label>
+      }
+    </fieldset>
+  </form>
+  </div>
+
+  <hlm-dialog-footer class="border-0 bg-transparent">
+    <button hlmBtn variant="ghost" (click)="close()">Cancel</button>
+    <button hlmBtn [disabled]="!hasSelectedOrders(Form)" (click)="transfer(Form.value)">Transfer</button>
+  </hlm-dialog-footer>
+}
+
+@else
+{
+  <p class="text-sm text-muted-foreground">Something went wrong. This Dialog is in an invalid state.</p>
+}

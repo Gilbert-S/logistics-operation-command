@@ -15,15 +15,27 @@
 
       <hlm-dropdown-menu-separator />
 
-      <button hlmDropdownMenuItem (click)="newOrder(base()!.id)">New Order</button>
+      <button hlmDropdownMenuItem (click)="newOrder(base()!.id)">
+        <ng-icon name="lucideShoppingCart" class="mr-1 text-muted-foreground"/>
+        New Order
+      </button>
+
+      <button hlmDropdownMenuItem (click)="transferOrders(base())">
+        <ng-icon name="lucideArrowRightLeft" class="mr-1 text-muted-foreground"/>
+        Transfer Orders
+      </button>
 
       @if (isOpsBase()) {
+        <hlm-dropdown-menu-separator />
+
         <button hlmDropdownMenuItem [disabled]="isSelected()" (click)="clickHandlerBaseEdit($event, base()!)">
+          <ng-icon name="lucideSquarePen" class="mr-1 text-muted-foreground"/>
           Edit Base
         </button>
 
         <button hlmDropdownMenuItem [disabled]="isDraggable()" (click)="base()?.draggable?.set(true)">
-          10sec Draggable
+          <ng-icon name="lucideMove" class="mr-1 text-muted-foreground"/>
+          Draggable <small class="text-muted-foreground">10sec</small>
         </button>
       }
       
