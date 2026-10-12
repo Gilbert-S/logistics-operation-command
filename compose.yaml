@@ -21,7 +21,7 @@ services:
     networks:
       - loc-network
     env_file:
-      - container.env
+      - .env
     volumes:
       - loc-backend-volume:/app/backend/database/data
 

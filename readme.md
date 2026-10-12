@@ -99,7 +99,7 @@ Build them locally or on the target Docker host.
 
 ### Configure the Deployment
 
-1. Copy `/container.env.example` to `/container.env`.
+1. Copy `/.env.example` to `/.env`.
 2. Add the required settings, including the base URL, secrets, Discord
    application client ID and secret, and Discord server ID.
 
@@ -115,7 +115,7 @@ docker context use {my-vps-ssh-context}
 ### Build and Start the Containers
 
 ```shell
-docker compose --env-file container.env up -d --build
+docker compose up -d --build
 ```
 
 This builds the container images and starts the services.
