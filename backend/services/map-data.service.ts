@@ -299,19 +299,27 @@ export function registerSocketMapDataHandlers(socket: Socket)
   const dlog = debug.extend(`socket:${ socket.id}`)
 
 
-  const requestMapDataUpdateHandler = (
-    iteration: number,
-    clientEpoch: string | null | undefined,
-    callback: (response: RequestResponse<MapData>) => void,
-  ) =>
+  // clients send (iteration, epoch, ack); outdated clients send (iteration, ack) without an epoch,
+  // and misbehaving clients may send no ack at all - which must never crash the server
+  const requestMapDataUpdateHandler = (...args: unknown[]) =>
   {
+    const ack = args.at(-1)
+    if (typeof ack !== "function")
+      return dlog("invalid or missing callback provided, cannot send response")
+
+    const callback = ack as (response: RequestResponse<MapData>) => void
+    const iteration = args[0] as number
+    const hasEpochArg = args.length >= 3
+    const clientEpoch = typeof args[1] === "string" ? args[1] : undefined
+
     dlog("map data update requested for iteration %d", iteration)
 
     const lastIteration = getLastIterationNumber(Identifier.MapData)
     const epoch = getEpoch(Identifier.MapData)
     dlog("latest map data iteration is %d", lastIteration)
 
-    if (mapData && clientEpoch !== epoch)
+    // legacy clients (no epoch argument) are served by iteration only
+    if (mapData && hasEpochArg && clientEpoch !== epoch)
     {
       callback({ iteration: lastIteration, epoch, full: mapData })
       dlog("client epoch differs from server epoch, sending full map data")

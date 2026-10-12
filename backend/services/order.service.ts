@@ -48,6 +48,9 @@ export function registerSocketOrdersHandlers(socket: Socket)
   {
     dlog("Orders update requested for iteration %d", iteration)
 
+    if (typeof callback !== "function")
+      return dlog("invalid or missing callback provided, cannot send response")
+
     const lastIteration = getLastIterationNumber(Identifier.Orders)
     dlog("latest Orders iteration is %d", lastIteration)
 
