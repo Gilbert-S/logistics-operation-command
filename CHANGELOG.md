@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ...
 
+
+
+## [1.3.0] - 2026-10-12
+
+### Added
+- display app version in UI
+
+### Changed
+- refactor: improve map-data icon layer refresh
+
+
+
 ## [1.2.0] - 2026-09-30
 
 ### Added
@@ -48,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-[unreleased]: https://github.com/Gilbert-S/logistics-operation-command/compare/1.2.0...HEAD
+[unreleased]: https://github.com/Gilbert-S/logistics-operation-command/compare/1.3.0...HEAD
+[1.3.0]: https://github.com/Gilbert-S/logistics-operation-command/compare/1.2.0...1.3.0
 [1.2.0]: https://github.com/Gilbert-S/logistics-operation-command/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/Gilbert-S/logistics-operation-command/compare/1.0.0...1.1.0
