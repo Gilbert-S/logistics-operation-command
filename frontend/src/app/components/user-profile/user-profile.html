@@ -1,3 +1,7 @@
+@if (!isAuthenticated())
+{
+  <div class="p-3 text-center text-xs opacity-50">v{{ version }}</div>
+}
 <div hlmItem variant="muted" size="sm" class="
   -mx-2 -mb-6 rounded-b-none border border-b-0 border-sidebar-border select-none
 " tabindex=0 (click)="clickHandler()" (keyup.enter)="clickHandler()"
@@ -76,6 +80,8 @@
             Sign out
           </button>
         </hlm-dropdown-menu-group>
+        <hlm-dropdown-menu-separator />
+        <div disabled hlmDropdownMenuItem class="justify-center text-xs">v{{ version }}</div>
       </hlm-dropdown-menu>
     </ng-template>
   } 

@@ -17,6 +17,7 @@ import { UserProfilePopover } from "./user-profile-popover"
 import { HlmSpinnerImports } from "@spartan-ng/helm/spinner"
 import { HlmDialogService } from "../../../../libs/ui/dialog/src/lib/hlm-dialog.service"
 import { AdminDialog, adminDialogOptions } from "../admin-dialog/admin-dialog"
+import { version } from "packageJson"
 
 @Component({
   imports: [
@@ -64,6 +65,7 @@ export class UserProfile
   public login = this.auth.signIn
   public logout = this.auth.signOut
   public stopImpersonating = () => this.auth.stopImpersonating()
+  public version = version as string
 
 
   readonly menuButton = viewChild<ElementRef<HTMLButtonElement>>("PopoverAnchor")
