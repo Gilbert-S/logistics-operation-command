@@ -13,6 +13,15 @@ debug("loading diff service module")
 
 const ITERATION_STORE: IterationStore = {}
 
+/** random id per iteration history; changes whenever the history is discarded (restart, reset),
+ * so clients can detect that their iteration numbers refer to a different history */
+const EPOCHS: Partial<Record<IdentifierKey, string>> = {}
+
+export function getEpoch(identifier: IdentifierKey)
+{
+  return EPOCHS[identifier] ??= crypto.randomUUID()
+}
+
 
 
 
@@ -107,7 +116,7 @@ export function sync(event: Events, identifier: IdentifierKey)
   const iterationNumber = getLastIterationNumber(identifier)
   const diff = ITERATION_STORE[identifier].get(iterationNumber)?.diff
   const io = getSocketIOInstance()
-  io.emit(event, { iterationNumber, diff })
+  io.emit(event, { iterationNumber, diff, epoch: getEpoch(identifier) })
   debug(
     "sync: emitted event %o with iteration %d for identifier %o",
     event,
@@ -232,6 +241,7 @@ export function storeDelta(identifier: IdentifierKey, delta: Delta, newData: unk
 export function clearIterationStore(identifier: IdentifierKey)
 {
   debug("clearIterationStore: %o", identifier)
+  delete EPOCHS[identifier]
   if (ITERATION_STORE[identifier])
   {
     delete ITERATION_STORE[identifier]

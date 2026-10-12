@@ -14,6 +14,7 @@ declare module "leaflet"
     getBounds():LatLngBounds
     redraw():void
     clear():void
+    clearLayers():void
     removeMarker(marker:Marker):void
     addClass(className: string):this
     addOnClickListener(listener: (

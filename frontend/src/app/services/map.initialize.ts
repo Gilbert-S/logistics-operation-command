@@ -6,6 +6,8 @@ import addTileLayer from "../map-layers/tile.layer"
 import type { MapService } from "./map.service"
 import { default as L } from "leaflet"
 import "@geoman-io/leaflet-geoman-free"
+import { regions } from "../config/regions"
+import { REGION_BASES } from "../config/mapicons"
 import { ColorAndLineWidthControl }
   from "../leaflet-color-line-control/color-and-line-width-control"
 import "../leaflet-edgebuffer/leaflet.edgebuffer"
@@ -81,39 +83,64 @@ export function initializeDynamicMapLayers(this: MapService): void
     return
 
 
-  const [regionLabelsLayerMajor, regionLabelsLayerMinor] = createRegionLabelsLayer(map, mapData)
+  // region labels only depend on static data and the position of region bases,
+  // rebuild them only when those change (or the map instance changed)
+  const labelsKey = JSON.stringify(regions.map((region) => [
+    mapData[region.id]?.static,
+    mapData[region.id]?.dynamic?.filter((item) => REGION_BASES.includes(item.iconType))
+      .map((item) => [item.iconType, item.x, item.y]),
+  ]))
 
-  this.addLayerToggleToSidebar(regionLabelsLayerMajor, {
-    icon: "lucideTag",
-    name: "Region Labels (Major)",
-    zoomMax: 99,
-    zoomMin: 4,
-  })
+  if (this.regionLabelsState?.map !== map || this.regionLabelsState.key !== labelsKey)
+    try
+    {
+      const [regionLabelsLayerMajor, regionLabelsLayerMinor] = createRegionLabelsLayer(map, mapData)
 
-  this.addLayerToggleToSidebar(regionLabelsLayerMinor, {
-    icon: "lucideTags",
-    name: "Region Labels (Minor)",
-    zoomMax: 99,
-    zoomMin: 5,
-  })
+      this.addLayerToggleToSidebar(regionLabelsLayerMajor, {
+        icon: "lucideTag",
+        name: "Region Labels (Major)",
+        zoomMax: 99,
+        zoomMin: 4,
+      })
+
+      this.addLayerToggleToSidebar(regionLabelsLayerMinor, {
+        icon: "lucideTags",
+        name: "Region Labels (Minor)",
+        zoomMax: 99,
+        zoomMin: 5,
+      })
+
+      this.regionLabelsState = { map, key: labelsKey }
+    }
+    catch (error)
+    {
+      console.error("Error creating region labels layer", error)
+    }
 
 
+  try
+  {
+    const [mapIconsLayerMajor, mapIconsLayerMinor] =
+      this.mapIconsLayer.createMapIconsLayer(map, mapData)
 
-  const [mapIconsLayerMajor, mapIconsLayerMinor] =
-    this.mapIconsLayer.createMapIconsLayer(map, mapData)
+    // no-op if the (persistent) layers are already registered
+    this.addLayerToggleToSidebar(mapIconsLayerMajor, {
+      icon: "lucideImage",
+      name: "Map Icons (Major)",
+      zoomMax: 99,
+      zoomMin: 5,
+    })
 
-  this.addLayerToggleToSidebar(mapIconsLayerMajor, {
-    icon: "lucideImage",
-    name: "Map Icons (Major)",
-    zoomMax: 99,
-    zoomMin: 5,
-  })
-
-  this.addLayerToggleToSidebar(mapIconsLayerMinor, {
-    enabled: signal(false),
-    icon: "lucideImages",
-    name: "Map Icons (Minor)",
-    zoomMax: 99,
-    zoomMin: 5,
-  })
+    this.addLayerToggleToSidebar(mapIconsLayerMinor, {
+      enabled: signal(false),
+      icon: "lucideImages",
+      name: "Map Icons (Minor)",
+      zoomMax: 99,
+      zoomMin: 5,
+    })
+  }
+  catch (error)
+  {
+    console.error("Error creating map icons layer", error)
+  }
 }

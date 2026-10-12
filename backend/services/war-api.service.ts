@@ -19,6 +19,21 @@ debug("Root URL: %s", ROOT_URL)
 
 
 
+const REQUEST_TIMEOUT_MS = 10 * 1000
+
+async function fetchJson(url: string): Promise<unknown>
+{
+  const response = await fetch(url, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) })
+  if (!response.ok)
+    throw Error(`WarAPI responded with status ${response.status} for ${url}`)
+
+  return response.json()
+}
+
+
+
+
+
 export async function fetchMapList()
 {
   const endpointUrl = `/worldconquest/maps`
@@ -26,10 +41,7 @@ export async function fetchMapList()
 
   try
   {
-    const response = await fetch(`${ROOT_URL}${endpointUrl}`)
-    const data = await response.json()
-
-    debug("map list response %O", response)
+    const data = await fetchJson(`${ROOT_URL}${endpointUrl}`)
     debug("map list data %o", data)
 
     if (isMapList(data))
@@ -58,10 +70,7 @@ export async function fetchStaticMapData(mapId: string)
   const endpointUrl = `/worldconquest/maps/${mapId}/static`
   debug(`fetchStaticMapData`)
 
-  const response = await fetch(`${ROOT_URL}${endpointUrl}`)
-  const data = await response.json()
-
-  debug("fetchStaticMapData response %O", response)
+  const data = await fetchJson(`${ROOT_URL}${endpointUrl}`)
   debug("fetchStaticMapData data %o", data)
 
   if (isMapDataStatic(data))
@@ -84,10 +93,7 @@ export async function fetchDynamicMapData(mapId: string)
   const endpointUrl = `/worldconquest/maps/${mapId}/dynamic/public`
   debug(`fetchDynamicMapData`)
 
-  const response = await fetch(`${ROOT_URL}${endpointUrl}`)
-  const data = await response.json()
-
-  debug("fetchDynamicMapData response %O", response)
+  const data = await fetchJson(`${ROOT_URL}${endpointUrl}`)
   debug("fetchDynamicMapData data %o", data)
 
   if (isMapDataDynamic(data))

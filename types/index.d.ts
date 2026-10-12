@@ -79,6 +79,7 @@ export namespace Map
 
 export interface RequestResponse<T> {
   iteration: number
+  epoch?: string
   full?: T
   delta?: Delta[]
 }

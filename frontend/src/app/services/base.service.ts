@@ -514,6 +514,25 @@ export class BaseService
 
 
 
+  /** removes map icon bases (game map markers) from the base list and disposes their effects */
+  public removeMapIconBases(bases: Base[]): void
+  {
+    if (!bases.length) return
+
+    bases.forEach((base) =>
+    {
+      base.effects.forEach((effect) => effect.destroy())
+      base.effects = []
+    })
+
+    const removed = new Set(bases)
+    this.baseList.update((list) => list.filter((b) => !removed.has(b)))
+  }
+
+
+
+
+
   public deleteOpsBase(base: Base | null, syncChanges = true): void
   {
     if (!base || base.baseClass !== "OpsBase")

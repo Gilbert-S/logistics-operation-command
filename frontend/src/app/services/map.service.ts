@@ -31,6 +31,9 @@ export class MapService
 
   readonly mapData = signal<MapData | null>(null)
   readonly mapDataIteration = signal(-1)
+  regionLabelsState: { map: L.Map, key: string } | undefined
+  private mapDataEpoch: string | undefined
+  private mapDataRequestPending = false
   mapDataUpdateInterval: number | undefined
 
   public readonly opsLayer = signal<L.LayerGroup>(L.layerGroup())
@@ -180,10 +183,19 @@ export class MapService
 
   setupSocketHandlers = () =>
   {
-    this.socket().on(Events.SYNC_MAP_DATA, this.syncMapDataHandler)
+    const socket = this.socket()
+    socket.off(Events.SYNC_MAP_DATA, this.syncMapDataHandler)
+    socket.on(Events.SYNC_MAP_DATA, this.syncMapDataHandler)
+
+    // on every reconnect: missed syncs are caught up via the request
+    socket.off("connect", this.requestMapDataUpdateOnConnect)
+    socket.on("connect", this.requestMapDataUpdateOnConnect)
+
     this.requestMapDataUpdate()
     this.resetIdleUpdateTimout()
   }
+
+  private requestMapDataUpdateOnConnect = () => this.requestMapDataUpdate()
 
 
   resetIdleUpdateTimout = () =>
@@ -200,19 +212,56 @@ export class MapService
   requestMapDataUpdate()
   {
     const socket = this.socket()
-    if (!socket || !socket.connected) return
+    if (!socket || !socket.connected || this.mapDataRequestPending) return
+
+    this.mapDataRequestPending = true
 
     socket.emit(
       Events.REQUEST_MAP_DATA,
       this.mapDataIteration(),
+      this.mapDataEpoch,
       this.requestMapDataResponseHandler,
     )
 
-    toast.loading("Requesting map data update", { duration: 20000, id: "requesting-map-data" })
+    // only the initial load is worth a toast, background updates are silent
+    if (!this.mapData())
+      toast.loading("Requesting map data update", { duration: 20000, id: "requesting-map-data" })
   }
+
+
+  /** discards the local sync state so that the next request fetches the full map data */
+  private resyncMapData()
+  {
+    this.mapDataIteration.set(-1)
+    this.mapDataEpoch = undefined
+    this.requestMapDataUpdate()
+  }
+
+
+  /** patches a copy, so a failing patch can never leave the current map data half-updated */
+  private applyMapDataDeltas(deltas: jsondiffpatch.Delta[]): boolean
+  {
+    const current = this.mapData()
+    if (!current) return false
+
+    try
+    {
+      const copy = structuredClone(current)
+      deltas.forEach((delta) => jsondiffpatch.patch(copy, delta))
+      this.mapData.set(copy)
+      return true
+    }
+    catch (error)
+    {
+      console.error("Error applying map data delta, requesting full map data:", error)
+      return false
+    }
+  }
+
 
   requestMapDataResponseHandler = (error: Error, response: RequestResponse<MapData>) =>
   {
+    this.mapDataRequestPending = false
     toast.dismiss("requesting-map-data")
 
     this.resetIdleUpdateTimout()
@@ -220,46 +269,43 @@ export class MapService
     if (error)
       console.error("Error requesting map data update:", error)
 
-    if (!response)
+    if (error || !response)
       return
-
-    this.mapDataIteration.set(response.iteration)
 
     if (response.full)
       this.mapData.set(response.full)
 
-    if (response.delta && this.mapData())
-    {
-      const mapData = this.mapData()
-      response.delta.forEach((delta) =>
-      {
-        jsondiffpatch.patch(mapData, delta)
-      })
-      this.mapData.set({ ...mapData })
-    }
+    else if (response.delta && !this.applyMapDataDeltas(response.delta))
+      return this.resyncMapData()
+
+    this.mapDataIteration.set(response.iteration)
+    this.mapDataEpoch = response.epoch
   }
 
 
-  syncMapDataHandler = (data: { iterationNumber: number, diff: jsondiffpatch.Delta }) =>
+  syncMapDataHandler = (data: { iterationNumber: number, diff: jsondiffpatch.Delta, epoch?: string }) =>
   {
-    const { iterationNumber, diff } = data
-    const mapData = this.mapData()
+    const { iterationNumber, diff, epoch } = data
 
-    if (!mapData || !iterationNumber || !diff)
+    if (!this.mapData() || !iterationNumber || !diff)
       return
 
+    // server history was reset or restarted, local iteration numbers are meaningless
+    if (epoch && this.mapDataEpoch && epoch !== this.mapDataEpoch)
+      return this.resyncMapData()
+
     if (iterationNumber < this.mapDataIteration())
-    {
-      this.mapDataIteration.set(-1)
-      return this.requestMapDataUpdate()
-    }
+      return this.resyncMapData()
+
+    if (iterationNumber === this.mapDataIteration())
+      return
 
     if (iterationNumber - this.mapDataIteration() !== 1)
       return this.requestMapDataUpdate()
-    else
-      jsondiffpatch.patch(mapData, diff)
 
-    this.mapData.set({ ...mapData })
+    if (!this.applyMapDataDeltas([diff]))
+      return this.resyncMapData()
+
     this.mapDataIteration.set(iterationNumber)
     this.resetIdleUpdateTimout()
   }

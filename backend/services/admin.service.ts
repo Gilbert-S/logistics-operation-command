@@ -6,7 +6,10 @@ import type { Socket } from "socket.io"
 import { clearIterationStore, Identifier } from "./diff.service.ts"
 import { initializeOrderData } from "./order.service.ts"
 import { initializeOpsBaseData } from "./ops-base.service.ts"
-import { initializeMapData, startDynamicMapDataUpdateInterval, stopDynamicMapDataUpdateInterval }
+import {
+  initializeMapData, resetMapData, startDynamicMapDataUpdateInterval,
+  stopDynamicMapDataUpdateInterval,
+}
   from "./map-data.service.ts"
 import Events from "@loc/common"
 import { getStateBackupsList, restoreStateFromBackup } from "./state-backup.service.ts"
@@ -69,6 +72,7 @@ async function resetData(
     {
       stopDynamicMapDataUpdateInterval()
       clearIterationStore(Identifier.MapData)
+      resetMapData()
       await initializeMapData()
       startDynamicMapDataUpdateInterval()
       debug("MapData reset complete")

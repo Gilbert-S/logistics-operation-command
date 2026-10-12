@@ -23,28 +23,35 @@ export default function createRegionLabelsLayer(map: Leaflet.Map, mapData: MapDa
   regions.forEach((region) =>
   {
     const regionLabels = mapData[region.id]?.static
-    if (!regionLabels) return
+    if (!Array.isArray(regionLabels)) return
 
     regionLabels.forEach((label) =>
     {
-      const M = label.mapMarkerType == "Major" as WarAPI.MapMarkerType
+      try
+      {
+        const M = label.mapMarkerType == "Major" as WarAPI.MapMarkerType
 
-      let closest
-      if (M)
-        closest = findClosest(mapData, label, region.id)
+        let closest
+        if (M)
+          closest = findClosest(mapData, label, region.id)
 
-      const iconPosition = region.mapIconPosition!(closest?.x || label.x, closest?.y || label.y)
-      const icon = Leaflet.divIcon({
-        text: label.text,
-        style: label.mapMarkerType,
-        iconAnchor: [0, 26],
-      })
+        const iconPosition = region.mapIconPosition!(closest?.x || label.x, closest?.y || label.y)
+        const icon = Leaflet.divIcon({
+          text: label.text,
+          style: label.mapMarkerType,
+          iconAnchor: [0, 26],
+        })
 
-      const marker = new Leaflet.Marker(iconPosition, { icon, zIndexOffset: M ? 800 : 700 })
-      if (M)
-        major.push(marker)
-      else
-        minor.push(marker)
+        const marker = new Leaflet.Marker(iconPosition, { icon, zIndexOffset: M ? 800 : 700 })
+        if (M)
+          major.push(marker)
+        else
+          minor.push(marker)
+      }
+      catch (error)
+      {
+        console.error(`Region labels: error creating label "${label.text}" in ${region.id}`, error)
+      }
     })
 
 
@@ -67,7 +74,7 @@ function findClosest(mapData: MapData, label: WarAPI.TextItem, regionId: string)
 
   const closestNames: { item: WarAPI.MapItem, distance: number }[] = []
 
-  const mapItems = mapData[regionId]?.dynamic
+  const mapItems = (mapData[regionId]?.dynamic ?? [])
     .filter((mapItem) => REGION_BASES.includes(mapItem.iconType))
 
 
@@ -80,7 +87,7 @@ function findClosest(mapData: MapData, label: WarAPI.TextItem, regionId: string)
   })
 
   closestNames.sort(compare)
-  return closestNames[0].item
+  return closestNames[0]?.item
 }
 
 function compare(a:{ distance: number }, b:{ distance: number })
