@@ -773,6 +773,7 @@ export class BaseService
       localOpsBase.team.set(opsBase.team as WarAPI.TeamId)
       localOpsBase.baseType?.set(opsBase.type as BaseType)
       localOpsBase.marker().setLatLng(L.latLng(opsBase.lat, opsBase.lng))
+      localOpsBase.orderIndicatorMarker()?.setLatLng(L.latLng(opsBase.lat, opsBase.lng))
       localOpsBase.namePosition.set(opsBase.nPos as BaseLabelPosition)
       localOpsBase.orderIndicatorPosition.set(opsBase.oPos as BaseLabelPosition)
     })
