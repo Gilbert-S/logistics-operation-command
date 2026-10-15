@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs"
 import { Hono } from "hono"
 import { serve, type ServerType } from "@hono/node-server"
 
@@ -7,9 +8,32 @@ debug("loading hono server module")
 
 
 
+/** the docker build writes .version, package.json is not part of the image */
+function readAppVersion()
+{
+  try
+  {
+    return readFileSync(new URL("../.version", import.meta.url), "utf8").trim()
+  }
+  catch
+  {
+    const rootPackage = readFileSync(new URL("../../package.json", import.meta.url), "utf8")
+    return (JSON.parse(rootPackage) as { version: string }).version
+  }
+}
 
+export const APP_VERSION = readAppVersion()
 
 export const hono = new Hono()
+
+hono.use("/auth/*", async (context, next) =>
+{
+  if (context.req.header("X-Client-Version") !== APP_VERSION)
+    return context.json({ error: "client_outdated" }, 426)
+
+  return await next()
+})
+
 let server: ServerType | undefined
 
 

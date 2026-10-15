@@ -1,6 +1,7 @@
 import { Server, Socket, type ServerOptions } from "socket.io"
 import type { ServerType } from "@hono/node-server"
 import { auth, validateSession } from "./auth.service.ts"
+import { APP_VERSION } from "./hono.service.ts"
 
 
 import Debug from "debug"
@@ -33,6 +34,7 @@ export function attachSocketIOToServer(server: ServerType)
   io = new Server(server, serverOptions)
   debug("Socket.IO instance created and attached to server")
 
+  attachVersionCheck(io)
   attachAuth(io)
   attachDebugLoggers(io)
 
@@ -88,6 +90,21 @@ export function logHandlerErrors<Args extends unknown[]>(handler: (...args: Args
       console.error("socket handler failed:", error)
     }
   }
+}
+
+
+
+function attachVersionCheck(io: Server)
+{
+  debug("attaching client version check middleware")
+
+  io.use((socket, next) =>
+  {
+    if (socket.handshake.auth["version"] !== APP_VERSION)
+      return next(Error("client_outdated"))
+
+    next()
+  })
 }
 
 

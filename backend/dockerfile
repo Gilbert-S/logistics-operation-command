@@ -26,6 +26,7 @@ RUN npm ci \
   --ignore-scripts \
   --include-workspace-root
 
+RUN node -p "require('./package.json').version" > ./backend/.version
 RUN npm prune --production
 RUN rm -f .npmrc package.json package-lock.json
 

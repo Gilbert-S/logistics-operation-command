@@ -2,6 +2,7 @@ import { Injectable, resource, Signal, signal } from "@angular/core"
 import { toast } from "@spartan-ng/brain/sonner"
 import { createAuthClient } from "better-auth/client"
 import { adminClient } from "better-auth/client/plugins"
+import { version } from "packageJson"
 
 
 
@@ -14,7 +15,33 @@ export class AuthService
     baseURL: window.location.origin,
     basePath: "/auth",
     plugins: [adminClient()],
+    fetchOptions: {
+      headers: { "X-Client-Version": version },
+      onError: (context) =>
+      {
+        if (context.response.status === 426)
+          this.reloadOutdatedClient()
+      },
+    },
   })
+
+
+
+  private reloadScheduled = false
+
+  reloadOutdatedClient()
+  {
+    if (this.reloadScheduled)
+      return
+
+    this.reloadScheduled = true
+    toast.warning("Your app version is outdated. The page will reload ...", {
+      id: "client-outdated",
+      duration: 10000,
+      dismissible: false,
+    })
+    setTimeout(() => location.reload(), 10000)
+  }
 
 
 

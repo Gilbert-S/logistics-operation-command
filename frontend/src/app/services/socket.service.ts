@@ -2,6 +2,8 @@ import { effect, inject, Injectable, signal, untracked } from "@angular/core"
 import { io } from "socket.io-client"
 import { AuthService } from "./auth.service"
 import { toast } from "@spartan-ng/brain/sonner"
+import { version } from "packageJson"
+
 
 
 
@@ -15,6 +17,7 @@ export class SocketService
   public readonly socket = signal(io({
     ackTimeout: 10000,
     autoConnect: false,
+    auth: { version },
     reconnection: true,
     reconnectionAttempts: Infinity,
     reconnectionDelay: 1000,
@@ -32,6 +35,7 @@ export class SocketService
 
     socket.on("connect", this.socketConnectHandler)
     socket.on("disconnect", this.socketDisconnectHandler)
+    socket.on("connect_error", this.socketConnectErrorHandler)
 
     this.socket.set(socket)
 
@@ -67,4 +71,10 @@ export class SocketService
 
   private socketConnectHandler = () => this.connected.set(true)
   private socketDisconnectHandler = () => this.connected.set(false)
+
+  private socketConnectErrorHandler = (error: Error) =>
+  {
+    if (error.message === "client_outdated")
+      this.auth.reloadOutdatedClient()
+  }
 }

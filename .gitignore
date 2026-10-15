@@ -1,3 +1,4 @@
 .env
 *.env
+backend/.version
 node_modules

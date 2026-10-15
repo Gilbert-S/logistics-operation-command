@@ -51,6 +51,9 @@ ${BASE_URL} {
   encode
 
   @backend path /socket.io/* /auth/*
+  @shell path / /index.html
+
+  header @shell Cache-Control no-cache
 
   handle @backend {
     reverse_proxy ${BACKEND_SERVICE_NAME}:3000 {
