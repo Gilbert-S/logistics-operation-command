@@ -4,6 +4,7 @@ import type Debug from "debug"
 import type { RequestResponseHandler } from "@loc/types"
 import { getDeltaForIteration, getLastIterationNumber, type IdentifierKey }
   from "../services/diff.service.ts"
+import { logHandlerErrors } from "../services/socket.service.ts"
 
 
 
@@ -73,5 +74,5 @@ export function standardRequestHandler<T>(options: {
 
 
 
-  socket.on(event, requestHandler)
+  socket.on(event, logHandlerErrors(requestHandler))
 }

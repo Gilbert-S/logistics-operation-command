@@ -74,6 +74,24 @@ export function attachSocketEventHandlers(...funcs: ((socket: Socket) => void)[]
 
 
 
+/** keeps the server alive when a socket handler throws or rejects */
+export function logHandlerErrors<Args extends unknown[]>(handler: (...args: Args) => unknown)
+{
+  return async (...args: Args) =>
+  {
+    try
+    {
+      await handler(...args)
+    }
+    catch (error)
+    {
+      console.error("socket handler failed:", error)
+    }
+  }
+}
+
+
+
 function attachAuth(io: Server)
 {
   debug("attaching auth middleware")

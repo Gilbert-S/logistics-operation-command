@@ -4,6 +4,7 @@ import {
   applyDelta, diffAndSync, getDeltaForIteration, getLastIterationNumber,
   Identifier, storeDelta, sync,
 } from "./diff.service.ts"
+import { logHandlerErrors } from "./socket.service.ts"
 import type { Delta } from "jsondiffpatch"
 import type { OpsBase, RequestResponseHandler } from "@loc/types"
 
@@ -102,7 +103,7 @@ export function registerSocketOpsBaseHandlers(socket: Socket)
   }
 
 
-  socket.on(Events.REQUEST_OPS_BASE, requestOpsBaseHandler)
-  socket.on(Events.SYNC_OPS_BASE, syncOpsBaseHandler)
+  socket.on(Events.REQUEST_OPS_BASE, logHandlerErrors(requestOpsBaseHandler))
+  socket.on(Events.SYNC_OPS_BASE, logHandlerErrors(syncOpsBaseHandler))
   dlog("handlers registered")
 }

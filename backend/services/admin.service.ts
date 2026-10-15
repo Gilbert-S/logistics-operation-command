@@ -4,6 +4,7 @@ const debug = Debug("loc:service:admin")
 
 import type { Socket } from "socket.io"
 import { clearIterationStore, Identifier } from "./diff.service.ts"
+import { logHandlerErrors } from "./socket.service.ts"
 import { initializeOrderData } from "./order.service.ts"
 import { initializeOpsBaseData } from "./ops-base.service.ts"
 import {
@@ -27,11 +28,11 @@ export function registerSocketAdminHandlers(socket: Socket)
   if (socket.session && socket.session.user && socket.session.user.role === "admin")
   {
     debug("registering socket admin handlers for socket %o", socket.id)
-    socket.on(Events.ADMIN_RESET_DATA, resetData)
-    socket.on(Events.ADMIN_BACKUP_LIST, getBackupsList)
-    socket.on(Events.ADMIN_BACKUP_RESTORE, restoreBackup)
-    socket.on(Events.ADMIN_FRONTEND_SETTINGS, saveFrontendSettings)
-    socket.on(Events.ADMIN_BACKEND_SETTINGS, saveBackendSettings)
+    socket.on(Events.ADMIN_RESET_DATA, logHandlerErrors(resetData))
+    socket.on(Events.ADMIN_BACKUP_LIST, logHandlerErrors(getBackupsList))
+    socket.on(Events.ADMIN_BACKUP_RESTORE, logHandlerErrors(restoreBackup))
+    socket.on(Events.ADMIN_FRONTEND_SETTINGS, logHandlerErrors(saveFrontendSettings))
+    socket.on(Events.ADMIN_BACKEND_SETTINGS, logHandlerErrors(saveBackendSettings))
   }
   else
     debug("skipping registering admin handlers for socket. regular user")

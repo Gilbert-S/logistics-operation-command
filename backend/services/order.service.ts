@@ -2,10 +2,11 @@ import { checkOrderCompletion, Events, highFilter, lowFilter, mediumFilter, upda
   from "@loc/common"
 import type { Socket } from "socket.io"
 import {
-  applyDelta, diffAndSync, getDeltaForIteration, getLastIterationNumber,
+  applyDeltaToClone, diffAndSync, getDeltaForIteration, getLastIterationNumber,
   Identifier, storeDelta, sync,
 } from "./diff.service.ts"
 import type { Delta } from "jsondiffpatch"
+import { logHandlerErrors } from "./socket.service.ts"
 import type { Delivery, DeliveryItem, OrderItem, RequestResponseHandler, SyncOrder }
   from "@loc/types"
 
@@ -89,17 +90,29 @@ export function registerSocketOrdersHandlers(socket: Socket)
   }
 
 
-  const syncOrdersHandler = (iterationNumber: number, diff: Delta) =>
+  const syncOrdersHandler = (iterationNumber: number, diff: Delta, callback?: SyncAckCallback) =>
   {
     dlog(`Orders sync with iteration %d received`, iterationNumber)
+    const ack = typeof callback === "function" ? callback : () => undefined
 
     const lastIteration = getLastIterationNumber(Identifier.Orders)
     if (iterationNumber !== lastIteration + 1)
+    {
+      ack(false)
       return dlog(`Canceled. Out of order sync - last iteration is %d`, lastIteration)
+    }
 
-    applyDelta(orderList, diff)
+    const patched = applyDeltaToClone(orderList, diff, isValidOrderList)
+    if (!patched)
+    {
+      ack(false)
+      return dlog(`Canceled. Delta for iteration %d is invalid and was rejected`, iterationNumber)
+    }
+
+    orderList.splice(0, orderList.length, ...patched)
     storeDelta(Identifier.Orders, diff, orderList)
     dlog(`Orders sync with iteration %d applied`, iterationNumber)
+    ack(true)
     sync(Events.SYNC_ORDERS, Identifier.Orders)
     dlog(`Orders sync with iteration %d broadcasted to all clients`, iterationNumber)
   }
@@ -324,12 +337,12 @@ export function registerSocketOrdersHandlers(socket: Socket)
   }
 
 
-  socket.on(Events.REQUEST_ORDERS, requestOrdersHandler)
-  socket.on(Events.SYNC_ORDERS, syncOrdersHandler)
-  socket.on(Events.DELIVERY_AUTOPICK15, pick15Handler)
-  socket.on(Events.DELIVERY_CANCEL, cancelHandler)
-  socket.on(Events.DELIVERY_CHANGESTATE, changeStateHandler)
-  socket.on(Events.DELIVERY_PICK, pickHandler)
+  socket.on(Events.REQUEST_ORDERS, logHandlerErrors(requestOrdersHandler))
+  socket.on(Events.SYNC_ORDERS, logHandlerErrors(syncOrdersHandler))
+  socket.on(Events.DELIVERY_AUTOPICK15, logHandlerErrors(pick15Handler))
+  socket.on(Events.DELIVERY_CANCEL, logHandlerErrors(cancelHandler))
+  socket.on(Events.DELIVERY_CHANGESTATE, logHandlerErrors(changeStateHandler))
+  socket.on(Events.DELIVERY_PICK, logHandlerErrors(pickHandler))
   dlog("handlers registered")
 }
 
@@ -338,6 +351,42 @@ export function registerSocketOrdersHandlers(socket: Socket)
 
 
 type Pick15Callback = (success: boolean) => void
+
+type SyncAckCallback = (accepted: boolean) => void
+
+const isObject = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object"
+
+/** a patched order list is only accepted if arrays are dense and contain real objects */
+function isValidOrderList(list: SyncOrder[]): boolean
+{
+  if (!Array.isArray(list))
+    return false
+
+  for (const order of list)
+  {
+    if (!isObject(order) || !isObject(order.stats))
+      return false
+
+    if (!Array.isArray(order.items) || !Array.isArray(order.deliveries))
+      return false
+
+    for (const item of order.items)
+      if (!isObject(item) || !item.id)
+        return false
+
+    for (const delivery of order.deliveries)
+    {
+      if (!isObject(delivery) || !Array.isArray(delivery.items))
+        return false
+
+      for (const deliveryItem of delivery.items)
+        if (!isObject(deliveryItem))
+          return false
+    }
+  }
+
+  return true
+}
 
 
 

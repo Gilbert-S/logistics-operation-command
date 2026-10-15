@@ -194,6 +194,33 @@ export function applyDelta(data: unknown, delta: Delta)
 }
 
 
+
+export function applyDeltaToClone<T>(
+  data: T,
+  delta: Delta,
+  validate: (patched: T) => boolean,
+): T | undefined
+{
+  if (!delta || !data)
+    return
+
+  try
+  {
+    const clone = structuredClone(data)
+    jdp.patch(clone, delta)
+    return validate(clone) ? clone : undefined
+  }
+  catch (error)
+  {
+    console.error("diff.service:failed to apply delta to clone:", error)
+    return
+  }
+}
+
+
+
+
+
 export function storeDelta(identifier: IdentifierKey, delta: Delta, newData: unknown)
 {
   debug("storeDelta: %o", identifier)

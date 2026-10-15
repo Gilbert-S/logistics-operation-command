@@ -3,6 +3,7 @@ import type { RequestResponseHandler, Template } from "@loc/types"
 import { Events } from "@loc/common"
 import { diffAndSync, getDeltaForIteration, getLastIterationNumber, Identifier }
   from "./diff.service.ts"
+import { logHandlerErrors } from "./socket.service.ts"
 import db from "./db.service.ts"
 import { templatesTable } from "../database/schema/schema.ts"
 import { eq } from "drizzle-orm"
@@ -150,9 +151,9 @@ export function registerSocketTemplatesHandlers(socket: Socket)
 
 
 
-  socket.on(Events.TEMPLATE_UPDATE, updateTemplatesHandler)
-  socket.on(Events.REQUEST_TEMPLATES, requestTemplatesHandler)
-  socket.on(Events.TEMPLATE_DELETE, deleteTemplatesHandler)
+  socket.on(Events.TEMPLATE_UPDATE, logHandlerErrors(updateTemplatesHandler))
+  socket.on(Events.REQUEST_TEMPLATES, logHandlerErrors(requestTemplatesHandler))
+  socket.on(Events.TEMPLATE_DELETE, logHandlerErrors(deleteTemplatesHandler))
   dlog("handlers registered")
 }
 

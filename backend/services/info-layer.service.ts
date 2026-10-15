@@ -6,6 +6,7 @@ import type { Socket } from "socket.io"
 import { Events } from "@loc/common"
 import { applyDelta, diffAndSync, getLastIterationNumber, Identifier, storeDelta, sync }
   from "./diff.service.ts"
+import { logHandlerErrors } from "./socket.service.ts"
 import { standardRequestHandler } from "../utils/standard-request-handler.ts"
 import type { Delta } from "@loc/jdp"
 
@@ -44,7 +45,7 @@ export function registerSocketInfoLayerHandlers(socket: Socket)
     socket,
   })
 
-  socket.on(Events.SYNC_INFO_LAYER, (iterationNumber: number, diff: Delta) =>
+  const syncInfoLayerHandler = (iterationNumber: number, diff: Delta) =>
   {
     dlog(`sync with iteration %d received`, iterationNumber)
 
@@ -57,6 +58,7 @@ export function registerSocketInfoLayerHandlers(socket: Socket)
     dlog(`Info layer sync with iteration %d applied`, iterationNumber)
     sync(Events.SYNC_INFO_LAYER, Identifier.InfoLayer)
     dlog(`Info layer sync with iteration %d broadcasted to all clients`, iterationNumber)
-  })
+  }
 
+  socket.on(Events.SYNC_INFO_LAYER, logHandlerErrors(syncInfoLayerHandler))
 }

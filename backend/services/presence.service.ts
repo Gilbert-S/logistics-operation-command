@@ -4,6 +4,7 @@ const debug = Debug("loc:service:presence")
 
 import type { Socket } from "socket.io"
 import { auth } from "./auth.service.ts"
+import { logHandlerErrors } from "./socket.service.ts"
 import { db } from "./db.service.ts"
 import { standardRequestHandler } from "../utils/standard-request-handler.ts"
 import { diffAndSync, Identifier } from "./diff.service.ts"
@@ -44,7 +45,7 @@ export function registerSocketPresenceHandlers(socket: Socket)
 
 
   debug("attaching disconnect handler for user %o", socket.session.user.name)
-  socket.on("disconnect", () =>
+  socket.on("disconnect", logHandlerErrors(() =>
   {
     debug("disconnected, updating presence to offline for user %o", socket.session?.user.name)
     void auth.api.updateSession({
@@ -52,7 +53,7 @@ export function registerSocketPresenceHandlers(socket: Socket)
       body: { online: false, last_seen: new Date() },
     }).catch((e) => debug(e))
     updatePresenceData()
-  })
+  }))
 
 
   standardRequestHandler({

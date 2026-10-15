@@ -12,10 +12,17 @@ export function updateOrderStats(order: SyncOrder | Order): void
 {
   const stats = order.stats
 
-  const orderItems = Array.isArray(order.items) ? order.items : order.items()
-  const orderDeliveries = Array.isArray(order.deliveries) ? order.deliveries : order.deliveries()
+  // ignore invalid (null/undefined) entries so corrupted data can never throw here
+  const rawItems = Array.isArray(order.items) ? order.items : order.items()
+  const rawDeliveries = Array.isArray(order.deliveries) ? order.deliveries : order.deliveries()
+  const orderItems = (rawItems ?? []).filter((item) => !!item && !!item.id)
+  const orderDeliveries = (rawDeliveries ?? [])
+    .filter((delivery) => !!delivery)
+    .map((delivery) => ({
+      status: delivery.status,
+      items: (delivery.items ?? []).filter((di) => !!di),
+    }))
 
-  // order.items.forEach((item) =>
   for (const item of orderItems)
   {
     // refresh inDelivery stats directly from deliveries list

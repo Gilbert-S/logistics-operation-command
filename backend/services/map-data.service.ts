@@ -4,6 +4,7 @@ import { Events } from "@loc/common"
 import type { Socket } from "socket.io"
 import { diffAndSync, getDeltaForIteration, getEpoch, getLastIterationNumber, Identifier }
   from "./diff.service.ts"
+import { logHandlerErrors } from "./socket.service.ts"
 
 import Debug from "debug"
 const debug = Debug("loc:service:map-data")
@@ -371,6 +372,6 @@ export function registerSocketMapDataHandlers(socket: Socket)
   }
 
 
-  socket.on(Events.REQUEST_MAP_DATA, requestMapDataUpdateHandler)
+  socket.on(Events.REQUEST_MAP_DATA, logHandlerErrors(requestMapDataUpdateHandler))
   dlog("handlers registered")
 }

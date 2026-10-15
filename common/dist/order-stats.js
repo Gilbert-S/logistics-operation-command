@@ -6,9 +6,16 @@ export const mediumFilter = (item) => item.priority === "medium";
 export const lowFilter = (item) => item.priority === "low";
 export function updateOrderStats(order) {
     const stats = order.stats;
-    const orderItems = Array.isArray(order.items) ? order.items : order.items();
-    const orderDeliveries = Array.isArray(order.deliveries) ? order.deliveries : order.deliveries();
-    // order.items.forEach((item) =>
+    // ignore invalid (null/undefined) entries so corrupted data can never throw here
+    const rawItems = Array.isArray(order.items) ? order.items : order.items();
+    const rawDeliveries = Array.isArray(order.deliveries) ? order.deliveries : order.deliveries();
+    const orderItems = (rawItems ?? []).filter((item) => !!item && !!item.id);
+    const orderDeliveries = (rawDeliveries ?? [])
+        .filter((delivery) => !!delivery)
+        .map((delivery) => ({
+        status: delivery.status,
+        items: (delivery.items ?? []).filter((di) => !!di),
+    }));
     for (const item of orderItems) {
         // refresh inDelivery stats directly from deliveries list
         const inDelivery = orderDeliveries.reduce((sum, delivery) => {

@@ -349,9 +349,32 @@ export class OrderService
       this.orderIteration.update((n) => n + 1)
       this.lastSyncedOrderIteration = JSON.stringify(this.orderSyncList)
 
-      this.socket()?.emit(Events.SYNC_ORDERS, this.orderIteration(), diff)
+      this.socket()?.emit(
+        Events.SYNC_ORDERS,
+        this.orderIteration(),
+        diff,
+        (accepted: boolean) =>
+        {
+          if (accepted === false)
+            this.resyncAfterRejection()
+        },
+      )
     }
   }
+
+
+
+
+
+  /** server rejected local changes: fullSync */
+  private resyncAfterRejection()
+  {
+    this.forceNextMerge = true
+    this.orderIteration.set(-1)
+    this.requestOrdersUpdate()
+  }
+
+  private forceNextMerge = false
 
 
 
@@ -430,7 +453,9 @@ export class OrderService
         jdp.patch(this.orderSyncList, delta)
       })
 
-    this.mergeSyncedOrderChanges()
+    const force = this.forceNextMerge
+    this.forceNextMerge = false
+    this.mergeSyncedOrderChanges(force)
   }
 
 
@@ -470,7 +495,7 @@ export class OrderService
 
 
 
-  private mergeSyncedOrderChanges()
+  private mergeSyncedOrderChanges(force = false)
   {
     const ids: string[] = []
     this.orderSyncList.forEach((_order) =>
@@ -484,7 +509,7 @@ export class OrderService
 
       const localOrder = localOrderSignal() as Order
 
-      if (localOrder.syncId !== order.syncId)
+      if (force || localOrder.syncId !== order.syncId)
       {
         if (localOrder.completed && order.completed)
           this.audio.orderCompletedNotification()
