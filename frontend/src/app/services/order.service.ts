@@ -318,12 +318,13 @@ export class OrderService
   /** reflects changes of a local order to the sync order list */
   public updateSyncOrder(order: Order)
   {
-    updateOrderStats(order)
-    checkOrderCompletion(order)
-
     const syncOrderIndex = this.orderSyncList.findIndex((o) => o.id === order.id)
     if (syncOrderIndex === -1)
       return
+
+    order.syncId = crypto.randomUUID()
+    updateOrderStats(order)
+    checkOrderCompletion(order)
 
     this.orderSyncList[syncOrderIndex] = {
       ...order,
