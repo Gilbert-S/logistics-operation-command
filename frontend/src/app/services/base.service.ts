@@ -274,7 +274,15 @@ export class BaseService
       if (draggable())
       {
         marker().dragging!.enable()
-        const timeout = setTimeout(() => draggable.set(false), 10000)
+        const timeout = setTimeout(() =>
+        {
+          draggable.set(false)
+          this.syncOpsBaseChange({
+            id: base.id,
+            lat: marker().getLatLng().lat,
+            lng: marker().getLatLng().lng,
+          })
+        }, 10000)
         this.cancelDraggingBaseTimeout = () => clearTimeout(timeout)
       }
       else
