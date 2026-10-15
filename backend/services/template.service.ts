@@ -1,8 +1,8 @@
 import type { Socket } from "socket.io"
-import type { RequestResponseHandler, Template } from "@loc/types"
+import type { Template } from "@loc/types"
 import { Events } from "@loc/common"
-import { diffAndSync, getDeltaForIteration, getLastIterationNumber, Identifier }
-  from "./diff.service.ts"
+import { diffAndSync, Identifier } from "./diff.service.ts"
+import { standardRequestHandler } from "../utils/standard-request-handler.ts"
 import { logHandlerErrors } from "./socket.service.ts"
 import db from "./db.service.ts"
 import { templatesTable } from "../database/schema/schema.ts"
@@ -50,50 +50,13 @@ export function registerSocketTemplatesHandlers(socket: Socket)
 
 
 
-  const requestTemplatesHandler: RequestResponseHandler<Template[]> = (iteration, callback) =>
-  {
-    dlog("Templates update requested for iteration %d", iteration)
-
-    if (typeof callback !== "function")
-      return dlog("invalid or missing callback provided, cannot send response")
-
-    const lastIteration = getLastIterationNumber(Identifier.Templates)
-    dlog("latest Templates iteration is %d", lastIteration)
-
-    if (iteration === lastIteration)
-    {
-      dlog("up to date, no data sent")
-      return callback({ iteration: lastIteration })
-    }
-
-    if (!templateList)
-    {
-      dlog("no Templates data available on server, no data sent")
-      return callback({ iteration: lastIteration })
-    }
-
-
-    if (!iteration || iteration <= 0)
-    {
-      dlog("update for invalid iteration requested, sending full Templates data")
-      return callback({ iteration: lastIteration, full: templateList })
-    }
-
-
-    const delta = getDeltaForIteration(Identifier.Templates, iteration)
-    if (!delta)
-    {
-      dlog("no delta available for requested iteration, sending full Templates data")
-      return callback({ iteration: lastIteration, full: templateList })
-    }
-
-    else
-    {
-      dlog("sending delta for iteration %d to %d", iteration, lastIteration)
-      return callback({ iteration: lastIteration, delta })
-    }
-  }
-
+  standardRequestHandler({
+    debugger: debug,
+    event: Events.REQUEST_TEMPLATES,
+    getData: () => templateList,
+    identifier: Identifier.Templates,
+    socket,
+  })
 
   const updateTemplatesHandler = async (template: Template) =>
   {
@@ -152,7 +115,6 @@ export function registerSocketTemplatesHandlers(socket: Socket)
 
 
   socket.on(Events.TEMPLATE_UPDATE, logHandlerErrors(updateTemplatesHandler))
-  socket.on(Events.REQUEST_TEMPLATES, logHandlerErrors(requestTemplatesHandler))
   socket.on(Events.TEMPLATE_DELETE, logHandlerErrors(deleteTemplatesHandler))
   dlog("handlers registered")
 }

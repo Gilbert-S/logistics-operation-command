@@ -4,11 +4,11 @@ debug("loading info-layer service module")
 
 import type { Socket } from "socket.io"
 import { Events } from "@loc/common"
-import { applyDelta, diffAndSync, getLastIterationNumber, Identifier, storeDelta, sync }
-  from "./diff.service.ts"
+import { applyDelta, diffAndSync, Identifier, storeDelta, sync } from "./diff.service.ts"
 import { logHandlerErrors } from "./socket.service.ts"
-import { standardRequestHandler } from "../utils/standard-request-handler.ts"
+import { isExpectedSync, standardRequestHandler } from "../utils/standard-request-handler.ts"
 import type { Delta } from "@loc/jdp"
+import type { SyncAckCallback } from "@loc/types"
 
 
 export const infoLayer: Record<string, unknown> = {}
@@ -38,24 +38,33 @@ export function registerSocketInfoLayerHandlers(socket: Socket)
 
 
   standardRequestHandler({
-    data: infoLayer,
     debugger: debug,
     event: Events.REQUEST_INFO_LAYER,
+    getData: () => infoLayer,
     identifier: Identifier.InfoLayer,
     socket,
   })
 
-  const syncInfoLayerHandler = (iterationNumber: number, diff: Delta) =>
+  const syncInfoLayerHandler = (
+    iterationNumber: number,
+    epoch: string,
+    diff: Delta,
+    callback?: SyncAckCallback,
+  ) =>
   {
     dlog(`sync with iteration %d received`, iterationNumber)
+    const ack = typeof callback === "function" ? callback : () => undefined
 
-    const lastIteration = getLastIterationNumber(Identifier.InfoLayer)
-    if (iterationNumber !== lastIteration + 1)
-      return dlog(`Canceled. Out of order sync - last iteration is %d`, lastIteration)
+    if (!isExpectedSync(Identifier.InfoLayer, iterationNumber, epoch))
+    {
+      ack(false)
+      return dlog(`Canceled. Out of order sync or epoch mismatch`)
+    }
 
     applyDelta(infoLayer, diff)
     storeDelta(Identifier.InfoLayer, diff, infoLayer)
     dlog(`Info layer sync with iteration %d applied`, iterationNumber)
+    ack(true)
     sync(Events.SYNC_INFO_LAYER, Identifier.InfoLayer)
     dlog(`Info layer sync with iteration %d broadcasted to all clients`, iterationNumber)
   }

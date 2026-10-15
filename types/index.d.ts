@@ -84,8 +84,11 @@ export interface RequestResponse<T> {
   delta?: Delta[]
 }
 
+export type SyncAckCallback = (accepted: boolean) => void
+
 export type RequestResponseHandler<T> = (
-  iteration: number, 
+  iteration: number,
+  epoch: string | undefined,
   callback: (response: RequestResponse<T>) => void
 ) => void
 

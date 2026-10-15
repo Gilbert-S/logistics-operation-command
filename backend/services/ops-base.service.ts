@@ -1,12 +1,10 @@
 import { Events } from "@loc/common"
 import type { Socket } from "socket.io"
-import {
-  applyDelta, diffAndSync, getDeltaForIteration, getLastIterationNumber,
-  Identifier, storeDelta, sync,
-} from "./diff.service.ts"
+import { applyDelta, diffAndSync, Identifier, storeDelta, sync } from "./diff.service.ts"
 import { logHandlerErrors } from "./socket.service.ts"
+import { isExpectedSync, standardRequestHandler } from "../utils/standard-request-handler.ts"
 import type { Delta } from "jsondiffpatch"
-import type { OpsBase, RequestResponseHandler } from "@loc/types"
+import type { OpsBase, SyncAckCallback } from "@loc/types"
 
 
 import Debug from "debug"
@@ -42,68 +40,40 @@ export function registerSocketOpsBaseHandlers(socket: Socket)
 
 
 
-  const requestOpsBaseHandler: RequestResponseHandler<OpsBase[]> = (iteration, callback) =>
-  {
-    dlog("OpsBase update requested for iteration %d", iteration)
-
-    if (typeof callback !== "function")
-      return dlog("invalid or missing callback provided, cannot send response")
-
-    const lastIteration = getLastIterationNumber(Identifier.OpsBase)
-    dlog("latest OpsBase iteration is %d", lastIteration)
-
-    if (iteration === lastIteration)
-    {
-      dlog("up to date, no data sent")
-      return callback({ iteration: lastIteration })
-    }
-
-    if (!opsBaseList)
-    {
-      dlog("no OpsBase data available on server, no data sent")
-      return callback({ iteration: lastIteration })
-    }
+  standardRequestHandler({
+    debugger: debug,
+    event: Events.REQUEST_OPS_BASE,
+    getData: () => opsBaseList,
+    identifier: Identifier.OpsBase,
+    socket,
+  })
 
 
-    if (!iteration || iteration <= 0)
-    {
-      dlog("update for invalid iteration requested, sending full OpsBase data")
-      return callback({ iteration: lastIteration, full: opsBaseList })
-    }
-
-
-    const delta = getDeltaForIteration(Identifier.OpsBase, iteration)
-    if (!delta)
-    {
-      dlog("no delta available for requested iteration, sending full OpsBase data")
-      return callback({ iteration: lastIteration, full: opsBaseList })
-    }
-
-    else
-    {
-      dlog("sending delta for iteration %d to %d", iteration, lastIteration)
-      return callback({ iteration: lastIteration, delta })
-    }
-  }
-
-
-  const syncOpsBaseHandler = (iterationNumber: number, diff: Delta) =>
+  const syncOpsBaseHandler = (
+    iterationNumber: number,
+    epoch: string,
+    diff: Delta,
+    callback?: SyncAckCallback,
+  ) =>
   {
     dlog(`OpsBase sync with iteration %d received`, iterationNumber)
+    const ack = typeof callback === "function" ? callback : () => undefined
 
-    const lastIteration = getLastIterationNumber(Identifier.OpsBase)
-    if (iterationNumber !== lastIteration + 1)
-      return dlog(`Canceled. Out of order sync - last iteration is %d`, lastIteration)
+    if (!isExpectedSync(Identifier.OpsBase, iterationNumber, epoch))
+    {
+      ack(false)
+      return dlog(`Canceled. Out of order sync or epoch mismatch`)
+    }
 
     applyDelta(opsBaseList, diff)
     storeDelta(Identifier.OpsBase, diff, opsBaseList)
     dlog(`OpsBase sync with iteration %d applied`, iterationNumber)
+    ack(true)
     sync(Events.SYNC_OPS_BASE, Identifier.OpsBase)
     dlog(`OpsBase sync with iteration %d broadcasted to all clients`, iterationNumber)
   }
 
 
-  socket.on(Events.REQUEST_OPS_BASE, logHandlerErrors(requestOpsBaseHandler))
   socket.on(Events.SYNC_OPS_BASE, logHandlerErrors(syncOpsBaseHandler))
   dlog("handlers registered")
 }

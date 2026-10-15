@@ -1,14 +1,11 @@
 import { checkOrderCompletion, Events, highFilter, lowFilter, mediumFilter, updateOrderStats }
   from "@loc/common"
 import type { Socket } from "socket.io"
-import {
-  applyDeltaToClone, diffAndSync, getDeltaForIteration, getLastIterationNumber,
-  Identifier, storeDelta, sync,
-} from "./diff.service.ts"
+import { applyDeltaToClone, diffAndSync, Identifier, storeDelta, sync } from "./diff.service.ts"
 import type { Delta } from "jsondiffpatch"
 import { logHandlerErrors } from "./socket.service.ts"
-import type { Delivery, DeliveryItem, OrderItem, RequestResponseHandler, SyncOrder }
-  from "@loc/types"
+import { isExpectedSync, standardRequestHandler } from "../utils/standard-request-handler.ts"
+import type { Delivery, DeliveryItem, OrderItem, SyncAckCallback, SyncOrder } from "@loc/types"
 
 
 import Debug from "debug"
@@ -45,61 +42,29 @@ export function registerSocketOrdersHandlers(socket: Socket)
 
 
 
-  const requestOrdersHandler: RequestResponseHandler<SyncOrder[]> = (iteration, callback) =>
-  {
-    dlog("Orders update requested for iteration %d", iteration)
-
-    if (typeof callback !== "function")
-      return dlog("invalid or missing callback provided, cannot send response")
-
-    const lastIteration = getLastIterationNumber(Identifier.Orders)
-    dlog("latest Orders iteration is %d", lastIteration)
-
-    if (iteration === lastIteration)
-    {
-      dlog("up to date, no data sent")
-      return callback({ iteration: lastIteration })
-    }
-
-    if (!orderList)
-    {
-      dlog("no Orders data available on server, no data sent")
-      return callback({ iteration: lastIteration })
-    }
+  standardRequestHandler({
+    debugger: debug,
+    event: Events.REQUEST_ORDERS,
+    getData: () => orderList,
+    identifier: Identifier.Orders,
+    socket,
+  })
 
 
-    if (!iteration || iteration <= 0)
-    {
-      dlog("update for invalid iteration requested, sending full Orders data")
-      return callback({ iteration: lastIteration, full: orderList })
-    }
-
-
-    const delta = getDeltaForIteration(Identifier.Orders, iteration)
-    if (!delta)
-    {
-      dlog("no delta available for requested iteration, sending full Orders data")
-      return callback({ iteration: lastIteration, full: orderList })
-    }
-
-    else
-    {
-      dlog("sending delta for iteration %d to %d", iteration, lastIteration)
-      return callback({ iteration: lastIteration, delta })
-    }
-  }
-
-
-  const syncOrdersHandler = (iterationNumber: number, diff: Delta, callback?: SyncAckCallback) =>
+  const syncOrdersHandler = (
+    iterationNumber: number,
+    epoch: string,
+    diff: Delta,
+    callback?: SyncAckCallback,
+  ) =>
   {
     dlog(`Orders sync with iteration %d received`, iterationNumber)
     const ack = typeof callback === "function" ? callback : () => undefined
 
-    const lastIteration = getLastIterationNumber(Identifier.Orders)
-    if (iterationNumber !== lastIteration + 1)
+    if (!isExpectedSync(Identifier.Orders, iterationNumber, epoch))
     {
       ack(false)
-      return dlog(`Canceled. Out of order sync - last iteration is %d`, lastIteration)
+      return dlog(`Canceled. Out of order sync or epoch mismatch`)
     }
 
     const patched = applyDeltaToClone(orderList, diff, isValidOrderList)
@@ -337,7 +302,6 @@ export function registerSocketOrdersHandlers(socket: Socket)
   }
 
 
-  socket.on(Events.REQUEST_ORDERS, logHandlerErrors(requestOrdersHandler))
   socket.on(Events.SYNC_ORDERS, logHandlerErrors(syncOrdersHandler))
   socket.on(Events.DELIVERY_AUTOPICK15, logHandlerErrors(pick15Handler))
   socket.on(Events.DELIVERY_CANCEL, logHandlerErrors(cancelHandler))
@@ -351,8 +315,6 @@ export function registerSocketOrdersHandlers(socket: Socket)
 
 
 type Pick15Callback = (success: boolean) => void
-
-type SyncAckCallback = (accepted: boolean) => void
 
 const isObject = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object"
 

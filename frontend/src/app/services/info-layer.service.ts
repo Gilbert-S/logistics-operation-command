@@ -82,6 +82,7 @@ export class InfoLayerService
 
   private readonly socket = inject(SocketService).socket.asReadonly()
   private readonly syncIteration = signal(-1)
+  private syncEpoch: string | undefined
 
 
   map: L.Map | undefined
@@ -156,17 +157,16 @@ export class InfoLayerService
       if (!socket)
         return
 
-      if (!socket.connected)
-        socket.once("connect", () => this.setupSocketHandlers())
+      socket.on(Events.SYNC_INFO_LAYER, this.syncHandler)
+      socket.on("connect", this.setupSocketHandlers)
 
-      else
+      if (socket.connected)
         this.setupSocketHandlers()
     })
   })
 
   private setupSocketHandlers = () =>
   {
-    this.socket().on(Events.SYNC_INFO_LAYER, this.syncHandler)
     this.requestUpdate()
   }
 
@@ -178,6 +178,7 @@ export class InfoLayerService
     socket.emit(
       Events.REQUEST_INFO_LAYER,
       this.syncIteration(),
+      this.syncEpoch,
       this.requestResponseHandler,
     )
   }
@@ -189,6 +190,7 @@ export class InfoLayerService
       return toast.error(`Error requesting info map layer: ${ error.message}`, { duration: 10000 })
 
     this.syncIteration.set(response.iteration)
+    this.syncEpoch = response.epoch
 
     if (response.full)
       this.syncList = response.full
@@ -199,12 +201,15 @@ export class InfoLayerService
     return
   }
 
-  private syncHandler = (data: { iterationNumber: number, diff: Delta }) =>
+  private syncHandler = (data: { iterationNumber: number, diff: Delta, epoch?: string }) =>
   {
-    const { iterationNumber, diff } = data
+    const { iterationNumber, diff, epoch } = data
 
     if (!iterationNumber || !diff)
       return
+
+    if (epoch !== this.syncEpoch)
+      return this.requestUpdate()
 
     if (iterationNumber < this.syncIteration())
     {
@@ -426,7 +431,21 @@ export class InfoLayerService
     if (!diff) return
 
     this.syncIteration.update((iteration) => iteration + 1)
-    this.socket().emit(Events.SYNC_INFO_LAYER, this.syncIteration(), diff)
+    this.socket().emit(
+      Events.SYNC_INFO_LAYER,
+      this.syncIteration(),
+      this.syncEpoch,
+      diff,
+      (error: Error | null, accepted: boolean) =>
+      {
+        if (!error && accepted)
+          return
+
+        toast.error("Map drawing change was rejected by the backend. Reloading...")
+        this.syncIteration.set(-1)
+        this.requestUpdate()
+      },
+    )
   }
 
 

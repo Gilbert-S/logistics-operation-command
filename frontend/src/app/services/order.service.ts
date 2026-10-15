@@ -38,6 +38,7 @@ export class OrderService
   // list of orders used for syncing with server and other clients
   private orderSyncList: SyncOrder[] = []
   private readonly orderIteration = signal(-1)
+  private orderEpoch: string | undefined
   private orderUpdateInterval: number | undefined
   private lastSyncedOrderIteration = "[]"
 
@@ -353,10 +354,11 @@ export class OrderService
       this.socket()?.emit(
         Events.SYNC_ORDERS,
         this.orderIteration(),
+        this.orderEpoch,
         diff,
-        (accepted: boolean) =>
+        (error: Error | null, accepted: boolean) =>
         {
-          if (accepted === false)
+          if (error || !accepted)
             this.resyncAfterRejection()
         },
       )
@@ -389,16 +391,16 @@ export class OrderService
     {
       if (!socket) return
 
-      if (!socket.connected)
-        socket.once("connect", () => this.setupSocketHandlers())
-      else
+      socket.on(Events.SYNC_ORDERS, this.syncOrdersHandler)
+      socket.on("connect", this.setupSocketHandlers)
+
+      if (socket.connected)
         this.setupSocketHandlers()
     })
   })
 
   private setupSocketHandlers = () =>
   {
-    this.socket().on(Events.SYNC_ORDERS, this.syncOrdersHandler)
     this.requestOrdersUpdate()
     this.resetIdleUpdateTimout()
   }
@@ -425,6 +427,7 @@ export class OrderService
     socket.emit(
       Events.REQUEST_ORDERS,
       this.orderIteration(),
+      this.orderEpoch,
       this.requestOrdersResponseHandler,
     )
   }
@@ -444,6 +447,7 @@ export class OrderService
       return
 
     this.orderIteration.set(response.iteration)
+    this.orderEpoch = response.epoch
 
     if (response.full)
       this.orderSyncList = response.full
@@ -463,14 +467,17 @@ export class OrderService
 
 
 
-  private syncOrdersHandler = (data: { iterationNumber: number, diff: Delta }) =>
+  private syncOrdersHandler = (data: { iterationNumber: number, diff: Delta, epoch?: string }) =>
   {
-    const { iterationNumber, diff } = data
+    const { iterationNumber, diff, epoch } = data
 
     if (!this.orderSyncList || !iterationNumber || !diff)
       return
 
     this.resetIdleUpdateTimout()
+
+    if (epoch !== this.orderEpoch)
+      return this.requestOrdersUpdate()
 
     if (iterationNumber < this.orderIteration())
     {

@@ -13,6 +13,7 @@ export class TemplateService
 
   public readonly templates = signal<Template[] | null>(null)
   private readonly templatesIteration = signal(-1)
+  private templatesEpoch: string | undefined
 
 
 
@@ -25,10 +26,10 @@ export class TemplateService
       if (!socket)
         return
 
-      if (!socket.connected)
-        socket.once("connect", () => this.setupSocketHandlers())
+      socket.on(Events.SYNC_TEMPLATES, this.syncTemplatesHandler)
+      socket.on("connect", this.setupSocketHandlers)
 
-      else
+      if (socket.connected)
         this.setupSocketHandlers()
     })
   })
@@ -37,7 +38,6 @@ export class TemplateService
 
   private setupSocketHandlers = () =>
   {
-    this.socket().on(Events.SYNC_TEMPLATES, this.syncTemplatesHandler)
     this.requestTemplatesUpdate()
   }
 
@@ -92,6 +92,7 @@ export class TemplateService
     socket.emit(
       Events.REQUEST_TEMPLATES,
       this.templatesIteration(),
+      this.templatesEpoch,
       this.requestResponseHandler,
     )
   }
@@ -107,6 +108,7 @@ export class TemplateService
       return
 
     this.templatesIteration.set(response.iteration)
+    this.templatesEpoch = response.epoch
 
     if (response.full)
       return this.templates.set(response.full)
@@ -124,13 +126,16 @@ export class TemplateService
   }
 
 
-  private syncTemplatesHandler = (data: { iterationNumber: number, diff: Delta }) =>
+  private syncTemplatesHandler = (data: { iterationNumber: number, diff: Delta, epoch?: string }) =>
   {
-    const { iterationNumber, diff } = data
+    const { iterationNumber, diff, epoch } = data
     const templates = this.templates()
 
     if (!templates || !iterationNumber || !diff)
       return
+
+    if (epoch !== this.templatesEpoch)
+      return this.requestTemplatesUpdate()
 
     if (iterationNumber < this.templatesIteration())
     {

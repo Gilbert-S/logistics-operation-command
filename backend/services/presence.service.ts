@@ -57,9 +57,9 @@ export function registerSocketPresenceHandlers(socket: Socket)
 
 
   standardRequestHandler({
-    data: presenceList,
     debugger: debug,
     event: Events.REQUEST_PRESENCE,
+    getData: () => presenceList,
     identifier: Identifier.Presence,
     socket,
   })

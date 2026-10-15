@@ -13,6 +13,7 @@ export class PresenceService
 
   public readonly presences = signal<Presence[]>([])
   private readonly presencesIteration = signal(-1)
+  private presencesEpoch: string | undefined
 
 
 
@@ -25,10 +26,10 @@ export class PresenceService
       if (!socket)
         return
 
-      if (!socket.connected)
-        socket.once("connect", () => this.setupSocketHandlers())
+      socket.on(Events.SYNC_PRESENCE, this.syncPresenceHandler)
+      socket.on("connect", this.setupSocketHandlers)
 
-      else
+      if (socket.connected)
         this.setupSocketHandlers()
     })
   })
@@ -37,7 +38,6 @@ export class PresenceService
 
   private setupSocketHandlers = () =>
   {
-    this.socket().on(Events.SYNC_PRESENCE, this.syncPresenceHandler)
     this.requestPresenceUpdate()
   }
 
@@ -54,6 +54,7 @@ export class PresenceService
     socket.emit(
       Events.REQUEST_PRESENCE,
       this.presencesIteration(),
+      this.presencesEpoch,
       this.requestResponseHandler,
     )
   }
@@ -68,6 +69,7 @@ export class PresenceService
       return
 
     this.presencesIteration.set(response.iteration)
+    this.presencesEpoch = response.epoch
 
     if (response.full)
       this.presences.set(response.full)
@@ -85,13 +87,16 @@ export class PresenceService
   }
 
 
-  private syncPresenceHandler = (data: { iterationNumber: number, diff: Delta }) =>
+  private syncPresenceHandler = (data: { iterationNumber: number, diff: Delta, epoch?: string }) =>
   {
-    const { iterationNumber, diff } = data
+    const { iterationNumber, diff, epoch } = data
     const presences = this.presences()
 
     if (!presences || !iterationNumber || !diff)
       return
+
+    if (epoch !== this.presencesEpoch)
+      return this.requestPresenceUpdate()
 
     if (iterationNumber < this.presencesIteration())
     {

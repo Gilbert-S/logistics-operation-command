@@ -18,6 +18,7 @@ import { SocketService } from "./socket.service"
 import { Events } from "@loc/common"
 import { jdp } from "@loc/jdp"
 import { type Delta } from "jsondiffpatch"
+import { toast } from "@spartan-ng/brain/sonner"
 import { OrderService } from "./order.service"
 import { OrderIndicator } from "../components/order-indicator/order-indicator"
 import { environment } from "../../environments/environment"
@@ -44,6 +45,7 @@ export class BaseService
   // list of OpsBases used for syncing with server and other clients
   opsBaseSyncList: OpsBase[] = []
   readonly opsBaseIteration = signal(-1)
+  private opsBaseEpoch: string | undefined
   opsBaseUpdateInterval: number | undefined
 
 
@@ -557,12 +559,34 @@ export class BaseService
     {
       const oldOpsBaseSyncList = JSON.parse(JSON.stringify(this.opsBaseSyncList)) as OpsBase[]
       this.opsBaseSyncList = this.opsBaseSyncList.filter((b) => b.id !== base!.id)
-      this.opsBaseIteration.set(this.opsBaseIteration() + 1)
       const diff = jdp.diff(oldOpsBaseSyncList, this.opsBaseSyncList)
-      this.socket().emit(Events.SYNC_OPS_BASE, this.opsBaseIteration(), diff)
+      this.emitOpsBaseSync(diff)
     }
 
     base = null
+  }
+
+
+  /** sends local changes to the server; a rejection means the server state differs, so resync */
+  private emitOpsBaseSync(diff: Delta | undefined)
+  {
+    this.opsBaseIteration.update((iteration) => iteration + 1)
+
+    this.socket().emit(
+      Events.SYNC_OPS_BASE,
+      this.opsBaseIteration(),
+      this.opsBaseEpoch,
+      diff,
+      (error: Error | null, accepted: boolean) =>
+      {
+        if (!error && accepted)
+          return
+
+        toast.error("Base change was rejected by the backend. Reloading bases...")
+        this.opsBaseIteration.set(-1)
+        this.requestOpsBaseUpdate()
+      },
+    )
   }
 
 
@@ -590,11 +614,9 @@ export class BaseService
 
     const oldOpsBaseSyncList = JSON.parse(JSON.stringify(this.opsBaseSyncList)) as OpsBase[]
     this.opsBaseSyncList.push(sync)
-    this.opsBaseIteration.set(this.opsBaseIteration() + 1)
 
     const diff = jdp.diff(oldOpsBaseSyncList, this.opsBaseSyncList)
-
-    this.socket().emit(Events.SYNC_OPS_BASE, this.opsBaseIteration(), diff)
+    this.emitOpsBaseSync(diff)
   }
 
   syncOpsBaseChange(options: Partial<OpsBase>)
@@ -622,8 +644,7 @@ export class BaseService
       const diff = jdp.diff(oldOpsBaseSyncList, this.opsBaseSyncList)
       if (!diff) return
 
-      this.opsBaseIteration.set(this.opsBaseIteration() + 1)
-      this.socket().emit(Events.SYNC_OPS_BASE, this.opsBaseIteration(), diff)
+      this.emitOpsBaseSync(diff)
     })
   }
 
@@ -639,9 +660,10 @@ export class BaseService
     {
       if (!socket) return
 
-      if (!socket.connected)
-        socket.once("connect", () => this.setupSocketHandlers())
-      else
+      socket.on(Events.SYNC_OPS_BASE, this.syncOpsBaseHandler)
+      socket.on("connect", this.setupSocketHandlers)
+
+      if (socket.connected)
         this.setupSocketHandlers()
     })
   })
@@ -649,7 +671,6 @@ export class BaseService
 
   setupSocketHandlers = () =>
   {
-    this.socket().on(Events.SYNC_OPS_BASE, this.syncOpsBaseHandler)
     this.requestOpsBaseUpdate()
     this.resetIdleUpdateTimout()
   }
@@ -674,6 +695,7 @@ export class BaseService
     socket.emit(
       Events.REQUEST_OPS_BASE,
       this.opsBaseIteration(),
+      this.opsBaseEpoch,
       this.requestOpsBaseResponseHandler,
     )
   }
@@ -687,6 +709,7 @@ export class BaseService
       return
 
     this.opsBaseIteration.set(response.iteration)
+    this.opsBaseEpoch = response.epoch
     this.resetIdleUpdateTimout()
 
     if (response.full)
@@ -702,15 +725,18 @@ export class BaseService
   }
 
 
-  syncOpsBaseHandler = (data: { iterationNumber: number, diff: Delta }) =>
+  syncOpsBaseHandler = (data: { iterationNumber: number, diff: Delta, epoch?: string }) =>
   {
-    const { iterationNumber, diff } = data
+    const { iterationNumber, diff, epoch } = data
     const opsBase = this.opsBaseSyncList
 
     if (!opsBase || !iterationNumber || !diff)
       return
 
     this.resetIdleUpdateTimout()
+
+    if (epoch !== this.opsBaseEpoch)
+      return this.requestOpsBaseUpdate()
 
     if (iterationNumber < this.opsBaseIteration())
     {
