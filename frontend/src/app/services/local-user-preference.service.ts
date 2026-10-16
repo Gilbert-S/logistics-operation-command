@@ -13,8 +13,9 @@ export class LocalUserPreferenceService
   private defaults = {
     audioVolume: [0.8] as [number],
     iconMod: "default" as (typeof environment.availableIconMods)[number]["key"],
-    itemListVariant: "icon" as DeliveryItemsVariant,
+    itemListVariant: "list" as DeliveryItemsVariant,
     mapMod: "WG-IX-02A" as (typeof environment.availableMapMods)[number]["key"],
+    myDlvryVariant: "icon" as DeliveryItemsVariant,
     orderLayout: [27, 55, 18] as number[],
     sidebarLayout: [20, 80] as number[],
     theme: "dark" as "light" | "dark",
@@ -23,6 +24,7 @@ export class LocalUserPreferenceService
 
   public readonly audioVolume = signal<[number]>(this.defaults.audioVolume)
   public readonly itemListVariant = signal<DeliveryItemsVariant>(this.defaults.itemListVariant)
+  public readonly myDlvryVariant = signal<DeliveryItemsVariant>(this.defaults.myDlvryVariant)
   public readonly orderLayout = signal<number[]>(this.defaults.orderLayout)
   public readonly sidebarLayout = signal<number[]>(this.defaults.sidebarLayout)
   public readonly theme = signal<"light" | "dark">(this.defaults.theme)
@@ -40,6 +42,14 @@ export class LocalUserPreferenceService
       this.itemListVariant.set(storedVariant as ReturnType<typeof this.itemListVariant>)
 
     effect(() => this.setStoredValue("itemListVariant", this.itemListVariant()))
+
+    // ---
+
+    const storedMyDlvryVariant = this.getStoredValue("myDlvryVariant")
+    if (storedMyDlvryVariant)
+      this.myDlvryVariant.set(storedMyDlvryVariant as ReturnType<typeof this.myDlvryVariant>)
+
+    effect(() => this.setStoredValue("myDlvryVariant", this.myDlvryVariant()))
 
     // ---
 

@@ -18,10 +18,10 @@ import { SocketService } from "../../../services/socket.service"
 import Events from "@loc/common"
 import { Delivery, User } from "@loc/types"
 import { DeliveryItems } from "../delivery-items/delivery-items"
-import { ItemVariant } from "../../shared/item-variant"
 import { PresenceService } from "../../../services/presence.service"
 import { UserAvatar } from "../../user-avatar/user-avatar"
 import { OrderDetails } from "../../orders/order-details/order-details"
+import { DlvryVariant } from "../../shared/dlvry-variant"
 
 @Component({
   selector: "app-my-delivery",
@@ -34,9 +34,9 @@ import { OrderDetails } from "../../orders/order-details/order-details"
     NgIcon,
     HlmDropdownMenuImports,
     DeliveryItems,
-    ItemVariant,
     UserAvatar,
     OrderDetails,
+    DlvryVariant,
   ],
   providers: [
     provideIcons({

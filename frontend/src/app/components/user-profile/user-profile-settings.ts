@@ -18,6 +18,7 @@ import { FormsModule } from "@angular/forms"
 import { DeliveryItems } from "../deliveries/delivery-items/delivery-items"
 import { Delivery } from "@loc/types"
 import { MapService } from "../../services/map.service"
+import { DlvryVariant } from "../shared/dlvry-variant"
 
 
 
@@ -40,6 +41,7 @@ import { MapService } from "../../services/map.service"
     NgIcon,
     FormsModule,
     DeliveryItems,
+    DlvryVariant,
   ],
   providers: [provideIcons({ lucidePlay, lucideVolumeX })],
 
@@ -125,6 +127,14 @@ import { MapService } from "../../services/map.service"
           <label hlmFieldLabel for="order-editor">Order Item Display Variant</label>
           <app-item-variant size="large"/>
           <p hlmFieldDescription>Adjust the display variant of the Order Items.</p>
+        </div>
+      </div>
+
+      <div hlmFieldGroup class="rounded-sm border bg-input/10 p-3">
+        <div hlmField>
+          <label hlmFieldLabel for="order-editor">Delivery Item Display Variant</label>
+          <app-dlvry-variant size="large"/>
+          <p hlmFieldDescription>Adjust the display variant of Your Delivery Items.</p>
         </div>
       </div>
 

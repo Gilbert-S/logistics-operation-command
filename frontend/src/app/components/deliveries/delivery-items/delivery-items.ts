@@ -105,7 +105,7 @@ export class DeliveryItems
   orderService = inject(OrderService)
 
   readonly delivery = input.required<Delivery>()
-  itemListVariant = inject(LocalUserPreferenceService).itemListVariant
+  itemListVariant = inject(LocalUserPreferenceService).myDlvryVariant
   readonly variant = computed(() => this.forceIconVariant() ? "icon" : this.itemListVariant())
 
   readonly items = computed(() =>
