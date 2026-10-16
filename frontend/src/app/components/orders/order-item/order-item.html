@@ -41,6 +41,23 @@
             x{{ quantity() }}
         </span>
 
+        @if(!completed())
+        {
+          <div class="absolute bottom-0 left-0 z-1 flex h-2 w-full">
+            <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
+            <div class="h-full w-(--width) bg-lime-700" [style.--width]="stats().delivered"></div>
+            <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
+            <div class="
+              h-full w-(--width) animate-stripes bg-yellow-600 bg-stripes motion-reduce:animate-none
+            " [style.--width]="stats().myDelivery"></div>
+            <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
+            <div class="
+              h-full w-(--width) animate-stripes bg-stone-500/80 bg-stripes
+              motion-reduce:animate-none
+            " [style.--width]="stats().inDelivery"></div>
+          </div>
+        }
+
         @if(editMode())
         {
           <button hlmBtn variant="ghost" size="icon-xs" class="
@@ -62,17 +79,6 @@
         }
         @else
         {
-          @if(!completed())
-          {
-            <div class="absolute bottom-0 left-0 z-1 flex h-2 w-full">
-              <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
-              <div class="h-full w-(--width) bg-lime-700" [style.--width]="stats().delivered"></div>
-              <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
-              <div class="h-full w-(--width) bg-yellow-600" [style.--width]="stats().myDelivery"></div>
-              <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
-              <div class="h-full w-(--width) bg-stone-500/50" [style.--width]="stats().inDelivery"></div>
-            </div>
-          }
 
           @if(canReduceDelivery())
           {
@@ -119,9 +125,13 @@
         <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
         <div class="h-full w-(--width) bg-lime-700" [style.--width]="stats().delivered"></div>
         <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
-        <div class="h-full w-(--width) bg-yellow-600" [style.--width]="stats().myDelivery"></div>
+        <div class="
+          h-full w-(--width) animate-stripes bg-yellow-600 bg-stripes motion-reduce:animate-none
+        " [style.--width]="stats().myDelivery"></div>
         <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
-        <div class="h-full w-(--width) bg-stone-500/50" [style.--width]="stats().inDelivery"></div>
+        <div class="
+          h-full w-(--width) animate-stripes bg-stone-500/80 bg-stripes motion-reduce:animate-none
+        " [style.--width]="stats().inDelivery"></div>
       </div>
 
       <section class="relative z-1 -my-1 -ml-1 shrink-0 bg-muted/80 @max-sm:hidden" >

@@ -25,13 +25,21 @@
 
           @if(order() === orderWithMyDelivery()) {
             <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
-            <div class="h-full w-(--width) bg-yellow-600" [style.--width]="`${mine}%`"></div>
+            <div class="
+              h-full w-(--width) animate-stripes bg-yellow-600 bg-stripes motion-reduce:animate-none
+            " [style.--width]="`${mine}%`"></div>
             <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
-            <div class="h-full w-(--width) bg-stone-500/50" [style.--width]="`${delivery - mine}%`"></div>
+            <div class="
+              h-full w-(--width) animate-stripes bg-stone-500/80 bg-stripes
+              motion-reduce:animate-none
+            " [style.--width]="`${delivery - mine}%`"></div>
           }
           @else {
             <!-- eslint-disable-next-line @angular-eslint/template/no-inline-styles -->
-            <div class="h-full w-(--width) bg-stone-500/50" [style.--width]="`${delivery}%`"></div>
+            <div class="
+              h-full w-(--width) animate-stripes bg-stone-500/80 bg-stripes
+              motion-reduce:animate-none
+            " [style.--width]="`${delivery}%`"></div>
           }
         </div>
         }
