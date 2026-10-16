@@ -346,6 +346,9 @@ $SortedItems.MGW.ItemCategory = "EItemCategory::SmallArms"
 $SortedItems.GrenadeC.ItemCategory = "EItemCategory::SmallArms"
 $SortedItems.WoundedCarriedPlayer.ItemCategory = "EItemCategory::Medical"
 $SortedItems.BannerTW.ItemCategory = "EItemCategory::Utility"
+$SortedItems.ReservePower.ItemCategory = $null
+$SortedItems.Excavation.ItemCategory = $null
+$SortedItems.UnexplodedOrdnance.ItemCategory = $null
 
 
 
