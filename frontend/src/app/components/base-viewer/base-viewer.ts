@@ -14,7 +14,7 @@ import {
 } from "@ng-icons/lucide"
 import { HlmPopoverImports } from "@spartan-ng/helm/popover"
 import { OrderService } from "../../services/order.service"
-import { BaseService, BASE_TYPES } from "../../services/base.service"
+import { BaseService, BASE_TYPES, BaseLabelPosition } from "../../services/base.service"
 import { HlmTooltipImports } from "@spartan-ng/helm/tooltip"
 import { OpsbaseIconPipe } from "../../pipes/opsbase-icon-pipe"
 
@@ -122,7 +122,9 @@ import { OpsbaseIconPipe } from "../../pipes/opsbase-icon-pipe"
                 <div class="mt-5 flex flex-row justify-evenly gap-2">
                   <div class="flex flex-col items-center justify-between gap-1">
                     <span class="text-muted-foreground">Name Position:</span>
-                    <div class="grid w-fit grid-cols-3 grid-rows-3 gap-0">
+                    <div class="
+                      grid w-fit grid-cols-3 grid-rows-3 gap-0 [&>button]:hover:bg-neutral-500!
+                    ">
 
                       <img class="
                         col-start-2 col-end-2 row-start-2 row-end-2 size-6 rounded-xs bg-input
@@ -132,29 +134,25 @@ import { OpsbaseIconPipe } from "../../pipes/opsbase-icon-pipe"
                       <button hlmBtn size="icon-xs" class="
                         col-start-2 col-end-2 row-start-1 row-end-1 cursor-pointer
                       " [variant]="base()!.namePosition() === 'top' ? 'default' : 'outline'"
-                        [disabled]="base()!.orderIndicatorPosition() === 'top'"
-                        (click)="base()!.namePosition.set('top')">
+                        (click)="setNamePosition('top')">
                         <ng-icon name="lucideArrowUpFromLine" class=""/>
                       </button>
                       <button hlmBtn size="icon-xs" class="
                         col-start-2 col-end-2 row-start-3 row-end-3 cursor-pointer
                       " [variant]="base()!.namePosition() === 'bottom' ? 'default' : 'outline'"
-                        [disabled]="base()!.orderIndicatorPosition() === 'bottom'"
-                        (click)="base()!.namePosition.set('bottom')">
+                        (click)="setNamePosition('bottom')">
                         <ng-icon name="lucideArrowDownFromLine" class=""/>
                       </button>
                       <button hlmBtn size="icon-xs" class="
                         col-start-1 col-end-1 row-start-2 row-end-2 cursor-pointer
                       " [variant]="base()!.namePosition() === 'left' ? 'default' : 'outline'"
-                        [disabled]="base()!.orderIndicatorPosition() === 'left'"
-                        (click)="base()!.namePosition.set('left')">
+                        (click)="setNamePosition('left')">
                         <ng-icon name="lucideArrowLeftFromLine" class=""/>
                       </button>
                       <button hlmBtn size="icon-xs" class="
                         col-start-3 col-end-3 row-start-2 row-end-2 cursor-pointer
                       " [variant]="base()!.namePosition() === 'right' ? 'default' : 'outline'"
-                        [disabled]="base()!.orderIndicatorPosition() === 'right'"
-                        (click)="base()!.namePosition.set('right')">
+                        (click)="setNamePosition('right')">
                         <ng-icon name="lucideArrowRightFromLine" class=""/>
                       </button>
 
@@ -163,7 +161,9 @@ import { OpsbaseIconPipe } from "../../pipes/opsbase-icon-pipe"
 
                   <div class="flex flex-col items-center justify-between gap-1">
                     <span class="text-muted-foreground">Order Indicator:</span>
-                    <div class="grid w-fit grid-cols-3 grid-rows-3 gap-0">
+                    <div class="
+                      grid w-fit grid-cols-3 grid-rows-3 gap-0 [&>button]:hover:bg-neutral-500!
+                    ">
 
                       <img class="
                         col-start-2 col-end-2 row-start-2 row-end-2 size-6 rounded-xs bg-input
@@ -173,29 +173,25 @@ import { OpsbaseIconPipe } from "../../pipes/opsbase-icon-pipe"
                       <button hlmBtn size="icon-xs" class="
                         col-start-2 col-end-2 row-start-1 row-end-1 cursor-pointer
                       " [variant]="base()!.orderIndicatorPosition() === 'top' ? 'default' : 'outline'"
-                        [disabled]="base()!.namePosition() === 'top'"
-                        (click)="base()!.orderIndicatorPosition.set('top')">
+                        (click)="setOrderIndicatorPosition('top')">
                         <ng-icon name="lucideArrowUpFromLine" class=""/>
                       </button>
                       <button hlmBtn size="icon-xs" class="
                         col-start-2 col-end-2 row-start-3 row-end-3 cursor-pointer
                       " [variant]="base()!.orderIndicatorPosition() === 'bottom' ? 'default' : 'outline'"
-                        [disabled]="base()!.namePosition() === 'bottom'"
-                        (click)="base()!.orderIndicatorPosition.set('bottom')">
+                        (click)="setOrderIndicatorPosition('bottom')">
                         <ng-icon name="lucideArrowDownFromLine" class=""/>
                       </button>
                       <button hlmBtn size="icon-xs" class="
                         col-start-1 col-end-1 row-start-2 row-end-2 cursor-pointer
                       " [variant]="base()!.orderIndicatorPosition() === 'left' ? 'default' : 'outline'"
-                        [disabled]="base()!.namePosition() === 'left'"
-                        (click)="base()!.orderIndicatorPosition.set('left')">
+                        (click)="setOrderIndicatorPosition('left')">
                         <ng-icon name="lucideArrowLeftFromLine" class=""/>
                       </button>
                       <button hlmBtn size="icon-xs" class="
                         col-start-3 col-end-3 row-start-2 row-end-2 cursor-pointer
                       " [variant]="base()!.orderIndicatorPosition() === 'right' ? 'default' : 'outline'"
-                        [disabled]="base()!.namePosition() === 'right'"
-                        (click)="base()!.orderIndicatorPosition.set('right')">
+                        (click)="setOrderIndicatorPosition('right')">
                         <ng-icon name="lucideArrowRightFromLine" class=""/>
                       </button>
 
@@ -301,6 +297,32 @@ export class BaseViewer implements AfterViewInit
   onClose()
   {
     this.baseService.editingBase.set(null)
+  }
+
+
+
+
+
+  setNamePosition(newNamePosition: BaseLabelPosition)
+  {
+    const base = this.base()
+    if (base)
+    {
+      if (base.orderIndicatorPosition() === newNamePosition)
+        base.orderIndicatorPosition.set(base.namePosition()) // swap positions
+      base.namePosition.set(newNamePosition)
+    }
+  }
+
+  setOrderIndicatorPosition(newOrderIndicatorPosition: BaseLabelPosition)
+  {
+    const base = this.base()
+    if (base)
+    {
+      if (base.namePosition() === newOrderIndicatorPosition)
+        base.namePosition.set(base.orderIndicatorPosition()) // swap positions
+      base.orderIndicatorPosition.set(newOrderIndicatorPosition)
+    }
   }
 
 }
