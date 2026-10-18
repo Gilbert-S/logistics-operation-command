@@ -28,6 +28,10 @@ export const hono = new Hono()
 
 hono.use("/auth/*", async (context, next) =>
 {
+  // oauth provider redirect is a plain browser navigation, cannot carry the header
+  if (context.req.path.startsWith("/auth/callback/"))
+    return await next()
+
   if (context.req.header("X-Client-Version") !== APP_VERSION)
     return context.json({ error: "client_outdated" }, 426)
 
