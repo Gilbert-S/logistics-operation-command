@@ -238,6 +238,9 @@ export class OrderService
     delivery.timeEnd = Date.now()
     order.deliveries.set([...order.deliveries()])
     this.updateSyncOrder(order)
+
+    if (newState === "completed")
+      this.audio.orderCompletedNotification()
   }
 
 
@@ -558,7 +561,7 @@ export class OrderService
 
       if (force || localOrder.syncId !== order.syncId)
       {
-        if (localOrder.completed && order.completed)
+        if (!localOrder.completed && order.completed)
           this.audio.orderCompletedNotification()
 
         const { items, deliveries, ...orderUpdate } = order
