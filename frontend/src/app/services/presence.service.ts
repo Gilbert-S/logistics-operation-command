@@ -45,6 +45,14 @@ export class PresenceService
 
 
 
+  private reset()
+  {
+    this.presencesIteration.set(-1)
+    this.presencesEpoch = undefined
+    this.requestPresenceUpdate()
+  }
+
+
   private requestPresenceUpdate()
   {
     const socket = this.socket()
@@ -68,21 +76,38 @@ export class PresenceService
     if (!response)
       return
 
-    this.presencesIteration.set(response.iteration)
-    this.presencesEpoch = response.epoch
 
     if (response.full)
+    {
       this.presences.set(response.full)
+      this.presencesIteration.set(response.iteration)
+      this.presencesEpoch = response.epoch
+    }
 
     const presences = this.presences()
 
-    if (response.delta && presences)
+    if (response.delta && response.delta.length > 0 && presences)
     {
-      response.delta.forEach((delta) =>
+      if (response.epoch !== this.presencesEpoch || this.presencesIteration() < 0)
+        return this.reset()
+
+      if (response.iteration === this.presencesIteration())
+        return
+
+      if (response.iteration < this.presencesIteration())
+        return this.reset()
+
+      try
       {
-        jsondiffpatch.patch(presences, delta)
-      })
+        response.delta.forEach((delta) => jsondiffpatch.patch(presences, delta))
+      }
+      catch
+      {
+        return this.reset()
+      }
+
       this.presences.set([...presences])
+      this.presencesIteration.set(response.iteration)
     }
   }
 
@@ -98,16 +123,27 @@ export class PresenceService
     if (epoch !== this.presencesEpoch)
       return this.requestPresenceUpdate()
 
+    if (iterationNumber === this.presencesIteration())
+      return
+
     if (iterationNumber < this.presencesIteration())
     {
       this.presencesIteration.set(-1)
       return this.requestPresenceUpdate()
     }
 
-    if (iterationNumber - this.presencesIteration() !== 1)
+    try
+    {
+      if (iterationNumber - this.presencesIteration() !== 1)
+        return this.requestPresenceUpdate()
+      else
+        jsondiffpatch.patch(presences, diff)
+    }
+    catch
+    {
+      this.presencesIteration.set(-1)
       return this.requestPresenceUpdate()
-    else
-      jsondiffpatch.patch(presences, diff)
+    }
 
     this.presences.set([...presences])
     this.presencesIteration.set(iterationNumber)

@@ -83,6 +83,15 @@ export class TemplateService
 
 
 
+  private reset()
+  {
+    this.templatesIteration.set(-1)
+    this.templatesEpoch = undefined
+    this.requestTemplatesUpdate()
+  }
+
+
+
   private requestTemplatesUpdate()
   {
     const socket = this.socket()
@@ -107,21 +116,37 @@ export class TemplateService
     if (!response)
       return
 
-    this.templatesIteration.set(response.iteration)
-    this.templatesEpoch = response.epoch
-
     if (response.full)
+    {
+      this.templatesIteration.set(response.iteration)
+      this.templatesEpoch = response.epoch
       return this.templates.set(response.full)
+    }
 
     const templates = this.templates()
 
-    if (response.delta && templates)
+    if (response.delta && response.delta.length > 0 && templates)
     {
-      response.delta.forEach((delta) =>
+      if (response.epoch !== this.templatesEpoch || this.templatesIteration() < 0)
+        return this.reset()
+
+      if (response.iteration === this.templatesIteration())
+        return
+
+      if (response.iteration < this.templatesIteration())
+        return this.reset()
+
+      try
       {
-        jsondiffpatch.patch(templates, delta)
-      })
+        response.delta.forEach((delta) => jsondiffpatch.patch(templates, delta))
+      }
+      catch
+      {
+        return this.reset()
+      }
+
       this.templates.set([...templates])
+      this.templatesIteration.set(response.iteration)
     }
   }
 
@@ -137,16 +162,27 @@ export class TemplateService
     if (epoch !== this.templatesEpoch)
       return this.requestTemplatesUpdate()
 
+    if (iterationNumber === this.templatesIteration())
+      return
+
     if (iterationNumber < this.templatesIteration())
     {
       this.templatesIteration.set(-1)
       return this.requestTemplatesUpdate()
     }
 
-    if (iterationNumber - this.templatesIteration() !== 1)
+    try
+    {
+      if (iterationNumber - this.templatesIteration() !== 1)
+        return this.requestTemplatesUpdate()
+      else
+        jsondiffpatch.patch(templates, diff)
+    }
+    catch
+    {
+      this.templatesIteration.set(-1)
       return this.requestTemplatesUpdate()
-    else
-      jsondiffpatch.patch(templates, diff)
+    }
 
     this.templates.set([...templates])
     this.templatesIteration.set(iterationNumber)

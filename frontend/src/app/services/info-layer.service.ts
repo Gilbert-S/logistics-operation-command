@@ -170,6 +170,13 @@ export class InfoLayerService
     this.requestUpdate()
   }
 
+  private reset()
+  {
+    this.syncIteration.set(-1)
+    this.syncEpoch = undefined
+    this.requestUpdate()
+  }
+
   private requestUpdate()
   {
     const socket = this.socket()
@@ -189,13 +196,34 @@ export class InfoLayerService
     if (error || !response)
       return toast.error(`Error requesting info map layer: ${ error.message}`, { duration: 10000 })
 
-    this.syncIteration.set(response.iteration)
-    this.syncEpoch = response.epoch
-
     if (response.full)
+    {
+      this.syncIteration.set(response.iteration)
+      this.syncEpoch = response.epoch
       this.syncList = response.full
-    else if (response.delta)
-      response.delta.forEach((delta) => jsondiffpatch.patch(this.syncList, delta))
+    }
+    else if (response.delta && response.delta.length > 0)
+    {
+      if (response.epoch !== this.syncEpoch || this.syncIteration() < 0)
+        return this.reset()
+
+      if (response.iteration === this.syncIteration())
+        return
+
+      if (response.iteration < this.syncIteration())
+        return this.reset()
+
+      try
+      {
+        response.delta.forEach((delta) => jsondiffpatch.patch(this.syncList, delta))
+      }
+      catch
+      {
+        return this.reset()
+      }
+
+      this.syncIteration.set(response.iteration)
+    }
 
     this.processSyncList()
     return
@@ -211,17 +239,28 @@ export class InfoLayerService
     if (epoch !== this.syncEpoch)
       return this.requestUpdate()
 
+    if (iterationNumber === this.syncIteration())
+      return
+
     if (iterationNumber < this.syncIteration())
     {
       this.syncIteration.set(-1)
       return this.requestUpdate()
     }
 
-    if (iterationNumber - this.syncIteration() !== 1)
+    try
+    {
+      if (iterationNumber - this.syncIteration() !== 1)
+        return this.requestUpdate()
+
+      jsondiffpatch.patch(this.syncList, diff)
+    }
+    catch
+    {
+      this.syncIteration.set(-1)
       return this.requestUpdate()
+    }
 
-
-    jsondiffpatch.patch(this.syncList, diff)
     this.syncIteration.set(iterationNumber)
     this.processSyncList()
     return

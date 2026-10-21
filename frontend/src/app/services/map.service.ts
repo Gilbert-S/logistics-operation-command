@@ -272,6 +272,13 @@ export class MapService
     if (error || !response)
       return
 
+    if (
+      response.delta &&
+      response.epoch === this.mapDataEpoch &&
+      response.iteration <= this.mapDataIteration()
+    )
+      return
+
     if (response.full)
       this.mapData.set(response.full)
 

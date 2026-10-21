@@ -419,6 +419,17 @@ export class OrderService
 
 
 
+  private resetOrderSync()
+  {
+    this.orderIteration.set(-1)
+    this.orderEpoch = undefined
+    this.requestOrdersUpdate()
+  }
+
+
+
+
+
   private requestOrdersUpdate()
   {
     const socket = this.socket()
@@ -446,17 +457,36 @@ export class OrderService
     if (!response)
       return
 
-    this.orderIteration.set(response.iteration)
-    this.orderEpoch = response.epoch
-
     if (response.full)
+    {
+      this.orderIteration.set(response.iteration)
+      this.orderEpoch = response.epoch
       this.orderSyncList = response.full
+    }
 
-    else if (response.delta && this.orderSyncList)
-      response.delta.forEach((delta) =>
+    else if (response.delta && response.delta.length > 0 && this.orderSyncList)
+    {
+      if (
+        response.epoch !== this.orderEpoch ||
+        this.orderIteration() < 0 ||
+        response.iteration < this.orderIteration()
+      )
+        return this.resetOrderSync()
+
+      if (response.iteration > this.orderIteration())
       {
-        jdp.patch(this.orderSyncList, delta)
-      })
+        try
+        {
+          response.delta.forEach((delta) => jdp.patch(this.orderSyncList, delta))
+        }
+        catch
+        {
+          return this.resetOrderSync()
+        }
+
+        this.orderIteration.set(response.iteration)
+      }
+    }
 
     const force = this.forceNextMerge
     this.forceNextMerge = false
@@ -492,7 +522,16 @@ export class OrderService
       return this.requestOrdersUpdate()
     else
     {
-      jdp.patch(this.orderSyncList, diff)
+      try
+      {
+        jdp.patch(this.orderSyncList, diff)
+      }
+      catch
+      {
+        this.orderIteration.set(-1)
+        return this.requestOrdersUpdate()
+      }
+
       this.orderIteration.set(iterationNumber)
       this.mergeSyncedOrderChanges()
     }

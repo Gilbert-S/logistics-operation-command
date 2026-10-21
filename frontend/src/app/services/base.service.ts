@@ -695,6 +695,14 @@ export class BaseService
   }
 
 
+  resetOpsBaseSync()
+  {
+    this.opsBaseIteration.set(-1)
+    this.opsBaseEpoch = undefined
+    this.requestOpsBaseUpdate()
+  }
+
+
   requestOpsBaseUpdate()
   {
     const socket = this.socket()
@@ -716,18 +724,38 @@ export class BaseService
     if (!response)
       return
 
-    this.opsBaseIteration.set(response.iteration)
-    this.opsBaseEpoch = response.epoch
     this.resetIdleUpdateTimout()
 
     if (response.full)
+    {
+      this.opsBaseIteration.set(response.iteration)
+      this.opsBaseEpoch = response.epoch
       this.opsBaseSyncList = response.full
+    }
 
-    else if (response.delta && this.opsBaseSyncList)
-      response.delta.forEach((delta) =>
+    else if (response.delta && response.delta.length > 0 && this.opsBaseSyncList)
+    {
+      if (
+        response.epoch !== this.opsBaseEpoch ||
+        this.opsBaseIteration() < 0 ||
+        response.iteration < this.opsBaseIteration()
+      )
+        return this.resetOpsBaseSync()
+
+      if (response.iteration > this.opsBaseIteration())
       {
-        jdp.patch(this.opsBaseSyncList, delta)
-      })
+        try
+        {
+          response.delta.forEach((delta) => jdp.patch(this.opsBaseSyncList, delta))
+        }
+        catch
+        {
+          return this.resetOpsBaseSync()
+        }
+
+        this.opsBaseIteration.set(response.iteration)
+      }
+    }
 
     this.mergeSyncedOpsBaseChanges()
   }
@@ -759,7 +787,16 @@ export class BaseService
       return this.requestOpsBaseUpdate()
     else
     {
-      jdp.patch(this.opsBaseSyncList, diff)
+      try
+      {
+        jdp.patch(this.opsBaseSyncList, diff)
+      }
+      catch
+      {
+        this.opsBaseIteration.set(-1)
+        return this.requestOpsBaseUpdate()
+      }
+
       this.opsBaseIteration.set(iterationNumber)
       this.mergeSyncedOpsBaseChanges()
     }
