@@ -5,30 +5,26 @@
 
 FROM node:26-alpine AS build
 
+# pnpm
+COPY --from=ghcr.io/pnpm/pnpm:12-alpine /opt/pnpm /opt/pnpm
+RUN mkdir -p /usr/local/bin \
+    && ln -s /opt/pnpm/pnpm /usr/local/bin/pnpm
+
 # ENV NPM_CONFIG_LOGLEVEL=info
 ENV NODE_ENV=production
 
 WORKDIR /app
 
-COPY package.json package-lock.json .npmrc ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY ./backend/ ./backend/
 COPY ./common/ ./common/
 COPY ./jdp/ ./jdp/ 
 COPY ./backend/entrypoint.sh /
 
-RUN npm ci \
-  --workspace=common \
-  --workspace=jdp \
-  --workspace=backend \
-  --omit=dev \
-  --omit=peer \
-  --omit=optional \
-  --ignore-scripts \
-  --include-workspace-root
+RUN pnpm -F backend -F common -F jdp -F types ci --prod --ignore-scripts
 
 RUN node -p "require('./package.json').version" > ./backend/.version
-RUN npm prune --production
-RUN rm -f .npmrc package.json package-lock.json
+RUN rm -f package.json pnpm-lock.yaml pnpm-workspace.yaml
 
 
 

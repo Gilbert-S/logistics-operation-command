@@ -7,26 +7,23 @@ FROM dhi.io/node:26-alpine-dev AS build
 
 # ENV NPM_CONFIG_LOGLEVEL=info
 
+# pnpm
+COPY --from=ghcr.io/pnpm/pnpm:12-alpine /opt/pnpm /opt/pnpm
+RUN mkdir -p /usr/local/bin \
+    && ln -s /opt/pnpm/pnpm /usr/local/bin/pnpm
+
 WORKDIR /app
 
-COPY package.json package-lock.json .npmrc ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY ./frontend/ ./frontend/
 COPY ./common/ ./common/
 COPY ./jdp/ ./jdp/
 COPY ./types/ ./types/
 
-RUN --mount=type=cache,target=/root/.npm npm ci \
-  --workspace=common \
-  --workspace=jdp \
-  --workspace=frontend \
-  --workspace=types \
-  --ignore-scripts \
-  --include-workspace-root
+RUN --mount=type=cache,id=pnpm,target=/var/cache/pnpm \
+  pnpm -F frontend -F common -F jdp -F types ci --store-dir /var/cache/pnpm --ignore-scripts
 
-# temporary monkey patch for spartan overlay bug until 1.5 release
-COPY ./spartan-ng-brain-overlay.mjs ./node_modules/@spartan-ng/brain/fesm2022/
-
-RUN npm run build --workspace=frontend
+RUN pnpm -F frontend build
 
 
 
