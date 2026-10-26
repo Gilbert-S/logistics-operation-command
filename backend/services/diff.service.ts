@@ -1,6 +1,5 @@
 import { getSocketIOInstance } from "./socket.service.ts"
-import { jdp } from "@loc/jdp"
-import { type Delta } from "jsondiffpatch"
+import { jdp, type Delta } from "@loc/jdp"
 import type Events from "@loc/common"
 
 import Debug from "debug"

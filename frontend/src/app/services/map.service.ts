@@ -10,7 +10,7 @@ import { ContextMenu } from "./context-menu"
 import { MapIconsLayer } from "../map-layers/map-icons.layer"
 import { SocketService } from "./socket.service"
 import { Events } from "@loc/common"
-import * as jsondiffpatch from "jsondiffpatch"
+import { jdp, type Delta } from "@loc/jdp"
 import { toast } from "@spartan-ng/brain/sonner"
 import { environment } from "../../environments/environment"
 import { LocalUserPreferenceService } from "./local-user-preference.service"
@@ -239,7 +239,7 @@ export class MapService
 
 
   /** patches a copy, so a failing patch can never leave the current map data half-updated */
-  private applyMapDataDeltas(deltas: jsondiffpatch.Delta[]): boolean
+  private applyMapDataDeltas(deltas: Delta[]): boolean
   {
     const current = this.mapData()
     if (!current) return false
@@ -247,7 +247,7 @@ export class MapService
     try
     {
       const copy = structuredClone(current)
-      deltas.forEach((delta) => jsondiffpatch.patch(copy, delta))
+      deltas.forEach((delta) => jdp.patch(copy, delta))
       this.mapData.set(copy)
       return true
     }
@@ -290,7 +290,7 @@ export class MapService
   }
 
 
-  syncMapDataHandler = (data: { iterationNumber: number, diff: jsondiffpatch.Delta, epoch?: string }) =>
+  syncMapDataHandler = (data: { iterationNumber: number, diff: Delta, epoch?: string }) =>
   {
     const { iterationNumber, diff, epoch } = data
 

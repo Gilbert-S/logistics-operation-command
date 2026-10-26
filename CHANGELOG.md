@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - migrated mono repo to [pnpm]
 - migrated front- and backend dockerfile to pnpm
+- refactored jdp imports
 
 
 

@@ -2,7 +2,7 @@ import { effect, inject, Injectable, signal, untracked } from "@angular/core"
 import { SocketService } from "./socket.service"
 import { Events } from "@loc/common"
 import { RequestResponse, Template } from "@loc/types"
-import jsondiffpatch, { type Delta } from "@loc/jdp"
+import { jdp, type Delta } from "@loc/jdp"
 import { toast } from "@spartan-ng/brain/sonner"
 
 
@@ -138,7 +138,7 @@ export class TemplateService
 
       try
       {
-        response.delta.forEach((delta) => jsondiffpatch.patch(templates, delta))
+        response.delta.forEach((delta) => jdp.patch(templates, delta))
       }
       catch
       {
@@ -176,7 +176,7 @@ export class TemplateService
       if (iterationNumber - this.templatesIteration() !== 1)
         return this.requestTemplatesUpdate()
       else
-        jsondiffpatch.patch(templates, diff)
+        jdp.patch(templates, diff)
     }
     catch
     {

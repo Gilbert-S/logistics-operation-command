@@ -2,7 +2,7 @@ import { checkOrderCompletion, Events, highFilter, lowFilter, mediumFilter, upda
   from "@loc/common"
 import type { Socket } from "socket.io"
 import { applyDeltaToClone, diffAndSync, Identifier, storeDelta, sync } from "./diff.service.ts"
-import type { Delta } from "jsondiffpatch"
+import type { Delta } from "@loc/jdp"
 import { logHandlerErrors } from "./socket.service.ts"
 import { isExpectedSync, standardRequestHandler } from "../utils/standard-request-handler.ts"
 import type { Delivery, DeliveryItem, OrderItem, SyncAckCallback, SyncOrder } from "@loc/types"

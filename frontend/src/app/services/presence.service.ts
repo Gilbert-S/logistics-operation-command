@@ -2,7 +2,7 @@ import { effect, inject, Injectable, signal, untracked } from "@angular/core"
 import { SocketService } from "./socket.service"
 import { Events } from "@loc/common"
 import type { Presence, RequestResponse } from "@loc/types"
-import jsondiffpatch, { type Delta } from "@loc/jdp"
+import { jdp, type Delta } from "@loc/jdp"
 import { toast } from "@spartan-ng/brain/sonner"
 
 
@@ -99,7 +99,7 @@ export class PresenceService
 
       try
       {
-        response.delta.forEach((delta) => jsondiffpatch.patch(presences, delta))
+        response.delta.forEach((delta) => jdp.patch(presences, delta))
       }
       catch
       {
@@ -137,7 +137,7 @@ export class PresenceService
       if (iterationNumber - this.presencesIteration() !== 1)
         return this.requestPresenceUpdate()
       else
-        jsondiffpatch.patch(presences, diff)
+        jdp.patch(presences, diff)
     }
     catch
     {

@@ -4,7 +4,7 @@ import { SocketService } from "./socket.service"
 import Events from "@loc/common"
 import { RequestResponse } from "@loc/types"
 import { toast } from "@spartan-ng/brain/sonner"
-import jsondiffpatch, { jdp, type Delta } from "@loc/jdp"
+import { jdp, type Delta } from "@loc/jdp"
 
 
 
@@ -215,7 +215,7 @@ export class InfoLayerService
 
       try
       {
-        response.delta.forEach((delta) => jsondiffpatch.patch(this.syncList, delta))
+        response.delta.forEach((delta) => jdp.patch(this.syncList, delta))
       }
       catch
       {
@@ -253,7 +253,7 @@ export class InfoLayerService
       if (iterationNumber - this.syncIteration() !== 1)
         return this.requestUpdate()
 
-      jsondiffpatch.patch(this.syncList, diff)
+      jdp.patch(this.syncList, diff)
     }
     catch
     {

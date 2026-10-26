@@ -3,7 +3,7 @@ import type { Socket } from "socket.io"
 import { applyDelta, diffAndSync, Identifier, storeDelta, sync } from "./diff.service.ts"
 import { logHandlerErrors } from "./socket.service.ts"
 import { isExpectedSync, standardRequestHandler } from "../utils/standard-request-handler.ts"
-import type { Delta } from "jsondiffpatch"
+import type { Delta } from "@loc/jdp"
 import type { OpsBase, SyncAckCallback } from "@loc/types"
 
 

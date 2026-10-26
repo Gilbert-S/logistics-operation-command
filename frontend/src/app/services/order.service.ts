@@ -2,10 +2,9 @@ import { effect, inject, Injectable, linkedSignal, signal, untracked, WritableSi
   from "@angular/core"
 import { SocketService } from "./socket.service"
 import { checkOrderCompletion, Events, updateOrderStats } from "@loc/common"
-import { Delta } from "jsondiffpatch"
 import { OrderId, Order, SyncOrder, OrderItem, RequestResponse, User, Delivery } from "@loc/types"
 import { AudioService } from "./audio.service"
-import { jdp } from "@loc/jdp"
+import { jdp, type Delta } from "@loc/jdp"
 import { AuthService } from "./auth.service"
 
 
