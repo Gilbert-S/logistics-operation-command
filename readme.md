@@ -11,12 +11,15 @@ status and progress.
 
 ### Install Dependencies
 
+This project uses [pnpm](https://pnpm.io) to manage the dependencies of this monorepo.
+[Install](https://pnpm.io/installation) it if you havent yet. (`npm` commands won't work).
+
 ```shell
 cd /path/to/repo/
-npm install
+pnpm install
 ```
 
-Alternatively, use `npm ci` to install the exact versions specified in the lockfile.
+Alternatively, use `pnpm ci` to install the exact versions specified in the lockfile.
 
 ### Configure Discord OAuth
 
@@ -77,16 +80,9 @@ and `/socket.io` paths instead of a separate backend URL such as
 
 ### Run the Application
 
-In the first shell, start the backend:
 
 ```shell
-npm start --workspace=backend
-```
-
-In a second shell, start the frontend:
-
-```shell
-npm start --workspace=frontend
+pnpm start
 ```
 
 When both services are running, browse to
