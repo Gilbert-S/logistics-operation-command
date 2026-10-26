@@ -13,9 +13,10 @@
   "scripts": {
     "build": "tsc --build"
   },
-  
+
   "dependencies": {},
   "devDependencies": {
-    "typescript": "~5.9.3"
+    "@loc/types": "workspace:*",
+    "typescript": "~6.0.0"
   }
 }

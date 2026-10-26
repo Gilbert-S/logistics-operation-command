@@ -4,5 +4,10 @@
   "version": "1.0.0",
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "@angular/core": "catalog:",
+    "@loc/jdp": "workspace:*",
+    "leaflet": "catalog:"
+  }
 }
