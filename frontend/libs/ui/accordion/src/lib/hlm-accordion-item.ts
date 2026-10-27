@@ -1,22 +1,23 @@
-import { Directive } from "@angular/core"
-import { BrnAccordionItem } from "@spartan-ng/brain/accordion"
-import { classes } from "@spartan-ng/helm/utils"
+import { Directive } from '@angular/core';
+import { BrnAccordionItem } from '@spartan-ng/brain/accordion';
+import { classes } from '@spartan-ng/helm/utils';
 
 @Directive({
-  selector: "[hlmAccordionItem],hlm-accordion-item",
-  hostDirectives: [
-    {
-      directive: BrnAccordionItem,
-      inputs: ["isOpened", "disabled"],
-      outputs: ["openedChange"],
-    },
-  ],
-  host: { "data-slot": "accordion-item" },
+	selector: '[hlmAccordionItem],hlm-accordion-item',
+	exportAs: 'hlmAccordionItem',
+	hostDirectives: [
+		{
+			directive: BrnAccordionItem,
+			inputs: ['isOpened', 'disabled'],
+			outputs: ['openedChange'],
+		},
+	],
+	host: {
+		'data-slot': 'accordion-item',
+	},
 })
-export class HlmAccordionItem
-{
-  constructor()
-  {
-    classes(() => "not-last:border-b flex flex-col")
-  }
+export class HlmAccordionItem {
+	constructor() {
+		classes(() => 'not-last:border-b flex flex-col');
+	}
 }

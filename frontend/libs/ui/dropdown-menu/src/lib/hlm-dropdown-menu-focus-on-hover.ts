@@ -1,6 +1,6 @@
-import { InputModalityDetector } from "@angular/cdk/a11y"
-import { CdkMenu, CdkMenuItem } from "@angular/cdk/menu"
-import { Directive, inject } from "@angular/core"
+import { InputModalityDetector } from '@angular/cdk/a11y';
+import { CdkMenu, CdkMenuItem } from '@angular/cdk/menu';
+import { Directive, inject } from '@angular/core';
 
 /**
  * @internal
@@ -14,23 +14,23 @@ import { Directive, inject } from "@angular/core"
  * Applied as a host directive on every dropdown item type (item, checkbox, radio, sub-trigger).
  */
 @Directive({
-  selector: "[hlmDropdownMenuFocusOnHover]",
-  host: { "(mouseenter)": "_focusOnHover()" },
+	selector: '[hlmDropdownMenuFocusOnHover]',
+	exportAs: 'hlmDropdownMenuFocusOnHover',
+	host: {
+		'(mouseenter)': '_focusOnHover()',
+	},
 })
-export class HlmDropdownMenuFocusOnHover
-{
-  private readonly _cdkMenuItem = inject(CdkMenuItem, { self: true })
-  private readonly _parentMenu = inject(CdkMenu, { optional: true })
-  private readonly _inputModality = inject(InputModalityDetector)
+export class HlmDropdownMenuFocusOnHover {
+	private readonly _cdkMenuItem = inject(CdkMenuItem, { self: true });
+	private readonly _parentMenu = inject(CdkMenu, { optional: true });
+	private readonly _inputModality = inject(InputModalityDetector);
 
-  protected _focusOnHover(): void
-  {
-    // Only skip synthetic hovers from touch taps; every real hover (mouse, or keyboard-then-hover,
-    // which leaves the modality as 'keyboard') should move focus to keep a single highlight.
-    if (this._inputModality.mostRecentModality === "touch" || this._cdkMenuItem.disabled)
-
-      return
-
-    this._parentMenu?.setActiveMenuItem(this._cdkMenuItem)
-  }
+	protected _focusOnHover(): void {
+		// Only skip synthetic hovers from touch taps; every real hover (mouse, or keyboard-then-hover,
+		// which leaves the modality as 'keyboard') should move focus to keep a single highlight.
+		if (this._inputModality.mostRecentModality === 'touch' || this._cdkMenuItem.disabled) {
+			return;
+		}
+		this._parentMenu?.setActiveMenuItem(this._cdkMenuItem);
+	}
 }

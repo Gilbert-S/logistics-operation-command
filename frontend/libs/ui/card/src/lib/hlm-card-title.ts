@@ -1,14 +1,13 @@
-import { Directive } from "@angular/core"
-import { classes } from "@spartan-ng/helm/utils"
+import { Directive } from '@angular/core';
+import { classes } from '@spartan-ng/helm/utils';
 
 @Directive({
-  selector: "[hlmCardTitle]",
-  host: { "data-slot": "card-title" },
+	selector: '[hlmCardTitle]',
+	exportAs: 'hlmCardTitle',
+	host: { 'data-slot': 'card-title' },
 })
-export class HlmCardTitle
-{
-  constructor()
-  {
-    classes(() => "text-base leading-snug font-medium group-data-[size=sm]/card:text-sm")
-  }
+export class HlmCardTitle {
+	constructor() {
+		classes(() => 'text-base leading-snug font-medium group-data-[size=sm]/card:text-sm');
+	}
 }

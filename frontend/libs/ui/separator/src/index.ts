@@ -1,5 +1,5 @@
-import { HlmSeparator } from "./lib/hlm-separator"
+import { HlmSeparator } from './lib/hlm-separator';
 
-export * from "./lib/hlm-separator"
+export * from './lib/hlm-separator';
 
-export const HlmSeparatorImports = [HlmSeparator] as const
+export const HlmSeparatorImports = [HlmSeparator] as const;

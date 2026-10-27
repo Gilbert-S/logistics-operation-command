@@ -1,25 +1,27 @@
-import { BooleanInput } from "@angular/cdk/coercion"
-import { booleanAttribute, ChangeDetectionStrategy, Component, input } from "@angular/core"
-import { NgIcon, provideIcons } from "@ng-icons/core"
-import { lucideSearch, lucideX } from "@ng-icons/lucide"
-import { BrnAutocompleteAnchor, BrnAutocompleteClear, BrnAutocompleteInput } from "@spartan-ng/brain/autocomplete"
-import { HlmInputGroup, HlmInputGroupImports } from "@spartan-ng/helm/input-group"
-import { classes } from "@spartan-ng/helm/utils"
+import { BooleanInput } from '@angular/cdk/coercion';
+import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideSearch, lucideX } from '@ng-icons/lucide';
+import { BrnAutocompleteAnchor, BrnAutocompleteClear, BrnAutocompleteInput } from '@spartan-ng/brain/autocomplete';
+import { HlmInputGroup, HlmInputGroupImports } from '@spartan-ng/helm/input-group';
+import { classes } from '@spartan-ng/helm/utils';
 
 @Component({
-  selector: "hlm-autocomplete-input",
-  imports: [HlmInputGroupImports, NgIcon, BrnAutocompleteClear, BrnAutocompleteInput],
-  providers: [provideIcons({ lucideSearch, lucideX })],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  hostDirectives: [BrnAutocompleteAnchor, HlmInputGroup],
-  template: `
+	selector: 'hlm-autocomplete-input',
+	exportAs: 'hlmAutocompleteInput',
+	imports: [HlmInputGroupImports, NgIcon, BrnAutocompleteClear, BrnAutocompleteInput],
+	providers: [provideIcons({ lucideSearch, lucideX })],
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	hostDirectives: [BrnAutocompleteAnchor, HlmInputGroup],
+	template: `
 		<input
-			#autocompleteInput="brnAutocompleteInput"
 			brnAutocompleteInput
+			#autocompleteInput="brnAutocompleteInput"
 			hlmInputGroupInput
 			[id]="inputId()"
 			[placeholder]="placeholder()"
-			[aria-invalid]="ariaInvalidOverride()"
+			[autocomplete]="autocomplete()"
+			[aria-invalid]="ariaInvalidInput()"
 			[forceInvalid]="forceInvalid()"
 		/>
 
@@ -35,9 +37,9 @@ import { classes } from "@spartan-ng/helm/utils"
 					*brnAutocompleteClear
 					hlmInputGroupButton
 					data-slot="autocomplete-clear"
+					[disabled]="autocompleteInput.disabled()"
 					size="icon-xs"
 					variant="ghost"
-					[disabled]="autocompleteInput.disabled()"
 				>
 					<ng-icon name="lucideX" />
 				</button>
@@ -46,28 +48,28 @@ import { classes } from "@spartan-ng/helm/utils"
 		<ng-content />
 	`,
 })
-export class HlmAutocompleteInput
-{
-  private static _id = 0
+export class HlmAutocompleteInput {
+	private static _id = 0;
 
-  public readonly inputId = input<string>(`hlm-autocomplete-input-${HlmAutocompleteInput._id++}`)
+	public readonly inputId = input<string>(`hlm-autocomplete-input-${HlmAutocompleteInput._id++}`);
 
-  public readonly placeholder = input<string>("")
+	public readonly placeholder = input<string>('');
 
-  public readonly showSearch = input<boolean, BooleanInput>(true, { transform: booleanAttribute })
-  public readonly showClear = input<boolean, BooleanInput>(false, { transform: booleanAttribute })
+	public readonly autocomplete = input<string>('off');
 
-  /** Forces the invalid state visually, regardless of form control state. */
-  public readonly forceInvalid = input<boolean, BooleanInput>(false, { transform: booleanAttribute })
+	public readonly showSearch = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
+	public readonly showClear = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-  /** Manual override for aria-invalid. When not set, auto-detects from the parent autocomplete error state. */
-  public readonly ariaInvalidOverride = input<boolean | undefined, BooleanInput>(undefined, {
-    transform: (v: BooleanInput) => (v === "" || v === undefined ? undefined : booleanAttribute(v)),
-    alias: "aria-invalid",
-  })
+	/** Forces the invalid state visually, regardless of form control state. */
+	public readonly forceInvalid = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-  constructor()
-  {
-    classes(() => "w-auto")
-  }
+	/** Manual override for aria-invalid. When not set, auto-detects from the parent autocomplete error state. */
+	public readonly ariaInvalidInput = input<boolean | undefined, BooleanInput>(undefined, {
+		transform: (v: BooleanInput) => (v === '' || v === undefined ? undefined : booleanAttribute(v)),
+		alias: 'aria-invalid',
+	});
+
+	constructor() {
+		classes(() => 'w-auto');
+	}
 }

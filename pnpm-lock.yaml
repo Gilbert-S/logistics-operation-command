@@ -171,8 +171,8 @@ importers:
         specifier: ^36.1.0
         version: 36.1.0(@ng-icons/core@36.1.0)
       '@spartan-ng/brain':
-        specifier: ^1.4.1
-        version: 1.6.3(@angular/cdk@22.2.3)(@angular/common@22.2.3)(@angular/core@22.2.3)(@angular/forms@22.2.3)(clsx@2.1.1)(rxjs@7.8.2)(tailwindcss@4.3.3)(tw-animate-css@1.4.0)
+        specifier: ^1.8.0
+        version: 1.8.0(@angular/cdk@22.2.3)(@angular/common@22.2.3)(@angular/core@22.2.3)(@angular/forms@22.2.3)(clsx@2.1.1)(rxjs@7.8.2)(tailwindcss@4.3.3)(tw-animate-css@1.4.0)
       '@tailwindcss/postcss':
         specifier: ^4.3.3
         version: 4.3.3
@@ -235,8 +235,8 @@ importers:
         specifier: workspace:*
         version: link:../types
       '@spartan-ng/cli':
-        specifier: ^1.4.1
-        version: 1.6.3(@angular-devkit/core@22.2.3)(@angular-devkit/schematics@22.2.3)(@angular/build@22.2.3)(@angular/compiler@22.2.3)(@babel/traverse@7.29.10)(@zkochan/js-yaml@0.0.7)(chokidar@5.0.0)(debug@4.4.3)(eslint@10.13.0)(rxjs@7.8.2)(supports-color@11.0.0)(tslib@2.8.1)
+        specifier: ^1.8.0
+        version: 1.8.0(@angular-devkit/core@22.2.3)(@angular-devkit/schematics@22.2.3)(@angular/build@22.2.3)(@angular/compiler@22.2.3)(@babel/traverse@7.29.10)(@zkochan/js-yaml@0.0.7)(chokidar@5.0.0)(debug@4.4.3)(eslint@10.13.0)(rxjs@7.8.2)(supports-color@11.0.0)(tslib@2.8.1)
       '@types/leaflet':
         specifier: 'catalog:'
         version: 1.9.22
@@ -2837,8 +2837,8 @@ packages:
   '@socket.io/component-emitter@3.1.2':
     resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
 
-  '@spartan-ng/brain@1.6.3':
-    resolution: {integrity: sha512-qerkqUXXP0Wk9Lk7PMOM5BwHY1I066OJb49UWVt4pNT0KrQ24i1Ea06SLHbiXvR5fWilPrX5t42vibTkkmXyRw==}
+  '@spartan-ng/brain@1.8.0':
+    resolution: {integrity: sha512-JZUoaWQRHu6PeMiqEF4U9yjij0YrK6tN1iZwzgaTP740uVPkJHdTYv6Ui8+vOrHD3eOxiXNxnb2Q6VDcO+rJ6Q==}
     peerDependencies:
       '@angular/cdk': '>=21.0.0 <23.0.0'
       '@angular/common': '>=21.0.0 <23.0.0'
@@ -2853,8 +2853,8 @@ packages:
       luxon:
         optional: true
 
-  '@spartan-ng/cli@1.6.3':
-    resolution: {integrity: sha512-tz+5zjZ5T2tv8AksVn7NS2ZQxO2RSPQD6d/vT/E2vruu1v+DfiGWzUW1jpg/FeghgBY4o8+IGwvjfVXcTerYMg==}
+  '@spartan-ng/cli@1.8.0':
+    resolution: {integrity: sha512-UFbyniNj61unzXPbeg6D+dPz9LMO72nRFZwCUiMaS6HqJ2bifa4dGPicx5t3nTx8/9DdZjiN2Th/+aJ9NTZegA==}
     peerDependencies:
       tslib: ^2.3.0
 
@@ -8199,7 +8199,7 @@ snapshots:
 
   '@socket.io/component-emitter@3.1.2': {}
 
-  '@spartan-ng/brain@1.6.3(@angular/cdk@22.2.3)(@angular/common@22.2.3)(@angular/core@22.2.3)(@angular/forms@22.2.3)(clsx@2.1.1)(rxjs@7.8.2)(tailwindcss@4.3.3)(tw-animate-css@1.4.0)':
+  '@spartan-ng/brain@1.8.0(@angular/cdk@22.2.3)(@angular/common@22.2.3)(@angular/core@22.2.3)(@angular/forms@22.2.3)(clsx@2.1.1)(rxjs@7.8.2)(tailwindcss@4.3.3)(tw-animate-css@1.4.0)':
     dependencies:
       '@angular/cdk': 22.2.3(@angular/common@22.2.3)(@angular/core@22.2.3)(@angular/forms@22.2.3)(@angular/platform-browser@22.2.3)(rxjs@7.8.2)
       '@angular/common': 22.2.3(@angular/core@22.2.3)(rxjs@7.8.2)
@@ -8211,7 +8211,7 @@ snapshots:
       tslib: 2.8.1
       tw-animate-css: 1.4.0
 
-  '@spartan-ng/cli@1.6.3(@angular-devkit/core@22.2.3)(@angular-devkit/schematics@22.2.3)(@angular/build@22.2.3)(@angular/compiler@22.2.3)(@babel/traverse@7.29.10)(@zkochan/js-yaml@0.0.7)(chokidar@5.0.0)(debug@4.4.3)(eslint@10.13.0)(rxjs@7.8.2)(supports-color@11.0.0)(tslib@2.8.1)':
+  '@spartan-ng/cli@1.8.0(@angular-devkit/core@22.2.3)(@angular-devkit/schematics@22.2.3)(@angular/build@22.2.3)(@angular/compiler@22.2.3)(@babel/traverse@7.29.10)(@zkochan/js-yaml@0.0.7)(chokidar@5.0.0)(debug@4.4.3)(eslint@10.13.0)(rxjs@7.8.2)(supports-color@11.0.0)(tslib@2.8.1)':
     dependencies:
       '@angular/core': 22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)
       '@nx/angular': 23.3.0(@angular-devkit/core@22.2.3)(@angular-devkit/schematics@22.2.3)(@angular/build@22.2.3)(@babel/traverse@7.29.10)(@schematics/angular@21.2.14)(@zkochan/js-yaml@0.0.7)(debug@4.4.3)(eslint@10.13.0)(nx@23.3.0)(rxjs@7.8.2)(supports-color@11.0.0)(typescript@6.0.3)

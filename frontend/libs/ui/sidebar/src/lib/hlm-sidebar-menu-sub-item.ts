@@ -1,17 +1,16 @@
-import { Directive } from "@angular/core"
-import { classes } from "@spartan-ng/helm/utils"
+import { Directive } from '@angular/core';
+import { classes } from '@spartan-ng/helm/utils';
 
 @Directive({
-  selector: "li[hlmSidebarMenuSubItem]",
-  host: {
-    "data-slot": "sidebar-menu-sub-item",
-    "data-sidebar": "menu-sub-item",
-  },
+	selector: 'li[hlmSidebarMenuSubItem]',
+	exportAs: 'hlmSidebarMenuSubItem',
+	host: {
+		'data-slot': 'sidebar-menu-sub-item',
+		'data-sidebar': 'menu-sub-item',
+	},
 })
-export class HlmSidebarMenuSubItem
-{
-  constructor()
-  {
-    classes(() => "group/menu-sub-item relative")
-  }
+export class HlmSidebarMenuSubItem {
+	constructor() {
+		classes(() => 'group/menu-sub-item relative');
+	}
 }
