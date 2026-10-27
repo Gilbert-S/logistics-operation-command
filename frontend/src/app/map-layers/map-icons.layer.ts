@@ -105,7 +105,6 @@ export class MapIconsLayer
   {
     this.baseService.removeMapIconBases([...this.known.values()].map((entry) => entry.base))
     this.known.clear()
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     layers.forEach((layer) => void layer.clearLayers())
   }
 

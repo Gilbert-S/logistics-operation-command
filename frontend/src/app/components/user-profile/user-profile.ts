@@ -65,7 +65,7 @@ export class UserProfile
   public login = this.auth.signIn
   public logout = this.auth.signOut
   public stopImpersonating = () => this.auth.stopImpersonating()
-  public version = version as string
+  public version = version
 
 
   readonly menuButton = viewChild<ElementRef<HTMLButtonElement>>("PopoverAnchor")

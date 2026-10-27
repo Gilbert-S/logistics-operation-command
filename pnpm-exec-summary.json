@@ -1,0 +1,23 @@
+{
+  "executionStatus": {
+    "C:\\Repos\\logistics-operation-command\\backend": {
+      "status": "skipped"
+    },
+    "C:\\Repos\\logistics-operation-command\\common": {
+      "status": "skipped"
+    },
+    "C:\\Repos\\logistics-operation-command\\frontend": {
+      "status": "skipped"
+    },
+    "C:\\Repos\\logistics-operation-command\\jdp": {
+      "status": "passed",
+      "duration": 604.8195
+    },
+    "C:\\Repos\\logistics-operation-command\\types": {
+      "status": "failure",
+      "duration": 113.2141,
+      "prefix": "C:\\Repos\\logistics-operation-command\\types",
+      "message": "command failed with exit code 1"
+    }
+  }
+}

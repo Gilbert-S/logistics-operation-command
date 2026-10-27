@@ -103,7 +103,8 @@
             "lintFilePatterns": [
               "src/**/*.ts",
               "src/**/*.html"
-            ]
+            ],
+            "eslintConfig": "../eslint.config.ts"
           }
         }
       }

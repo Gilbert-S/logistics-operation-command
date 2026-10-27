@@ -8,7 +8,6 @@ import { version } from "packageJson"
 
 
 
-
 @Injectable({ providedIn: "root" })
 export class SocketService
 {
@@ -16,8 +15,8 @@ export class SocketService
 
   public readonly socket = signal(io({
     ackTimeout: 10000,
-    autoConnect: false,
     auth: { version },
+    autoConnect: false,
     reconnection: true,
     reconnectionAttempts: Infinity,
     reconnectionDelay: 1000,

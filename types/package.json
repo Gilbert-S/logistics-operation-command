@@ -6,8 +6,8 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@angular/core": "catalog:",
+    "@angular/core": "^22.2.3",
     "@loc/jdp": "workspace:*",
-    "leaflet": "catalog:"
+    "@types/leaflet": "catalog:"
   }
 }

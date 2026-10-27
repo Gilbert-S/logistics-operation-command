@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { configs as eslintConfigs } from "@eslint/js"
 import { defineConfig, globalIgnores, includeIgnoreFile } from "eslint/config"
 import tseslint from "typescript-eslint"
@@ -11,6 +12,11 @@ import { fileURLToPath } from "node:url"
 const rootGitIgnore = fileURLToPath(new URL(".gitignore", import.meta.url))
 const frontendGitIgnore = fileURLToPath(new URL("frontend/.gitignore", import.meta.url))
 const backendGitIgnore = fileURLToPath(new URL("backend/.gitignore", import.meta.url))
+const frontendDir = fileURLToPath(new URL("./frontend/", import.meta.url))
+
+
+
+
 
 export default defineConfig([
 
@@ -33,9 +39,14 @@ export default defineConfig([
     extends: [eslintPluginBetterTailwindcss.configs.recommended],
     files: ["**/*.html", "**/*.ts"],
 
-    settings: { "better-tailwindcss": { entryPoint: "frontend/src/styles.scss" } },
+    settings: {
+      "better-tailwindcss": {
+        cwd: frontendDir,
+        entryPoint: "src/styles.scss",
+      },
+    },
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
     plugins: { "@html-eslint/angular-template": angularTemplate },
 
     rules: {
@@ -73,10 +84,8 @@ export default defineConfig([
     languageOptions: {
       parserOptions: {
         projectService: {
-          allowDefaultProject: [
-            "",
-            "eslint.config.ts",
-          ],
+          allowDefaultProject: ["", "eslint.config.ts"],
+          defaultProject: "backend/tsconfig.json",
         },
       },
     },
