@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - migrated mono repo to [pnpm]
 - migrated front- and backend dockerfile to pnpm
 - refactored jdp imports
+- readme updated for pnpm
+- angular migrated from v21 -> v22
+- dependency updates
+- fixed linting, linting settings and lint errors
+- spartan-ng updated to 1.8.0
 
 
 
